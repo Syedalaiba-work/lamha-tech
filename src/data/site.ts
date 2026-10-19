@@ -23,10 +23,10 @@ export const site = {
     secondary: { label: "Explore Services", href: "/services" },
   },
   contact: {
-    // Interim contact details supplied by LAMHA (2026-09-28). Replace with the company domain addresses when ready.
-    generalEmail: "syedalaibawork@gmail.com",
-    projectsEmail: "syedalaibawork@gmail.com",
-    careersEmail: "syedalaibawork@gmail.com",
+    // Company Gmail supplied by LAMHA (2026-10-19). Replace with the company domain addresses when ready.
+    generalEmail: "lamhatechnologies@gmail.com",
+    projectsEmail: "lamhatechnologies@gmail.com",
+    careersEmail: "lamhatechnologies@gmail.com",
     phone: "+92 334 1606621" as string | null,
     phoneDisplay: "0334 1606621",
     address: null as string | null,

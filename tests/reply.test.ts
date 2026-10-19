@@ -63,7 +63,7 @@ describe("reply email", () => {
     delete process.env.EMAIL_REPLY_TO;
     delete process.env.EMAIL_TO;
     mod = await import("@/lib/server/reply");
-    expect(mod.replyToAddress()).toBe("syedalaibawork@gmail.com");
+    expect(mod.replyToAddress()).toBe("lamhatechnologies@gmail.com");
   });
 
   it("explains a missing API key without exposing anything sensitive", async () => {
