@@ -70,7 +70,7 @@ export function ImmersiveHero() {
             {mounted && webgl ? (
               <SystemsScene progress={progress} active={active} reduced={reduced} mobile={mobile} />
             ) : (
-              <SystemsFallback className="absolute right-0 top-1/2 hidden h-[70vmin] w-[60vw] -translate-y-1/2 opacity-80 lg:block" />
+              <SystemsFallback className="absolute right-[13%] top-1/2 hidden h-[50vmin] w-[32vw] -translate-y-1/2 opacity-80 lg:block" />
             )}
             {/* Readability: a soft navy pool behind the copy so text never sits on bright geometry. */}
             <div aria-hidden="true" className="absolute inset-0 bg-[linear-gradient(90deg,rgba(7,19,43,0.88)_0%,rgba(7,19,43,0.55)_38%,transparent_62%)] max-sm:bg-[linear-gradient(0deg,rgba(7,19,43,0.95)_0%,rgba(7,19,43,0.7)_55%,transparent_80%)]" />

@@ -39,13 +39,15 @@ export function PageHero({
   compact?: boolean;
 }) {
   const hasVisual = Boolean(visual || accent);
+  // One 3D focal element per hero: a page visual/accent replaces the background sculpture.
+  const showField = Boolean(field) && !compact && !hasVisual;
   const titleNode = typeof title === "string" ? <TextReveal lines={[title]} delay={0.05} /> : title;
   return (
     <section data-hero className={cn("dark-section relative overflow-hidden bg-deep text-white", !compact && "flex min-h-[64vh] flex-col justify-center", className)}>
       <DarkBackdrop />
-      {field && !compact && <HeroField base={field} />}
+      {showField && field && <HeroField base={field} />}
       {/* readability veil over the field on the text side */}
-      {field && !compact && <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(7,17,41,0.85)_0%,rgba(7,17,41,0.55)_45%,rgba(7,17,41,0)_75%)]" />}
+      {showField && <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(7,17,41,0.85)_0%,rgba(7,17,41,0.55)_45%,rgba(7,17,41,0)_75%)]" />}
       <div className={cn("container-x relative w-full pt-[calc(var(--header-h)+3rem)]", compact ? "pb-14 sm:pb-16" : "pb-20 sm:pb-24", hasVisual && "lg:pb-28")}>
         <HeroParallax>
           {breadcrumbs && (

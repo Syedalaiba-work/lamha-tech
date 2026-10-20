@@ -8,7 +8,8 @@ const STEPS = Array.from({ length: 9 }, (_, i) => i);
 
 export function SystemsFallback({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 480 360" aria-hidden="true" focusable="false" className={cn("h-full w-full", className)}>
+    // cn() joins without resolving conflicts, so the default size applies only when no className is given.
+    <svg viewBox="0 0 480 360" preserveAspectRatio="xMaxYMid meet" aria-hidden="true" focusable="false" className={cn(className ?? "h-full w-full")}>
       <defs>
         <linearGradient id="sf-navy" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0" stopColor="#163066" />

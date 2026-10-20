@@ -7,19 +7,23 @@ import { useMediaQuery, useMounted, usePrefersReducedMotion, useWebGLSupport } f
 import type { ProgressRef } from "./ScrollField";
 import { cn } from "@/lib/utils";
 
-const ScrollField = dynamic(() => import("./ScrollField"), { ssr: false });
+const SystemsScene = dynamic(() => import("./SystemsScene"), { ssr: false });
 
 export type HeroFieldBase = "sphere" | "ring" | "wave";
 
 /**
- * Particle field for inner-page heroes. It forms the chosen base formation on entry and
- * blows apart as the visitor scrolls the hero out of view (the site's signature transition).
- * Field progress: 0 = sphere, ~0.34 = burst, ~0.66 = wave, ~0.98 = ring.
+ * Brand sculpture for inner-page heroes, in the same L-module / diamond-node language as the home
+ * hero (SystemsScene, "side" layout beside the copy). Each base picks a formation and a gentle
+ * scroll response as the hero leaves the viewport:
+ *   sphere → Systems lattice, loosening back toward fragments
+ *   wave   → Problems (fragments), assembling toward the lattice
+ *   ring   → Progress staircase, easing back into the lattice
+ * Formation progress: 0 = fragments, ~0.46 = lattice, ~0.95 = staircase.
  */
 const MAP: Record<HeroFieldBase, (v: number) => number> = {
-  sphere: (v) => v * 0.34,
-  wave: (v) => 0.62 - v * 0.42,
-  ring: (v) => 1 - v * 0.78,
+  sphere: (v) => 0.5 - v * 0.28,
+  wave: (v) => 0.08 + v * 0.36,
+  ring: (v) => 0.96 - v * 0.34,
 };
 
 export function HeroField({ base = "sphere", className }: { base?: HeroFieldBase; className?: string }) {
@@ -48,9 +52,7 @@ export function HeroField({ base = "sphere", className }: { base?: HeroFieldBase
 
   return (
     <div ref={ref} aria-hidden="true" className={cn("pointer-events-none absolute inset-0 overflow-hidden", className)}>
-      <div className="absolute inset-y-0 left-0 right-0 lg:left-[18%]">
-        <ScrollField progress={progress} active={active} reduced={reduced} mobile={mobile} />
-      </div>
+      <SystemsScene progress={progress} active={active} reduced={reduced} mobile={mobile} layout="side" />
     </div>
   );
 }

@@ -61,7 +61,10 @@ const smooth = (a: number, b: number, v: number) => {
   return t * t * (3 - 2 * t);
 };
 
-function Sculpture({ progress, modules, nodes, reduced, mobile }: { progress: ProgressRef; modules: number; nodes: number; reduced: boolean; mobile: boolean }) {
+/** "hero": the home hero's travelling composition. "side": a fixed position beside inner-page hero copy. */
+export type SculptureLayout = "hero" | "side";
+
+function Sculpture({ progress, modules, nodes, reduced, mobile, layout }: { progress: ProgressRef; modules: number; nodes: number; reduced: boolean; mobile: boolean; layout: SculptureLayout }) {
   useStudioEnvironment(0.5);
   const navyRef = useRef<THREE.InstancedMesh>(null);
   const cloudRef = useRef<THREE.InstancedMesh>(null);
@@ -77,7 +80,8 @@ function Sculpture({ progress, modules, nodes, reduced, mobile }: { progress: Pr
   const navyCount = isCloud.filter((x) => !x).length;
   const cloudCount = modules - navyCount;
 
-  const state = useRef({ p: reduced ? 0.46 : 0, mx: 0, my: 0, t: 0, intro: reduced ? 1 : 0 });
+  // Side layout starts in its page's formation; the home hero starts scattered (or as the lattice when motion is reduced).
+  const state = useRef({ p: layout === "side" ? progress.current : reduced ? 0.46 : 0, mx: 0, my: 0, t: 0, intro: reduced ? 1 : 0 });
   // Scratch objects reused every frame (no allocations in the render loop).
   const scratch = useRef<{ m: THREE.Matrix4; p: THREE.Vector3; a: THREE.Vector3; b: THREE.Vector3; qa: THREE.Quaternion; qb: THREE.Quaternion; q: THREE.Quaternion; s: THREE.Vector3; e: THREE.Euler } | null>(null);
   if (scratch.current === null) {
@@ -173,6 +177,11 @@ function Sculpture({ progress, modules, nodes, reduced, mobile }: { progress: Pr
       g.position.y = mobile ? 0.9 : THREE.MathUtils.lerp(0, 0.15, smooth(0.3, 0.5, p));
       g.position.z = THREE.MathUtils.lerp(0, -1.4, smooth(0.28, 0.44, p)) + THREE.MathUtils.lerp(0, 0.5, smooth(0.62, 0.9, p));
       if (reduced && !mobile) g.position.set(2.7, 0.1, -2.6); // the lattice is wider than the fragment cloud
+      if (layout === "side") {
+        // Right of the copy, set back and smaller so wide formations (lattice, staircase) stay clear of the text.
+        g.position.set(mobile ? 0.4 : 3.2, mobile ? 2.3 : 0.1, mobile ? -2.6 : -2.3);
+        g.scale.setScalar(mobile ? 0.62 : 0.78);
+      }
       g.rotation.y = (reduced ? 0 : Math.sin(st.t * 0.15) * 0.12) + st.mx * 0.18 + (1 - smooth(0.2, 0.44, p)) * st.t * 0.04;
       g.rotation.x = -st.my * 0.1;
     }
@@ -206,7 +215,7 @@ function Lights() {
   );
 }
 
-export default function SystemsScene({ progress, active, reduced, mobile }: { progress: ProgressRef; active: boolean; reduced: boolean; mobile: boolean }) {
+export default function SystemsScene({ progress, active, reduced, mobile, layout = "hero" }: { progress: ProgressRef; active: boolean; reduced: boolean; mobile: boolean; layout?: SculptureLayout }) {
   return (
     <Canvas
       dpr={mobile ? [1, 1.25] : [1, 1.5]}
@@ -217,7 +226,7 @@ export default function SystemsScene({ progress, active, reduced, mobile }: { pr
       aria-hidden="true"
     >
       <Lights />
-      <Sculpture progress={progress} modules={mobile ? 28 : 44} nodes={mobile ? 12 : 22} reduced={reduced} mobile={mobile} />
+      <Sculpture progress={progress} modules={layout === "side" ? (mobile ? 20 : 32) : mobile ? 28 : 44} nodes={layout === "side" ? (mobile ? 8 : 14) : mobile ? 12 : 22} reduced={reduced} mobile={mobile} layout={layout} />
     </Canvas>
   );
 }
