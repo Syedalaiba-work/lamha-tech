@@ -95,6 +95,7 @@ function PinnedStory() {
           <div className="col-span-6">
             <div className="relative aspect-square w-full">
               <div aria-hidden="true" className="absolute inset-[12%] rounded-full bg-blue/10 blur-3xl" />
+              <div aria-hidden="true" className="absolute right-[6%] top-[8%] h-1/2 w-1/2 rounded-full bg-lavender/25 blur-3xl" />
               <motion.div key="accent" className="absolute inset-0" animate={{ scale: [0.96, 1], opacity: [0.6, 1] }} transition={{ duration: 0.6, ease: EASE }}>
                 <AccentCanvas variant={p.accent} className="h-full w-full !aspect-auto" />
               </motion.div>

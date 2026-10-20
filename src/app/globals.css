@@ -15,6 +15,8 @@
   --color-blue: #1769e0;
   --color-blue-2: #2e7cf6;
   --color-cloud: #f5f8fc; /* official Cloud */
+  /* Lavender: restrained supporting accent for atmosphere and 3D light only — never text, the logo or primary UI. */
+  --color-lavender: #b9b3f5;
 
   /* Dark surfaces: navy-based, so navy stays the dominant field (guidelines 05 — Color ratio) */
   --color-abyss: #07132b;

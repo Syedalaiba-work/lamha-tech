@@ -46,7 +46,7 @@ export function ImmersiveHero() {
     return () => io.disconnect();
   }, []);
 
-  // Statement hand-over (opacity + drift per phase). Explicit ramps: fully 0 outside each window.
+  // Statement hand-over (opacity + drift per phase). Inactive phases are `inert`: invisible links must not take keyboard focus. Explicit ramps: fully 0 outside each window.
   const ramp = (v: number, a: number, b: number) => Math.min(1, Math.max(0, (v - a) / (b - a)));
   const o1 = useTransform(scrollYProgress, (v) => 1 - ramp(v, 0.18, 0.3));
   const y1 = useTransform(scrollYProgress, (v) => -60 * ramp(v, 0, 0.3));
@@ -65,7 +65,7 @@ export function ImmersiveHero() {
         <div className="sticky top-0 h-screen overflow-hidden">
           {/* Field */}
           <div className="absolute inset-0">
-            <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(ellipse_at_65%_45%,rgba(46,124,246,0.16),transparent_60%)]" />
+            <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(ellipse_at_65%_45%,rgba(46,124,246,0.16),transparent_60%),radial-gradient(ellipse_at_85%_15%,rgba(185,179,245,0.09),transparent_45%)]" />
             <div aria-hidden="true" className="absolute inset-0 grid-texture opacity-60 [mask-image:radial-gradient(ellipse_at_center,black_30%,transparent_75%)]" />
             {mounted && webgl ? (
               <SystemsScene progress={progress} active={active} reduced={reduced} mobile={mobile} />
@@ -79,7 +79,7 @@ export function ImmersiveHero() {
           {/* Stage content */}
           <div className="container-x relative flex h-full flex-col justify-end pb-16 pt-[var(--header-h)] sm:justify-center sm:pb-0">
             {/* Phase 01 */}
-            <motion.div style={{ opacity: o1, y: y1 }} className={phase === 0 ? "max-w-4xl" : "pointer-events-none max-w-4xl"} aria-hidden={phase !== 0}>
+            <motion.div style={{ opacity: o1, y: y1 }} className={phase === 0 ? "max-w-4xl" : "pointer-events-none max-w-4xl"} aria-hidden={phase !== 0} inert={phase !== 0}>
               <SectionLabel number="01" tone="dark">
                 {"LAMHA Technologies · Islamabad · Remote-first · Worldwide".split(" ").map((w, i) => (
                   <span key={i} className="word-hover inline-block">
@@ -109,7 +109,7 @@ export function ImmersiveHero() {
             </motion.div>
 
             {/* Phase 02 */}
-            <motion.div style={{ opacity: o2, y: y2 }} className="pointer-events-none absolute inset-x-5 top-1/2 -translate-y-1/2 sm:inset-x-8 lg:inset-x-12" aria-hidden={phase !== 1}>
+            <motion.div style={{ opacity: o2, y: y2 }} className="pointer-events-none absolute inset-x-5 top-1/2 -translate-y-1/2 sm:inset-x-8 lg:inset-x-12" aria-hidden={phase !== 1} inert={phase !== 1}>
               <div className="mx-auto max-w-5xl rounded-[2rem] bg-[radial-gradient(ellipse_at_center,rgba(7,19,43,0.82),rgba(7,19,43,0.55)_55%,transparent_75%)] px-4 py-10 text-center">
                 <p className="label-caps text-blue-200">02 · From Ideas to Systems</p>
                 <p className="mt-6 text-h1 font-semibold text-white">
@@ -119,7 +119,7 @@ export function ImmersiveHero() {
             </motion.div>
 
             {/* Phase 03 */}
-            <motion.div style={{ opacity: o3, y: y3 }} className={phase === 2 ? "absolute inset-x-5 top-1/2 -translate-y-1/2 sm:inset-x-8 lg:inset-x-12" : "pointer-events-none absolute inset-x-5 top-1/2 -translate-y-1/2 sm:inset-x-8 lg:inset-x-12"} aria-hidden={phase !== 2}>
+            <motion.div style={{ opacity: o3, y: y3 }} className={phase === 2 ? "absolute inset-x-5 top-1/2 -translate-y-1/2 sm:inset-x-8 lg:inset-x-12" : "pointer-events-none absolute inset-x-5 top-1/2 -translate-y-1/2 sm:inset-x-8 lg:inset-x-12"} aria-hidden={phase !== 2} inert={phase !== 2}>
               <div className="mx-auto max-w-5xl rounded-[2rem] bg-[radial-gradient(ellipse_at_center,rgba(7,19,43,0.82),rgba(7,19,43,0.55)_55%,transparent_75%)] px-4 py-10 text-center">
                 <p className="label-caps text-blue-200">03 · From Systems to Impact</p>
                 <p className="mt-6 text-h1 font-semibold text-white">

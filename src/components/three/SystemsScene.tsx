@@ -200,6 +200,8 @@ function Lights() {
       {/* Blue rim from behind-left gives navy modules an edge on the navy background. */}
       <directionalLight position={[-6, 2, -4]} intensity={2.6} color="#2E7CF6" />
       <pointLight position={[0, -3, 3]} intensity={6} distance={10} color="#1769E0" />
+      {/* Restrained lavender fill (supporting accent, per the brief). */}
+      <pointLight position={[-4, 4, 3]} intensity={3} distance={12} color="#B9B3F5" />
     </>
   );
 }

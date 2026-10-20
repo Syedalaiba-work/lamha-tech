@@ -67,7 +67,7 @@ function Core({ kit }: { kit: Kit }) {
 function Helix({ kit }: { kit: Kit }) {
   const steps = 14;
   return (
-    <group rotation={[0.2, 0, 0.08]} position={[0, -0.05, 0]} scale={0.74}>
+    <group rotation={[0.2, 0, 0.08]} position={[0, 0.12, 0]} scale={0.7}>
       {Array.from({ length: steps }, (_, i) => {
         const a = (i / steps) * Math.PI * 2 * 1.1;
         return <L key={i} kit={kit} position={[Math.cos(a) * 1.05, -1.25 + i * 0.19, Math.sin(a) * 1.05]} rotation={[0, -a + Math.PI / 2, 0]} scale={0.6} cloud={i % 4 === 3} />;
@@ -197,6 +197,7 @@ function Scene({ variant, reduced }: { variant: AccentVariant; reduced: boolean 
       <directionalLight position={[4, 5, 5]} intensity={1.6} />
       <directionalLight position={[-5, 1, -3]} intensity={2.4} color="#2E7CF6" />
       <pointLight position={[0, -2.5, 2.5]} intensity={5} distance={9} color="#1769E0" />
+      <pointLight position={[-3, 3, 2.5]} intensity={2.5} distance={10} color="#B9B3F5" />
       <Float speed={reduced ? 0 : 1.2} rotationIntensity={reduced ? 0 : 0.35} floatIntensity={reduced ? 0 : 0.7}>
         <Spin reduced={reduced}>
           <Form variant={variant} reduced={reduced} kit={kit} />
