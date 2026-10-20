@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { buildMetadata, breadcrumbJsonLd } from "@/lib/seo";
 import { careerValues, visibleJobs } from "@/data/jobs";
-import { site } from "@/data/site";
+import { getContent } from "@/lib/server/content";
 import { PageHero } from "@/components/sections/PageHero";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Reveal } from "@/components/ui/Reveal";
@@ -27,7 +27,9 @@ const philosophy = [
   { number: "04", title: "IMPACT", description: "Measure success by the problems solved for real people and businesses." },
 ];
 
-export default function CareersPage() {
+export default async function CareersPage() {
+  // Owner-editable values (portal → Website content); falls back to the src/data defaults.
+  const { site } = await getContent();
   const hasDemo = visibleJobs.some((j) => j.status === "demo");
   return (
     <>

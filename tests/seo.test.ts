@@ -15,6 +15,9 @@ const LINKEDIN: Record<string, string | null> = {
   "maira-almas": null,
   "syed-hamad-haider": "https://www.linkedin.com/in/syed-hamad-haider-21636a40/",
 };
+const GITHUB: Record<string, string> = {
+  "syeda-laiba-haider": "https://github.com/Syedalaiba-work",
+};
 const ROLES: Record<string, string> = {
   "syeda-laiba-haider": "Founder",
   "ahmed-majid": "Co-Founder",
@@ -61,6 +64,7 @@ describe("Organization entity", () => {
     // Person profiles never leak into the organization's sameAs; the property is absent until an official page exists.
     const sameAs = (org as { sameAs?: string[] }).sameAs;
     expect(sameAs === undefined || !sameAs.some((u) => u.includes("linkedin.com/in/"))).toBe(true);
+    expect(sameAs === undefined || !sameAs.some((u) => Object.values(GITHUB).includes(u))).toBe(true);
   });
 });
 
@@ -83,11 +87,11 @@ describe("Person entities", () => {
     }
   });
 
-  it("sets sameAs for exactly the three verified LinkedIn profiles", () => {
+  it("sets sameAs for exactly the verified LinkedIn and GitHub profiles", () => {
     for (const p of people) {
       const slug = p["@id"].split("#")[1];
-      const expected = LINKEDIN[slug];
-      if (expected) expect(p.sameAs).toEqual([expected]);
+      const expected = [LINKEDIN[slug], GITHUB[slug]].filter(Boolean);
+      if (expected.length) expect(p.sameAs).toEqual(expected);
       else expect("sameAs" in p).toBe(false);
     }
     expect(people.filter((p) => "sameAs" in p)).toHaveLength(3);
@@ -118,8 +122,8 @@ describe("ProfilePage entities", () => {
 });
 
 describe("sitemap", () => {
-  it("includes the leadership index and all four profile urls", () => {
-    const urls = sitemap().map((e) => e.url);
+  it("includes the leadership index and all four profile urls", async () => {
+    const urls = (await sitemap()).map((e) => e.url);
     expect(urls).toContain("https://lamhatechnologies.com/");
     expect(urls).toContain("https://lamhatechnologies.com/about");
     expect(urls).toContain("https://lamhatechnologies.com/about/leadership");
@@ -127,9 +131,9 @@ describe("sitemap", () => {
     expect(new Set(urls).size).toBe(urls.length);
   });
 
-  it("uses fixed content dates for lastmod, never the build time", () => {
+  it("uses fixed content dates for lastmod, never the build time", async () => {
     const { PROFILE_MODIFIED } = leadershipModule;
-    for (const e of sitemap()) {
+    for (const e of await sitemap()) {
       expect(typeof e.lastModified).toBe("string");
       expect(e.lastModified).toMatch(/^\d{4}-\d{2}-\d{2}$/);
       if (/\/about\/leadership\//.test(e.url)) expect(e.lastModified).toBe(PROFILE_MODIFIED);

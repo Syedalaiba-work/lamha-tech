@@ -1,5 +1,4 @@
-import { publishedLeadership } from "@/data/leadership";
-import { site } from "@/data/site";
+import { getContent } from "@/lib/server/content";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { Reveal } from "@/components/ui/Reveal";
 import { Button } from "@/components/ui/Button";
@@ -9,7 +8,9 @@ import { Tilt } from "@/components/motion/Motion";
 import { cn } from "@/lib/utils";
 
 /** About the company + leadership. The company column keeps this section from reading as executives only. */
-export function LeadershipGrid({ number = "10", tone = "light", showLink = true }: { number?: string; tone?: "light" | "dark"; showLink?: boolean }) {
+export async function LeadershipGrid({ number = "10", tone = "light", showLink = true }: { number?: string; tone?: "light" | "dark"; showLink?: boolean }) {
+  // Owner-editable values (portal → Website content); falls back to the src/data defaults.
+  const { site, publishedLeadership } = await getContent();
   const dark = tone === "dark";
   return (
     <section aria-labelledby="leadership-heading" className={cn("relative overflow-hidden", dark ? "dark-section bg-deep text-white" : "bg-cloud")}>

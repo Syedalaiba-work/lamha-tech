@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { site } from "@/data/site";
+import { getContent } from "@/lib/server/content";
 import { buildMetadata, webPageJsonLd } from "@/lib/seo";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { ImmersiveHero } from "@/components/sections/ImmersiveHero";
@@ -31,7 +32,9 @@ export const metadata: Metadata = buildMetadata({
   absoluteTitle: true,
 });
 
-export default function HomePage() {
+export default async function HomePage() {
+  // Owner-editable values (portal → Website content); falls back to the src/data defaults.
+  const { site } = await getContent();
   return (
     <>
       <JsonLd data={webPageJsonLd({ title: `${site.name} | Technology & Software Solutions`, description: site.description, path: "/" })} />

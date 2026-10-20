@@ -14,7 +14,10 @@ import { ServiceCard } from "@/components/services/ServiceCard";
 import { CTASection } from "@/components/sections/CTASection";
 import { ArchitectureVisual } from "@/components/visuals/ArchitectureVisual";
 
-export const dynamicParams = false;
+// Must stay true: portal edits revalidate every page (the footer is on all of them), and Next 16
+// answers an expired dynamicParams=false path with 404 instead of rebuilding it. Unknown slugs
+// still return 404 through notFound() in the page.
+export const dynamicParams = true;
 
 export function generateStaticParams() {
   return solutions.map((s) => ({ slug: s.slug }));

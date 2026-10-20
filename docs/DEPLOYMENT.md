@@ -116,3 +116,32 @@ docker run -d --name lamha-postgres -e POSTGRES_USER=lamha -e POSTGRES_PASSWORD=
 # .env: DATABASE_URL / DIRECT_URL = postgresql://lamha:lamha_dev_pw@localhost:5434/lamha?schema=public
 npm run db:migrate:dev && npm run db:seed && npm run dev
 ```
+
+---
+
+## Release: owner dashboard (2026-10-19)
+
+Adds website-content editing, team profiles with portrait upload, password recovery, session management and an Owner integrations page (details: `docs/ADMIN_PORTAL.md`).
+
+**Requirements before deploying**
+
+| Item | Action |
+| --- | --- |
+| Database migration | `20261019120000_owner_dashboard` is additive (3 new tables, 2 nullable columns) and is applied automatically by `prisma migrate deploy` in the Vercel build. Take a portal backup first (Backups → Run backup now). |
+| New environment variables | None required. `NEXT_PUBLIC_SITE_URL` must be the public origin (reset links are built from it). |
+| Server action body limit | `next.config.ts` raises `experimental.serverActions.bodySizeLimit` to 4 MB for portrait uploads (3 MB cap enforced in code). |
+| Reset emails | Sent through Resend. Until the sender domain is verified in Resend and `EMAIL_FROM` uses it, Resend delivers only to the Resend account owner's address, so self-service reset reaches only that inbox. The break-glass CLI (`npm run admin:recovery`) works regardless. |
+| First Owner | If no portal account exists yet, follow *First-time setup* in `docs/ADMIN_PORTAL.md` in order; remove `ADMIN_SETUP_TOKEN` only after sign-in and recovery are confirmed and a second Owner exists. |
+| Secrets hygiene (recommended) | Re-create `BACKUP_ENCRYPTION_KEY`, `DATABASE_URL`, `DIRECT_URL`, `POSTGRES_PASSWORD`, `PGPASSWORD` and `BLOB_READ_WRITE_TOKEN` as **Sensitive** variables (`vercel env add NAME production --sensitive`) so they cannot be read back from the dashboard or `vercel env pull`. Keep an offline copy of `BACKUP_ENCRYPTION_KEY`. |
+
+**Behaviour changes to expect**
+
+- Sessions now also end after 12 hours without activity; existing sessions older than that end once after the deploy.
+- `/services/*`, `/solutions/*`, `/careers/*` and `/about/leadership/*` now use `dynamicParams = true`; `src/proxy.ts` returns 404 for unknown slugs before rendering.
+- The company GitHub link is empty until an Owner/Admin saves it in the portal; GitHub must confirm the account exists before it is published.
+
+**After deploying**
+
+1. `GET /api/health` → `database: ok`.
+2. Sign in, open Website content, save one section, and confirm the change on the public page and that `/services/software-development` and `/about/leadership/syeda-laiba-haider` still return 200.
+3. Visit a made-up URL such as `/services/does-not-exist` and confirm status 404.

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { buildMetadata } from "@/lib/seo";
-import { site } from "@/data/site";
+import { getContent } from "@/lib/server/content";
 import { PageHero } from "@/components/sections/PageHero";
 
 export const metadata: Metadata = buildMetadata({
@@ -13,7 +13,9 @@ export const metadata: Metadata = buildMetadata({
 /**
  * PLACEHOLDER — not legal advice and not yet reviewed by LAMHA's legal counsel.
  */
-export default function TermsPage() {
+export default async function TermsPage() {
+  // Owner-editable values (portal → Website content); falls back to the src/data defaults.
+  const { site } = await getContent();
   return (
     <>
       <PageHero label="Legal" title="Terms of Use" description="Placeholder terms for this website, prepared for launch review." breadcrumbs={[{ label: "Home", href: "/" }, { label: "Terms of Use" }]} compact />

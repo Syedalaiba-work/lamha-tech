@@ -6,33 +6,17 @@ import type { ApplicationStatus, ContactStatus, InquiryStatus, NoteEntity, Role 
 import { getPrisma } from "@/lib/server/db";
 import { audit } from "@/lib/server/audit";
 import { rateLimit } from "@/lib/server/rate-limit";
-import { createSession, destroySession, ForbiddenError, generatePassword, getSessionUser, hashPassword, passwordPolicyError, requestContext, requirePermission, requireUser, verifyPassword } from "@/lib/server/auth";
+import { createSession, destroySession, generatePassword, getSessionUser, hashPassword, passwordPolicyError, requestContext, requirePermission, requireUser, verifyPassword } from "@/lib/server/auth";
 import { assignableRoles, roleRank } from "@/lib/server/rbac";
 import { runBackup } from "@/lib/server/backup";
 import { sendReply } from "@/lib/server/reply";
+import { fail, handle, str, type ActionState } from "@/lib/server/action-utils";
 
-export type ActionState = { ok: boolean; message?: string; secret?: string } | null;
+export type { ActionState };
 
 const INQUIRY_STATUSES: InquiryStatus[] = ["NEW", "QUALIFIED", "CONTACTED", "PROPOSAL", "WON", "LOST", "SPAM"];
 const APPLICATION_STATUSES: ApplicationStatus[] = ["NEW", "REVIEWING", "INTERVIEW", "OFFER", "REJECTED", "HIRED"];
 const CONTACT_STATUSES: ContactStatus[] = ["NEW", "REPLIED", "CLOSED", "SPAM"];
-
-function str(fd: FormData, key: string, max = 500): string {
-  const v = fd.get(key);
-  return typeof v === "string" ? v.trim().slice(0, max) : "";
-}
-
-function fail(message: string): ActionState {
-  return { ok: false, message };
-}
-
-function handle(err: unknown): ActionState {
-  if (err instanceof ForbiddenError) return fail("You do not have permission to do that.");
-  // Next's redirect() throws; let it propagate.
-  if (err && typeof err === "object" && "digest" in err && String((err as { digest: unknown }).digest).startsWith("NEXT_REDIRECT")) throw err;
-  console.error("[admin action]", err instanceof Error ? err.message : "unknown error");
-  return fail("Something went wrong. Please try again.");
-}
 
 /* ------------------------------------------------------------------ */
 /* Auth                                                                 */

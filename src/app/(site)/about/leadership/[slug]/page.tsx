@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getLeader, leaderPageTitle, leaderPath, leaderRoleLine, publishedLeadership } from "@/data/leadership";
-import { site } from "@/data/site";
+import { leaderPageTitle, leaderPath, leaderRoleLine, leadership as allLeaders } from "@/data/leadership";
+import { getContent } from "@/lib/server/content";
 import { breadcrumbJsonLd, buildMetadata, profilePageJsonLd } from "@/lib/seo";
 import { PageHero } from "@/components/sections/PageHero";
 import { SectionHeading } from "@/components/ui/SectionHeading";
@@ -12,20 +12,27 @@ import { JsonLd } from "@/components/ui/JsonLd";
 import { Button } from "@/components/ui/Button";
 import { Portrait } from "@/components/leadership/LeadershipCard";
 import { CTASection } from "@/components/sections/CTASection";
+import { SocialIcon } from "@/components/ui/SocialIcon";
+import { ArrowUpRight } from "lucide-react";
 
 /**
  * Canonical profile page for one leader. Everything visible here (and everything in the ProfilePage
  * JSON-LD) restates approved role descriptions and published company facts from src/data.
  */
-export const dynamicParams = false;
+// Must stay true: portal edits revalidate every page (the footer is on all of them), and Next 16
+// answers an expired dynamicParams=false path with 404 instead of rebuilding it. Unknown slugs
+// still return 404 through notFound() in the page.
+export const dynamicParams = true;
 
+// Every known profile is prerendered; drafts (set in the portal) render notFound().
 export function generateStaticParams() {
-  return publishedLeadership.map((l) => ({ slug: l.slug }));
+  return allLeaders.map((l) => ({ slug: l.slug }));
 }
 
 export async function generateMetadata({ params }: PageProps<"/about/leadership/[slug]">): Promise<Metadata> {
   const { slug } = await params;
-  const leader = getLeader(slug);
+  const { site, leadership } = await getContent();
+  const leader = leadership.find((l) => l.slug === slug);
   if (!leader || leader.status !== "published") return { title: "Profile not found" };
   return buildMetadata({
     title: leaderPageTitle(leader),
@@ -39,7 +46,9 @@ export async function generateMetadata({ params }: PageProps<"/about/leadership/
 
 export default async function LeaderProfilePage({ params }: PageProps<"/about/leadership/[slug]">) {
   const { slug } = await params;
-  const leader = getLeader(slug);
+  // Owner-editable values (portal → Team profiles); falls back to the src/data defaults.
+  const { site, leadership, publishedLeadership } = await getContent();
+  const leader = leadership.find((l) => l.slug === slug);
   if (!leader || leader.status !== "published") notFound();
 
   const roleLine = leaderRoleLine(leader);
@@ -65,6 +74,18 @@ export default async function LeaderProfilePage({ params }: PageProps<"/about/le
             value: (
               <a className="text-blue hover:underline" href={leader.profileUrl} rel="me noopener noreferrer" target="_blank">
                 {leader.profileUrl.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "")}
+              </a>
+            ),
+          },
+        ]
+      : []),
+    ...(leader.githubUrl
+      ? [
+          {
+            label: "GitHub",
+            value: (
+              <a className="text-blue hover:underline" href={leader.githubUrl} rel="me noopener noreferrer" target="_blank">
+                {leader.githubUrl.replace(/^https?:\/\/(www\.)?/, "")}
               </a>
             ),
           },
@@ -104,6 +125,11 @@ export default async function LeaderProfilePage({ params }: PageProps<"/about/le
                 LinkedIn profile
               </Button>
             )}
+            {leader.githubUrl && (
+              <Button href={leader.githubUrl} variant="ghost-light" size="lg" icon="external" rel="me noopener noreferrer">
+                GitHub profile
+              </Button>
+            )}
           </>
         }
         visual={<Portrait leader={leader} size="lg" className="mx-auto max-w-sm lg:ml-auto lg:mr-0" />}
@@ -125,6 +151,33 @@ export default async function LeaderProfilePage({ params }: PageProps<"/about/le
                   </div>
                 ))}
               </dl>
+              {leader.featuredProjects?.length ? (
+                <div className="mt-10">
+                  <h3 className="label-caps text-slate-500">Featured project{leader.featuredProjects.length > 1 ? "s" : ""}</h3>
+                  <ul className="mt-4 space-y-3">
+                    {leader.featuredProjects.map((p) => (
+                      <li key={p.url}>
+                        <a
+                          href={p.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="group block rounded-lg border border-slate-200 bg-cloud p-5 transition-colors hover:border-blue-200"
+                        >
+                          <span className="flex items-center gap-2 text-base font-semibold text-navy group-hover:text-blue">
+                            <SocialIcon platform="GitHub" />
+                            {p.name}
+                            <ArrowUpRight className="ml-auto h-4 w-4 text-slate-400 group-hover:text-blue" aria-hidden="true" />
+                          </span>
+                          <span className="mt-2 block text-sm leading-relaxed text-slate-600">{p.description}</span>
+                          <span className="mt-3 block text-xs uppercase tracking-[0.12em] text-slate-500">
+                            Personal project · <span className="sr-only">opens </span>GitHub repository<span className="sr-only"> in a new tab</span>
+                          </span>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
             </div>
             <div className="lg:col-span-7 lg:col-start-6">
               <SectionLabel number="02">Role at {site.name}</SectionLabel>

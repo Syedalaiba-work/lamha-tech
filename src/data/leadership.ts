@@ -25,6 +25,10 @@ export type Leader = {
   portraitPosition?: string;
   /** TODO(owner): approved LinkedIn (or other professional) profile URL; feeds Person.sameAs. null = not yet supplied. */
   profileUrl: string | null;
+  /** Personal GitHub profile confirmed by the person; also feeds Person.sameAs. Omit when not supplied. */
+  githubUrl?: string;
+  /** Personal projects (not LAMHA client work). Each description restates the project's own public README. */
+  featuredProjects?: { name: string; description: string; url: string }[];
   /** Meta description of the canonical profile page (≤ 160 characters, facts only). */
   metaDescription: string;
   /** Profile-page paragraphs. Every sentence restates approved role or company facts. */
@@ -52,6 +56,15 @@ export const leadership: Leader[] = [
     portrait: "/leadership/syeda-laiba-haider.jpg",
     portraitPosition: "50% 22%",
     profileUrl: "https://www.linkedin.com/in/syeda-laiba-b5a209362/",
+    githubUrl: "https://github.com/Syedalaiba-work",
+    featuredProjects: [
+      {
+        name: "ResolveX",
+        description:
+          "Multi-sport league and club operations platform built for NaSCon '26 App Dev: a FastAPI and PostgreSQL backend with a Flutter Android app.",
+        url: "https://github.com/Syedalaiba-work/RESOLVEX",
+      },
+    ],
     metaDescription: "Syeda Laiba Haider, Founder of LAMHA Technologies: software engineer setting the vision and direction of the Islamabad, Pakistan technology company.",
     profile: [
       `Syeda Laiba Haider is the Founder of ${company}.`,

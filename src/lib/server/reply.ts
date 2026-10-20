@@ -3,6 +3,7 @@ import { randomUUID } from "node:crypto";
 import type { NoteEntity } from "@prisma/client";
 import { site } from "@/data/site";
 import { escapeHtml, getEmailConfig, sendEmail } from "./email";
+import { getIntegrationSettings } from "./content";
 import { getPrisma } from "./db";
 import { audit } from "./audit";
 import type { SessionUser } from "./auth";
@@ -55,7 +56,9 @@ export function describeSendFailure(error: string | undefined): string {
 export async function sendReply(actor: SessionUser, input: ReplyInput): Promise<{ ok: boolean; message: string; replyId: string }> {
   const id = randomUUID();
   const mail = buildReplyEmail({ subject: input.subject, body: input.body, senderName: actor.name, referenceId: input.entityId });
-  const result = await sendEmail({ to: [input.to], subject: mail.subject, text: mail.text, html: mail.html, replyTo: mail.replyTo, idempotencyKey: `reply:${id}` });
+  // A reply-to address set in the portal (Settings → Email routing) takes precedence over EMAIL_REPLY_TO.
+  const replyTo = (await getIntegrationSettings()).replyTo ?? mail.replyTo;
+  const result = await sendEmail({ to: [input.to], subject: mail.subject, text: mail.text, html: mail.html, replyTo, idempotencyKey: `reply:${id}` });
   const error = result.ok ? null : (result.error ?? "unknown error").slice(0, 300);
 
   await getPrisma().reply.create({

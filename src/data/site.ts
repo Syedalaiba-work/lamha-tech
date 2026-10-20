@@ -51,6 +51,7 @@ export const site = {
    */
   social: [
     { label: "LinkedIn", href: null as string | null },
+    // Company GitHub (LAMHATechnologies) is set from the owner portal once GitHub confirms the account exists.
     { label: "GitHub", href: null as string | null },
     { label: "Facebook", href: null as string | null },
     { label: "Instagram", href: null as string | null },

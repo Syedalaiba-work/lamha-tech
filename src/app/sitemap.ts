@@ -2,7 +2,8 @@ import type { MetadataRoute } from "next";
 import { publishedServices } from "@/data/services";
 import { solutions } from "@/data/solutions";
 import { openJobs } from "@/data/jobs";
-import { leaderPath, publishedLeadership, PROFILE_MODIFIED } from "@/data/leadership";
+import { leaderPath, PROFILE_MODIFIED } from "@/data/leadership";
+import { getContent } from "@/lib/server/content";
 import { absoluteUrl } from "@/lib/seo";
 
 /**
@@ -18,7 +19,8 @@ const ROUTE_UPDATED: Record<string, string> = {
 };
 const updated = (path: string) => ROUTE_UPDATED[path] ?? LAUNCH_CONTENT;
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const { publishedLeadership } = await getContent();
   const staticRoutes: { path: string; priority: number; changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"] }[] = [
     { path: "/", priority: 1, changeFrequency: "weekly" },
     { path: "/services", priority: 0.9, changeFrequency: "monthly" },

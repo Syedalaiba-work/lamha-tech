@@ -1,5 +1,4 @@
-import { founder } from "@/data/leadership";
-import { site } from "@/data/site";
+import { getContent } from "@/lib/server/content";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { Button } from "@/components/ui/Button";
 import { Reveal } from "@/components/ui/Reveal";
@@ -8,7 +7,9 @@ import { GhostNumber } from "@/components/motion/GhostNumber";
 import { Parallax, TextReveal, Tilt } from "@/components/motion/Motion";
 
 /** Section 09 — About / Founder. Founder is the primary public leadership feature at launch. */
-export function FounderBlock({ number = "09" }: { number?: string }) {
+export async function FounderBlock({ number = "09" }: { number?: string }) {
+  // Owner-editable values (portal → Website content); falls back to the src/data defaults.
+  const { site, founder } = await getContent();
   return (
     <section aria-labelledby="about-heading" className="relative overflow-hidden bg-white">
       <GhostNumber value={number} side="left" />

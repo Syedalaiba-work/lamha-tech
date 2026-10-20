@@ -2,11 +2,12 @@ import type { Metadata } from "next";
 import { ArrowRight, Briefcase, Globe2, Mail, MessageSquare, Phone } from "lucide-react";
 import Link from "next/link";
 import { buildMetadata, breadcrumbJsonLd } from "@/lib/seo";
-import { site } from "@/data/site";
+import { getContent } from "@/lib/server/content";
 import { PageHero } from "@/components/sections/PageHero";
 import { ContactForm } from "@/components/forms/ContactForm";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { Button } from "@/components/ui/Button";
+import { SocialIcon, hasSocialIcon } from "@/components/ui/SocialIcon";
 
 export const metadata: Metadata = buildMetadata({
   title: "Contact",
@@ -15,13 +16,15 @@ export const metadata: Metadata = buildMetadata({
   path: "/contact",
 });
 
-const channels = [
-  { icon: Briefcase, title: "New project", description: "Share requirements, budget and timeline through the structured project form.", href: "/start-a-project", cta: "Start a Project", email: site.contact.projectsEmail },
-  { icon: Mail, title: "General inquiries", description: "Questions about LAMHA Technologies, partnerships or press.", href: null, cta: null, email: site.contact.generalEmail },
-  { icon: MessageSquare, title: "Careers", description: "Applications, introductions and questions about working with us.", href: "/careers", cta: "View careers", email: site.contact.careersEmail },
-];
-
-export default function ContactPage() {
+export default async function ContactPage() {
+  // Owner-editable values (portal → Website content); falls back to the src/data defaults.
+  const { site } = await getContent();
+  const channels = [
+    { icon: Briefcase, title: "New project", description: "Share requirements, budget and timeline through the structured project form.", href: "/start-a-project", cta: "Start a Project", email: site.contact.projectsEmail },
+    { icon: Mail, title: "General inquiries", description: "Questions about LAMHA Technologies, partnerships or press.", href: null, cta: null, email: site.contact.generalEmail },
+    { icon: MessageSquare, title: "Careers", description: "Applications, introductions and questions about working with us.", href: "/careers", cta: "View careers", email: site.contact.careersEmail },
+  ];
+  const socials = site.social.filter((s) => s.href);
   return (
     <>
       <JsonLd data={breadcrumbJsonLd([{ name: "Home", path: "/" }, { name: "Contact", path: "/contact" }])} />
@@ -89,6 +92,22 @@ export default function ContactPage() {
                     {site.contact.generalEmail}
                   </span>
                 </a>
+                {socials.map((s) => (
+                  <a
+                    key={s.label}
+                    href={s.href!}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-3 rounded-md border border-slate-200 bg-white p-4 text-sm text-navy hover:border-blue-200"
+                  >
+                    {hasSocialIcon(s.label) ? <SocialIcon platform={s.label} className="text-blue" /> : <Globe2 className="h-4 w-4 shrink-0 text-blue" aria-hidden="true" />}
+                    <span className="min-w-0">
+                      <span className="block text-xs uppercase tracking-[0.12em] text-slate-500">{s.label}</span>
+                      <span className="block truncate">{s.href!.replace(/^https?:\/\/(www\.)?/, "")}</span>
+                      <span className="sr-only"> (opens in a new tab)</span>
+                    </span>
+                  </a>
+                ))}
                 <div className="flex items-start gap-3 rounded-md border border-slate-200 bg-white p-4 text-sm text-slate-600">
                   <Globe2 className="mt-0.5 h-4 w-4 shrink-0 text-blue" aria-hidden="true" />
                   <p>

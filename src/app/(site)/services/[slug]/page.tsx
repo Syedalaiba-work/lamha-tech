@@ -4,7 +4,10 @@ import { getService, publishedServices } from "@/data/services";
 import { buildMetadata } from "@/lib/seo";
 import { ServiceDetail } from "@/components/services/ServiceDetail";
 
-export const dynamicParams = false;
+// Must stay true: portal edits revalidate every page (the footer is on all of them), and Next 16
+// answers an expired dynamicParams=false path with 404 instead of rebuilding it. Unknown slugs
+// still return 404 through notFound() in the page.
+export const dynamicParams = true;
 
 export function generateStaticParams() {
   return publishedServices.map((s) => ({ slug: s.slug }));

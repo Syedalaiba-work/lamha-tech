@@ -14,7 +14,9 @@ function scrypt(password: string, salt: Buffer, keylen: number, opts: { N: numbe
 }
 
 export const SESSION_COOKIE = "lamha_admin_session";
-const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days absolute
+export const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days absolute
+export const SESSION_IDLE_MS = 12 * 60 * 60 * 1000; // signed out after 12 hours without activity
+const SESSION_TOUCH_MS = 5 * 60 * 1000; // lastSeenAt is written at most every 5 minutes
 const SCRYPT_N = 16384;
 const SCRYPT_R = 8;
 const SCRYPT_P = 1;
@@ -59,8 +61,18 @@ export function generatePassword(): string {
 /* ------------------------------------------------------------------ */
 /* Sessions                                                             */
 /* ------------------------------------------------------------------ */
-function hashToken(token: string): string {
+export function hashToken(token: string): string {
   return createHash("sha256").update(token).digest("hex");
+}
+
+export type SessionState = "valid" | "expired" | "idle" | "inactive";
+
+/** Pure validity check: absolute expiry, idle timeout, then account status. */
+export function sessionState(s: { expiresAt: Date; lastSeenAt: Date | null; createdAt: Date; user: { active: boolean } }, now: Date = new Date()): SessionState {
+  if (s.expiresAt.getTime() <= now.getTime()) return "expired";
+  if (now.getTime() - (s.lastSeenAt ?? s.createdAt).getTime() > SESSION_IDLE_MS) return "idle";
+  if (!s.user.active) return "inactive";
+  return "valid";
 }
 
 export async function requestContext() {
@@ -75,8 +87,11 @@ export async function createSession(userId: string): Promise<void> {
   const prisma = getPrisma();
   const token = randomBytes(32).toString("base64url");
   const { ip, userAgent } = await requestContext();
-  const expiresAt = new Date(Date.now() + SESSION_TTL_MS);
-  await prisma.session.create({ data: { userId, tokenHash: hashToken(token), expiresAt, ip, userAgent } });
+  const now = new Date();
+  const expiresAt = new Date(now.getTime() + SESSION_TTL_MS);
+  // Housekeeping: drop this user's sessions that can no longer be used.
+  await prisma.session.deleteMany({ where: { userId, OR: [{ expiresAt: { lt: now } }, { lastSeenAt: { lt: new Date(now.getTime() - SESSION_IDLE_MS) } }] } }).catch(() => undefined);
+  await prisma.session.create({ data: { userId, tokenHash: hashToken(token), expiresAt, lastSeenAt: now, ip, userAgent } });
   const jar = await cookies();
   jar.set(SESSION_COOKIE, token, {
     httpOnly: true,
@@ -98,22 +113,35 @@ export async function destroySession(): Promise<void> {
 
 export type SessionUser = Pick<User, "id" | "email" | "name" | "role" | "active" | "mustChangePassword">;
 
-/** Returns the signed-in user or null. Never throws. */
-export const getSessionUser = cache(async (): Promise<SessionUser | null> => {
+/** Returns the current session (id + user) or null. Expired and idle sessions are deleted. Never throws. */
+export const getCurrentSession = cache(async (): Promise<{ id: string; user: SessionUser } | null> => {
   try {
     const jar = await cookies();
     const token = jar.get(SESSION_COOKIE)?.value;
     if (!token) return null;
-    const session = await getPrisma().session.findUnique({
+    const prisma = getPrisma();
+    const session = await prisma.session.findUnique({
       where: { tokenHash: hashToken(token) },
-      select: { expiresAt: true, user: { select: { id: true, email: true, name: true, role: true, active: true, mustChangePassword: true } } },
+      select: { id: true, expiresAt: true, lastSeenAt: true, createdAt: true, user: { select: { id: true, email: true, name: true, role: true, active: true, mustChangePassword: true } } },
     });
-    if (!session || session.expiresAt < new Date() || !session.user.active) return null;
-    return session.user;
+    if (!session) return null;
+    const now = new Date();
+    const state = sessionState(session, now);
+    if (state !== "valid") {
+      if (state !== "inactive") await prisma.session.delete({ where: { id: session.id } }).catch(() => undefined);
+      return null;
+    }
+    if (now.getTime() - (session.lastSeenAt ?? session.createdAt).getTime() > SESSION_TOUCH_MS) {
+      await prisma.session.update({ where: { id: session.id }, data: { lastSeenAt: now } }).catch(() => undefined);
+    }
+    return { id: session.id, user: session.user };
   } catch {
     return null;
   }
 });
+
+/** Returns the signed-in user or null. Never throws. */
+export const getSessionUser = cache(async (): Promise<SessionUser | null> => (await getCurrentSession())?.user ?? null);
 
 /** Page/action guard: redirects to login when signed out, to the password page when a change is required. */
 export async function requireUser(options: { allowPasswordChange?: boolean } = {}): Promise<SessionUser> {

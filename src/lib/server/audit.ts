@@ -25,7 +25,14 @@ export type AuditAction =
   | "setup.owner_created"
   | "backup.created"
   | "backup.downloaded"
-  | "notification.failed";
+  | "notification.failed"
+  | "auth.password_reset_requested"
+  | "auth.password_reset_completed"
+  | "auth.session_revoked"
+  | "auth.sessions_revoked_others"
+  | "profile.updated"
+  | "content.updated"
+  | "media.uploaded";
 
 /** Appends an immutable audit entry. Failures are logged, never thrown into the user flow. */
 export async function audit(args: {

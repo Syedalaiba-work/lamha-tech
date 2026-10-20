@@ -17,6 +17,10 @@ const NAV: NavItem[] = [
   { href: "/admin/audit", label: "Audit log", permission: "view:audit" },
   { href: "/admin/users", label: "Users", permission: "view:users" },
   { href: "/admin/backups", label: "Backups", permission: "backups:view" },
+  { href: "/admin/profile", label: "Owner profile", permission: "view:dashboard" },
+  { href: "/admin/content", label: "Website content", permission: "content:edit" },
+  { href: "/admin/content/team", label: "Team profiles", permission: "team:edit" },
+  { href: "/admin/settings", label: "Integrations", permission: "integrations:manage" },
 ];
 
 export function AdminShell({ user, children }: { user: SessionUser; children: React.ReactNode }) {

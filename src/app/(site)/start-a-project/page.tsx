@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Globe2, Mail, Phone, ShieldCheck, Workflow } from "lucide-react";
 import { buildMetadata, breadcrumbJsonLd } from "@/lib/seo";
-import { site } from "@/data/site";
+import { getContent } from "@/lib/server/content";
 import { ProjectForm } from "@/components/forms/ProjectForm";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
@@ -17,17 +17,18 @@ export const metadata: Metadata = buildMetadata({
   path: "/start-a-project",
 });
 
-const reassurance = [
-  { icon: Globe2, title: "Global delivery", description: site.contact.deliveryNote },
-  { icon: ShieldCheck, title: "Secure handling", description: "Submissions are validated server-side and stored securely. Attachments are type- and size-checked." },
-  { icon: Workflow, title: "Structured review", description: "Each inquiry becomes an internal lead record reviewed by our team." },
-  { icon: Mail, title: "Prefer email?", description: site.contact.projectsEmail },
-  ...(site.contact.phone ? [{ icon: Phone, title: "Prefer to call?", description: site.contact.phone }] : []),
-];
-
 const steps = ["Submit the form", "We review your requirements", "We contact you using the details submitted"];
 
 export default async function StartAProjectPage({ searchParams }: PageProps<"/start-a-project">) {
+  // Owner-editable values (portal → Website content); falls back to the src/data defaults.
+  const { site } = await getContent();
+  const reassurance = [
+    { icon: Globe2, title: "Global delivery", description: site.contact.deliveryNote },
+    { icon: ShieldCheck, title: "Secure handling", description: "Submissions are validated server-side and stored securely. Attachments are type- and size-checked." },
+    { icon: Workflow, title: "Structured review", description: "Each inquiry becomes an internal lead record reviewed by our team." },
+    { icon: Mail, title: "Prefer email?", description: site.contact.projectsEmail },
+    ...(site.contact.phone ? [{ icon: Phone, title: "Prefer to call?", description: site.contact.phone }] : []),
+  ];
   const sp = await searchParams;
   const raw = sp?.service;
   const initialService = typeof raw === "string" ? raw : Array.isArray(raw) ? raw[0] : undefined;

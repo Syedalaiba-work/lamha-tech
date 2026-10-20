@@ -17,7 +17,8 @@
     "db:seed": "node --env-file-if-exists=.env prisma/seed.ts",
     "db:studio": "prisma studio",
     "test": "vitest run",
-    "seo:indexnow": "node scripts/indexnow.mjs"
+    "seo:indexnow": "node scripts/indexnow.mjs",
+    "admin:recovery": "node scripts/admin-recovery.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.0",

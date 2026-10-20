@@ -1,11 +1,13 @@
 import { ImageResponse } from "next/og";
 import { site } from "@/data/site";
+import { getContent } from "@/lib/server/content";
 
 export const alt = `${site.name} — ${site.tagline}`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-export default function OpenGraphImage() {
+export default async function OpenGraphImage() {
+  const { site: live } = await getContent();
   return new ImageResponse(
     (
       <div
@@ -39,7 +41,7 @@ export default function OpenGraphImage() {
               Problems Into <span style={{ color: "#2E7CF6" }}>Progress.</span>
             </span>
           </div>
-          <div style={{ marginTop: 28, fontSize: 26, color: "#c3ccda" }}>{site.supportingLine}</div>
+          <div style={{ marginTop: 28, fontSize: 26, color: "#c3ccda" }}>{live.supportingLine}</div>
         </div>
         <div style={{ display: "flex", justifyContent: "space-between", fontSize: 20, color: "#6b7891" }}>
           <span>Software · Engineering · Digital Products</span>

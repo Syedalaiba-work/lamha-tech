@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { buildMetadata, breadcrumbJsonLd } from "@/lib/seo";
-import { site } from "@/data/site";
-import { founder } from "@/data/leadership";
+import { getContent } from "@/lib/server/content";
 import { whyLamha } from "@/data/whyLamha";
 import { PageHero } from "@/components/sections/PageHero";
 import { Statement } from "@/components/sections/Statement";
@@ -36,7 +35,9 @@ const direction = [
   { title: "New engineering frontiers", description: "Preparing to expand into engineering and R&D services when LAMHA Technologies is operationally ready to deliver them." },
 ];
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  // Owner-editable values (portal → Website content); falls back to the src/data defaults.
+  const { site, founder } = await getContent();
   return (
     <>
       <JsonLd data={breadcrumbJsonLd([{ name: "Home", path: "/" }, { name: "About", path: "/about" }])} />

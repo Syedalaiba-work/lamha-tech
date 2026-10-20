@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { buildMetadata, breadcrumbJsonLd, peopleJsonLd } from "@/lib/seo";
-import { founder, leaderPath, leaderRoleLine, publishedLeadership } from "@/data/leadership";
-import { site } from "@/data/site";
+import { leaderPath, leaderRoleLine } from "@/data/leadership";
+import { getContent } from "@/lib/server/content";
 import { PageHero } from "@/components/sections/PageHero";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { SectionLabel } from "@/components/ui/SectionLabel";
@@ -18,12 +18,14 @@ export const metadata: Metadata = buildMetadata({
   path: "/about/leadership",
 });
 
-export default function LeadershipPage() {
+export default async function LeadershipPage() {
+  // Owner-editable values (portal → Website content); falls back to the src/data defaults.
+  const { site, founder, publishedLeadership } = await getContent();
   const others = publishedLeadership.filter((l) => l.slug !== founder.slug);
   return (
     <>
       <JsonLd data={breadcrumbJsonLd([{ name: "Home", path: "/" }, { name: "About", path: "/about" }, { name: "Leadership", path: "/about/leadership" }])} />
-      <JsonLd data={peopleJsonLd()} />
+      <JsonLd data={peopleJsonLd(publishedLeadership)} />
       <PageHero
         number="10"
         label="Leadership"

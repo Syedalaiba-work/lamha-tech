@@ -61,8 +61,16 @@ export function buildMetadata({
 export const ORG_ID = () => `${site.url.replace(/\/$/, "")}/#organization`;
 export const WEBSITE_ID = () => `${site.url.replace(/\/$/, "")}/#website`;
 
+/** The owner-editable parts of the site the Organization entity reads (src/lib/server/content.ts). */
+type OrgSource = {
+  site: { tagline: string; entityDescription: string; contact: { generalEmail: string; projectsEmail: string; phone: string | null }; social: readonly { label: string; href: string | null }[] };
+  publishedLeadership: Leader[];
+};
+
 /** Organization entity. Every field comes from data already published on the site; nothing is inferred. */
-export function organizationJsonLd() {
+export function organizationJsonLd(c: OrgSource = { site, publishedLeadership }) {
+  const live = c.site;
+  const orgSameAs = live.social.map((s) => s.href).filter((h): h is string => Boolean(h));
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
@@ -78,20 +86,20 @@ export function organizationJsonLd() {
     // identifier: { "@type": "PropertyValue", propertyID: "SECP registration", value: "<number>" }.
     logo: { "@type": "ImageObject", url: absoluteUrl("/logo-512.png"), width: 512, height: 512, caption: `${site.name} logo` },
     image: [absoluteUrl("/logo-512.png"), absoluteUrl("/opengraph-image")],
-    slogan: site.tagline,
-    description: site.entityDescription,
-    email: site.contact.generalEmail,
-    telephone: site.contact.phone ?? undefined,
+    slogan: live.tagline,
+    description: live.entityDescription,
+    email: live.contact.generalEmail,
+    telephone: live.contact.phone ?? undefined,
     address: { "@type": "PostalAddress", addressLocality: site.contact.city, addressRegion: "Islamabad Capital Territory", addressCountry: site.contact.countryCode },
     foundingLocation: { "@type": "Place", name: `${site.contact.city}, ${site.contact.country}` },
     areaServed: "Worldwide",
     // schema.org founder = a person who founded the organization: the Founder and the Co-Founder.
     // Each Person keeps its own jobTitle ("Founder" / "Co-Founder"), so the distinction is preserved.
-    founder: publishedLeadership.filter((l) => FOUNDER_ROLES.includes(l.role)).map((l) => ({ "@id": PERSON_ID(l.slug) })),
-    member: publishedLeadership.map((l) => ({ "@id": PERSON_ID(l.slug) })),
+    founder: c.publishedLeadership.filter((l) => FOUNDER_ROLES.includes(l.role)).map((l) => ({ "@id": PERSON_ID(l.slug) })),
+    member: c.publishedLeadership.map((l) => ({ "@id": PERSON_ID(l.slug) })),
     contactPoint: [
-      { "@type": "ContactPoint", contactType: "sales", email: site.contact.projectsEmail, telephone: site.contact.phone ?? undefined, availableLanguage: ["English"], url: absoluteUrl("/start-a-project") },
-      { "@type": "ContactPoint", contactType: "customer support", email: site.contact.generalEmail, availableLanguage: ["English"], url: absoluteUrl("/contact") },
+      { "@type": "ContactPoint", contactType: "sales", email: live.contact.projectsEmail, telephone: live.contact.phone ?? undefined, availableLanguage: ["English"], url: absoluteUrl("/start-a-project") },
+      { "@type": "ContactPoint", contactType: "customer support", email: live.contact.generalEmail, availableLanguage: ["English"], url: absoluteUrl("/contact") },
     ],
     knowsAbout: publishedServices.map((s) => s.title),
     hasOfferCatalog: {
@@ -106,7 +114,6 @@ export function organizationJsonLd() {
 
 const FOUNDER_ROLES = ["Founder", "Co-Founder"];
 const BOARD_ROLE = "Board of Directors";
-const orgSameAs = site.social.map((s) => s.href).filter((h): h is string => Boolean(h));
 
 /** Stable Person identifier. Unchanged since the leadership page first published Person entities; never derive it from the profile URL. */
 export function PERSON_ID(slug: string) {
@@ -134,13 +141,13 @@ export function personJsonLd(l: Leader) {
     ...(l.discipline ? { hasOccupation: { "@type": "Occupation", name: l.discipline } } : {}),
     workLocation: { "@type": "Place", address: { "@type": "PostalAddress", addressLocality: site.contact.city, addressCountry: site.contact.countryCode } },
     // sameAs only for a verified profile of this exact person; absent otherwise (never guessed).
-    ...(l.profileUrl ? { sameAs: [l.profileUrl] } : {}),
+    ...(l.profileUrl || l.githubUrl ? { sameAs: [l.profileUrl, l.githubUrl].filter(Boolean) } : {}),
   };
 }
 
 /** Person entities for the leadership index page (one per published leader). */
-export function peopleJsonLd() {
-  return publishedLeadership.map((l) => ({ "@context": "https://schema.org", ...personJsonLd(l) }));
+export function peopleJsonLd(leaders: Leader[] = publishedLeadership) {
+  return leaders.map((l) => ({ "@context": "https://schema.org", ...personJsonLd(l) }));
 }
 
 /** ProfilePage for a leader's canonical profile route; its mainEntity is that leader's Person. */

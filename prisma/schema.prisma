@@ -210,6 +210,8 @@ model User {
   active             Boolean   @default(true)
   mustChangePassword Boolean   @default(false)
   lastLoginAt        DateTime?
+  /// Public team profile (src/data/leadership.ts slug) this account represents; shown on the owner profile page.
+  leaderSlug         String?
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
 
@@ -219,20 +221,66 @@ model User {
   auditLogs            AuditLog[]
   assignedInquiries    ProjectInquiry[] @relation("InquiryAssignee")
   assignedApplications JobApplication[] @relation("ApplicationAssignee")
+  passwordResetTokens  PasswordResetToken[]
+  contentEdits         SiteContent[]    @relation("ContentEditor")
+  mediaUploads         MediaAsset[]     @relation("MediaUploader")
 }
 
 model Session {
   id        String   @id @default(uuid())
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tokenHash String   @unique
-  expiresAt DateTime
-  ip        String?
-  userAgent String?
-  createdAt DateTime @default(now())
+  tokenHash  String    @unique
+  expiresAt  DateTime
+  /// Last authenticated request (updated at most every few minutes); drives the idle timeout.
+  lastSeenAt DateTime?
+  ip         String?
+  userAgent  String?
+  createdAt  DateTime  @default(now())
 
   @@index([userId])
   @@index([expiresAt])
+}
+
+/// One-time password-reset links. Only the SHA-256 of the token is stored; the raw token exists only in the email/CLI output.
+model PasswordResetToken {
+  id        String    @id @default(uuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  /// "email" (self-service) or "cli" (break-glass recovery script)
+  source    String    @default("email")
+  ip        String?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+/// Owner-editable website content. One row per section ("company", "contact", "social", "team", "integrations");
+/// `data` is validated against src/lib/content/schema.ts on every write and every read. Code defaults apply when a row is absent.
+model SiteContent {
+  key         String   @id
+  data        Json
+  version     Int      @default(1)
+  updatedAt   DateTime @updatedAt
+  updatedById String?
+  updatedBy   User?    @relation("ContentEditor", fields: [updatedById], references: [id], onDelete: SetNull)
+}
+
+/// Public images uploaded from the portal (team portraits). Served by /media/<id> after a lookup here, so storage keys are never client-controlled.
+model MediaAsset {
+  id           String   @id @default(uuid())
+  storageKey   String   @unique
+  contentType  String
+  size         Int
+  width        Int?
+  height       Int?
+  uploadedById String?
+  uploadedBy   User?    @relation("MediaUploader", fields: [uploadedById], references: [id], onDelete: SetNull)
+  createdAt    DateTime @default(now())
 }
 
 model Note {

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { buildMetadata } from "@/lib/seo";
-import { site } from "@/data/site";
+import { getContent } from "@/lib/server/content";
 import { PageHero } from "@/components/sections/PageHero";
 
 export const metadata: Metadata = buildMetadata({
@@ -14,7 +14,9 @@ export const metadata: Metadata = buildMetadata({
  * PLACEHOLDER — not legal advice and not yet reviewed by LAMHA's legal counsel.
  * Only describes what the website actually does today; no claims are invented.
  */
-export default function PrivacyPage() {
+export default async function PrivacyPage() {
+  // Owner-editable values (portal → Website content); falls back to the src/data defaults.
+  const { site } = await getContent();
   return (
     <>
       <PageHero label="Legal" title="Privacy Policy" description="Placeholder policy describing how this website currently handles the information you submit." breadcrumbs={[{ label: "Home", href: "/" }, { label: "Privacy Policy" }]} compact />

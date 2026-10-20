@@ -1,6 +1,7 @@
 import "server-only";
 import { site } from "@/data/site";
-import { isEmailConfigured, renderNotification, sendEmail } from "./email";
+import { getEmailConfig, isEmailConfigured, renderNotification, sendEmail } from "./email";
+import { getIntegrationSettings } from "./content";
 import { getFileStorage } from "./files";
 import { getPrisma, isDatabaseConfigured } from "./db";
 import type { ApplicationRecord, ContactRecord, LeadRecord, StoredAttachment } from "./storage";
@@ -152,9 +153,11 @@ export async function notify(
         ? buildContactEmail(record as ContactRecord)
         : buildApplicationEmail(record as ApplicationRecord);
 
-  const configured = isEmailConfigured();
+  // Recipients set in the portal (Settings → Email routing) take precedence over EMAIL_TO.
+  const recipients = (await getIntegrationSettings()).notifyRecipients;
+  const configured = isEmailConfigured() || Boolean(getEmailConfig().apiKey && recipients.length);
   const [emailResult, webhooked] = await Promise.all([
-    sendEmail(email),
+    sendEmail(recipients.length ? { ...email, to: recipients } : email),
     postWebhook(kind, { id: record.id, createdAt: record.createdAt, record }),
   ]);
 

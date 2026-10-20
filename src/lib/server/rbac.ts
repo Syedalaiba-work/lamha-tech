@@ -23,7 +23,10 @@ export type Permission =
   | "users:manageAdmins"
   | "backups:view"
   | "backups:run"
-  | "backups:download";
+  | "backups:download"
+  | "content:edit"
+  | "team:edit"
+  | "integrations:manage";
 
 const MIN_ROLE: Record<Permission, Role> = {
   "view:dashboard": "VIEWER",
@@ -45,6 +48,11 @@ const MIN_ROLE: Record<Permission, Role> = {
   "backups:view": "ADMIN",
   "backups:run": "ADMIN",
   "backups:download": "OWNER",
+  // Website content, company details, social links and team profiles are public-facing: Admin and above.
+  "content:edit": "ADMIN",
+  "team:edit": "ADMIN",
+  // Email routing (notification recipients, reply-to) and integration status: Owner only.
+  "integrations:manage": "OWNER",
 };
 
 export function roleRank(role: Role): number {
