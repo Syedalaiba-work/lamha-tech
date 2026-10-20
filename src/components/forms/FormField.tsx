@@ -2,7 +2,7 @@ import type { ComponentPropsWithRef } from "react";
 import { cn } from "@/lib/utils";
 
 export const inputBase =
-  "block w-full rounded-md border bg-white px-3.5 text-[0.95rem] text-ink placeholder:text-slate-400 transition-[border-color,box-shadow] duration-200 focus:outline-none focus:ring-2 focus:ring-blue/30 focus:border-blue disabled:bg-slate-50 disabled:text-slate-500";
+  "block w-full rounded-md border bg-white px-3.5 text-[0.95rem] text-ink placeholder:text-slate-500 transition-[border-color,box-shadow] duration-200 focus:outline-none focus:ring-2 focus:ring-blue/30 focus:border-blue disabled:bg-slate-50 disabled:text-slate-500";
 
 export function FieldLabel({ htmlFor, required, children, optionalText = "Optional" }: { htmlFor: string; required?: boolean; children: React.ReactNode; optionalText?: string }) {
   return (
@@ -15,7 +15,7 @@ export function FieldLabel({ htmlFor, required, children, optionalText = "Option
           </span>
         )}
       </span>
-      {!required && <span className="text-[0.6875rem] font-medium normal-case tracking-normal text-slate-400">{optionalText}</span>}
+      {!required && <span className="text-[0.6875rem] font-medium normal-case tracking-normal text-slate-500">{optionalText}</span>}
     </label>
   );
 }

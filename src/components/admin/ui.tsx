@@ -95,7 +95,7 @@ export function Empty({ children }: { children: React.ReactNode }) {
   return <p className="rounded-md border border-dashed border-slate-200 px-4 py-8 text-center text-sm text-slate-500">{children}</p>;
 }
 
-export const inputCls = "w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:border-blue focus:ring-2 focus:ring-blue/20";
+export const inputCls = "w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none placeholder:text-slate-500 focus:border-blue focus:ring-2 focus:ring-blue/20";
 export const btnCls = "inline-flex items-center justify-center gap-2 rounded bg-navy px-3.5 py-2 text-sm font-medium text-white transition hover:bg-blue disabled:cursor-not-allowed disabled:opacity-60";
 export const btnGhostCls = "inline-flex items-center justify-center gap-2 rounded border border-slate-300 bg-white px-3.5 py-2 text-sm font-medium text-slate-700 transition hover:border-navy hover:text-navy disabled:opacity-60";
 

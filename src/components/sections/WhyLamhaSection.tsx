@@ -28,7 +28,7 @@ function StackCard({ pillar, index, total }: { pillar: Pillar; index: number; to
         <div className="grid gap-6 rounded-xl border border-slate-200 bg-white p-8 shadow-[var(--shadow-card)] md:grid-cols-12 md:items-center md:p-10">
           <div className="md:col-span-3">
             <span className="font-mono text-6xl font-semibold leading-none tracking-tighter text-blue/90">{pillar.number}</span>
-            <p className="mt-3 text-xs uppercase tracking-[0.18em] text-slate-400">
+            <p className="mt-3 text-xs uppercase tracking-[0.18em] text-slate-500">
               {index + 1} of {total}
             </p>
           </div>

@@ -1,11 +1,14 @@
 import Link from "next/link";
 import { ArrowRight, Mail, Phone } from "lucide-react";
 import { footerNav } from "@/data/navigation";
-import { site } from "@/data/site";
+import { getContent } from "@/lib/server/content";
 import { LamhaLogo } from "@/components/ui/Logo";
 import { LocalTime } from "@/components/motion/LocalTime";
+import { SocialIcon, hasSocialIcon } from "@/components/ui/SocialIcon";
 
-export function Footer() {
+export async function Footer() {
+  // Owner-editable values (portal → Website content); falls back to the src/data defaults.
+  const { site } = await getContent();
   const year = new Date().getFullYear();
   const socials = site.social.filter((s) => s.href);
   return (
@@ -69,8 +72,14 @@ export function Footer() {
           </div>
         </div>
 
-        <p aria-hidden="true" className="mt-16 select-none font-display text-[clamp(4rem,17vw,15rem)] font-bold leading-[0.85] tracking-[-0.06em] text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.22)]">
-          LAMHA
+        {/* Oversized supporting line. Replaces an outlined "LAMHA" wordmark, which the logo guidelines prohibit (08 — Incorrect usage). */}
+        <p aria-hidden="true" className="mt-16 select-none font-display text-[clamp(2.25rem,7.4vw,7rem)] font-bold leading-[0.95] tracking-[-0.045em]">
+          {/* One line per sentence (the text is owner-editable); the last sentence takes the accent. */}
+          {site.supportingLine.split(/(?<=[.!?])\s+/).map((line, i, all) => (
+            <span key={i} className={i === all.length - 1 && all.length > 1 ? "block text-blue-2" : "block text-white"}>
+              {line}
+            </span>
+          ))}
         </p>
 
         <div className="mt-8 flex flex-col gap-4 border-t border-white/10 pt-6 font-mono text-[0.7rem] uppercase tracking-[0.14em] text-slate-500 sm:flex-row sm:items-center sm:justify-between">
@@ -85,7 +94,15 @@ export function Footer() {
               Terms of Use
             </Link>
             {socials.map((s) => (
-              <a key={s.label} href={s.href!} target="_blank" rel="noopener noreferrer" className="hover:text-white">
+              <a
+                key={s.label}
+                href={s.href!}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`${site.name} on ${s.label} (opens in a new tab)`}
+                className="inline-flex items-center gap-1.5 hover:text-white"
+              >
+                {hasSocialIcon(s.label) && <SocialIcon platform={s.label} className="h-3.5 w-3.5" />}
                 {s.label}
               </a>
             ))}

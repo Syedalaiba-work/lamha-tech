@@ -5,7 +5,8 @@
 /* ------------------------------------------------------------------ */
 @theme {
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-display: var(--font-space), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  /* Display: Montserrat Bold, per the logo guidelines (06 — Typography). */
+  --font-display: var(--font-display-face), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
 
   /* Brand */
@@ -13,11 +14,11 @@
   --color-ink: #162033;
   --color-blue: #1769e0;
   --color-blue-2: #2e7cf6;
-  --color-cloud: #f4f4f1;
+  --color-cloud: #f5f8fc; /* official Cloud */
 
-  /* Dark surfaces */
-  --color-abyss: #06070b;
-  --color-deep: #0a0c12;
+  /* Dark surfaces: navy-based, so navy stays the dominant field (guidelines 05 — Color ratio) */
+  --color-abyss: #07132b;
+  --color-deep: #08142e; /* official Blue 2 numerals stay ≥4.5:1 on it */
   --color-navy-800: #0f2350;
   --color-navy-700: #163066;
 
@@ -27,7 +28,7 @@
   --color-slate-200: #dde3ec;
   --color-slate-300: #c3ccda;
   --color-slate-400: #97a3b6;
-  --color-slate-500: #6b7891;
+  --color-slate-500: #5f6b84; /* ≥4.5:1 on white, Cloud and slate-100 */
   --color-slate-600: #4f5b73;
   --color-slate-700: #3a4459;
   --color-slate-800: #232c40;
@@ -116,6 +117,11 @@
     outline: 2px solid var(--color-blue);
     outline-offset: 3px;
     border-radius: 2px;
+  }
+  /* On navy surfaces the light-context greys are too dark for small text; lift them (≥4.5:1 on navy-800). */
+  .dark-section {
+    --color-slate-500: #8390a5;
+    --color-slate-600: #657187;
   }
   .dark-section :focus-visible {
     outline-color: #7fb0ff;

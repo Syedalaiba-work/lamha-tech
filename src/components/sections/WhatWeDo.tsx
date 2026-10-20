@@ -87,7 +87,7 @@ function PinnedStory() {
               <div className="h-px flex-1 bg-slate-200">
                 <motion.div style={{ width: bar }} className="h-px bg-blue" />
               </div>
-              <span className="font-mono text-xs text-slate-400">
+              <span className="font-mono text-xs text-slate-500">
                 {p.number} / 03
               </span>
             </div>

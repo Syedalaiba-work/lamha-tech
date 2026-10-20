@@ -127,7 +127,6 @@ const fragment = /* glsl */ `
 function Field({ progress, count, reduced }: { progress: ProgressRef; count: number; reduced: boolean }) {
   const points = useRef<THREE.Points>(null);
   const material = useRef<THREE.ShaderMaterial>(null);
-  const core = useRef<THREE.Mesh>(null);
   const glow = useRef<THREE.Mesh>(null);
   const smooth = useRef({ p: 0, mx: 0, my: 0 });
 
@@ -168,11 +167,10 @@ function Field({ progress, count, reduced }: { progress: ProgressRef; count: num
       points.current.rotation.y += reduced ? 0 : delta * (0.05 + s.p * 0.05);
       points.current.rotation.x = THREE.MathUtils.lerp(points.current.rotation.x, 0.25 + s.my * 0.2, 0.05);
     }
-    // Core collapses during the burst and returns as a small nucleus inside the ring.
+    // Soft glow (no opaque disc) collapses during the burst and returns inside the ring.
     const fade = 1 - THREE.MathUtils.smoothstep(s.p, 0.02, 0.28);
     const back = THREE.MathUtils.smoothstep(s.p, 0.7, 0.98) * 0.45;
     const k = Math.max(0.0001, fade + back) * (1 + 0.05 * Math.sin(state.clock.elapsedTime * 2));
-    if (core.current) core.current.scale.setScalar(k);
     if (glow.current) glow.current.scale.setScalar(k * 1.1);
   });
 
@@ -181,10 +179,6 @@ function Field({ progress, count, reduced }: { progress: ProgressRef; count: num
       <points ref={points} geometry={geometry}>
         <shaderMaterial ref={material} vertexShader={vertex} fragmentShader={fragment} uniforms={uniforms} transparent depthWrite={false} blending={THREE.AdditiveBlending} />
       </points>
-      <mesh ref={core}>
-        <sphereGeometry args={[0.55, 32, 32]} />
-        <meshBasicMaterial color="#2e7cf6" transparent opacity={0.9} toneMapped={false} />
-      </mesh>
       <mesh ref={glow}>
         <sphereGeometry args={[0.9, 32, 32]} />
         <meshBasicMaterial color="#2e7cf6" transparent opacity={0.12} blending={THREE.AdditiveBlending} depthWrite={false} toneMapped={false} />

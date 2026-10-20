@@ -10,19 +10,19 @@ import { publishedServices } from "@/data/services";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { Button } from "@/components/ui/Button";
 import { TrackedCTA } from "@/components/analytics/TrackedLink";
-import { NetworkVisual } from "@/components/visuals/NetworkVisual";
+import { SystemsFallback } from "@/components/visuals/SystemsFallback";
 import { Magnetic, Marquee, TextReveal } from "@/components/motion/Motion";
 import { useMediaQuery, useMounted, usePrefersReducedMotion, useWebGLSupport } from "@/components/motion/useReducedMotion";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import type { ProgressRef } from "@/components/three/ScrollField";
 import { LocalTime } from "@/components/motion/LocalTime";
 
-const ScrollField = dynamic(() => import("@/components/three/ScrollField"), { ssr: false });
-
+// Signature sculpture built from the brand geometry (L-modules + diamond nodes); see SystemsScene.
+const SystemsScene = dynamic(() => import("@/components/three/SystemsScene"), { ssr: false });
 
 /**
  * Pinned, scroll-driven hero. The section is tall; the viewport-sized stage sticks while the
- * particle field morphs (sphere → burst → wave → ring) and three statements hand over.
+ * sculpture moves Problems → Systems → Progress and three statements hand over.
  */
 export function ImmersiveHero() {
   const wrap = useRef<HTMLElement>(null);
@@ -65,13 +65,15 @@ export function ImmersiveHero() {
         <div className="sticky top-0 h-screen overflow-hidden">
           {/* Field */}
           <div className="absolute inset-0">
-            <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(46,124,246,0.10),transparent_60%)]" />
+            <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(ellipse_at_65%_45%,rgba(46,124,246,0.16),transparent_60%)]" />
             <div aria-hidden="true" className="absolute inset-0 grid-texture opacity-60 [mask-image:radial-gradient(ellipse_at_center,black_30%,transparent_75%)]" />
             {mounted && webgl ? (
-              <ScrollField progress={progress} active={active} reduced={reduced} mobile={mobile} />
+              <SystemsScene progress={progress} active={active} reduced={reduced} mobile={mobile} />
             ) : (
-              <NetworkVisual className="absolute left-1/2 top-1/2 h-[80vmin] w-[80vmin] -translate-x-1/2 -translate-y-1/2 opacity-70" />
+              <SystemsFallback className="absolute right-0 top-1/2 hidden h-[70vmin] w-[60vw] -translate-y-1/2 opacity-80 lg:block" />
             )}
+            {/* Readability: a soft navy pool behind the copy so text never sits on bright geometry. */}
+            <div aria-hidden="true" className="absolute inset-0 bg-[linear-gradient(90deg,rgba(7,19,43,0.88)_0%,rgba(7,19,43,0.55)_38%,transparent_62%)] max-sm:bg-[linear-gradient(0deg,rgba(7,19,43,0.95)_0%,rgba(7,19,43,0.7)_55%,transparent_80%)]" />
           </div>
 
           {/* Stage content */}
@@ -108,7 +110,7 @@ export function ImmersiveHero() {
 
             {/* Phase 02 */}
             <motion.div style={{ opacity: o2, y: y2 }} className="pointer-events-none absolute inset-x-5 top-1/2 -translate-y-1/2 sm:inset-x-8 lg:inset-x-12" aria-hidden={phase !== 1}>
-              <div className="mx-auto max-w-5xl text-center">
+              <div className="mx-auto max-w-5xl rounded-[2rem] bg-[radial-gradient(ellipse_at_center,rgba(7,19,43,0.82),rgba(7,19,43,0.55)_55%,transparent_75%)] px-4 py-10 text-center">
                 <p className="label-caps text-blue-200">02 · From Ideas to Systems</p>
                 <p className="mt-6 text-h1 font-semibold text-white">
                   Requirements, constraints and messy real-world problems, turned into <span className="text-gradient-blue">architecture, code and working systems.</span>
@@ -118,7 +120,7 @@ export function ImmersiveHero() {
 
             {/* Phase 03 */}
             <motion.div style={{ opacity: o3, y: y3 }} className={phase === 2 ? "absolute inset-x-5 top-1/2 -translate-y-1/2 sm:inset-x-8 lg:inset-x-12" : "pointer-events-none absolute inset-x-5 top-1/2 -translate-y-1/2 sm:inset-x-8 lg:inset-x-12"} aria-hidden={phase !== 2}>
-              <div className="mx-auto max-w-5xl text-center">
+              <div className="mx-auto max-w-5xl rounded-[2rem] bg-[radial-gradient(ellipse_at_center,rgba(7,19,43,0.82),rgba(7,19,43,0.55)_55%,transparent_75%)] px-4 py-10 text-center">
                 <p className="label-caps text-blue-200">03 · From Systems to Impact</p>
                 <p className="mt-6 text-h1 font-semibold text-white">
                   Software, engineering and digital products that keep improving <span className="text-gradient-blue">long after launch.</span>

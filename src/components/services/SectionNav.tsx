@@ -22,7 +22,7 @@ export function SectionNav({ sections }: { sections: { id: string; label: string
   }, [sections]);
 
   return (
-    <nav data-subnav aria-label="On this page" className="dark-section sticky top-0 z-40 border-b border-white/10 bg-deep/85 text-white backdrop-blur">
+    <nav data-subnav aria-label="On this page" className="dark-section sticky top-0 z-40 border-b border-white/10 bg-deep/95 text-white backdrop-blur">
       <div className="container-x -mx-5 overflow-x-auto px-5 sm:mx-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <ul className="flex gap-6 whitespace-nowrap py-3.5 text-sm">
           {sections.map((s) => (
@@ -32,7 +32,7 @@ export function SectionNav({ sections }: { sections: { id: string; label: string
                 aria-current={active === s.id ? "location" : undefined}
                 className={cn(
                   "relative py-1 transition-colors after:absolute after:inset-x-0 after:-bottom-[0.95rem] after:h-0.5 after:origin-left after:scale-x-0 after:bg-blue-2 after:transition-transform after:duration-300",
-                  active === s.id ? "text-white after:scale-x-100" : "text-slate-400 hover:text-white",
+                  active === s.id ? "text-white after:scale-x-100" : "text-slate-300 hover:text-white",
                 )}
               >
                 {s.label}

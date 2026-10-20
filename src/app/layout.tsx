@@ -1,10 +1,11 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
+import { Inter, JetBrains_Mono, Montserrat } from "next/font/google";
 import "./globals.css";
 import { site } from "@/data/site";
 import { AnalyticsProvider } from "@/components/analytics/AnalyticsProvider";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { organizationJsonLd, websiteJsonLd } from "@/lib/seo";
+import { getContent } from "@/lib/server/content";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -12,8 +13,9 @@ const inter = Inter({
   display: "swap",
 });
 
-const display = Space_Grotesk({
-  variable: "--font-space",
+// Display face: Montserrat (brand guidelines 06 — Typography: "Display: Montserrat / Inter, Bold").
+const display = Montserrat({
+  variable: "--font-display-face",
   subsets: ["latin"],
   display: "swap",
   weight: ["500", "600", "700"],
@@ -26,7 +28,7 @@ const mono = JetBrains_Mono({
   weight: ["400", "500", "600"],
 });
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
     default: `${site.name} | Technology & Software Solutions`,
@@ -79,21 +81,34 @@ export const metadata: Metadata = {
   },
 };
 
+/** The site description is owner-editable (portal → Website content); everything else is fixed. */
+export async function generateMetadata(): Promise<Metadata> {
+  const { site: live } = await getContent();
+  return {
+    ...baseMetadata,
+    description: live.description,
+    openGraph: { ...baseMetadata.openGraph, description: live.description },
+    twitter: { ...baseMetadata.twitter, description: live.description },
+  };
+}
+
 export const viewport: Viewport = {
   themeColor: "#06070b",
   width: "device-width",
   initialScale: 1,
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const content = await getContent();
   return (
-    <html lang="en" className={`${inter.variable} ${mono.variable} ${display.variable} h-full`}>
+    // suppressHydrationWarning: the inline script below (and the preloader/smooth scroll) add classes to <html> before hydration.
+    <html lang="en" className={`${inter.variable} ${mono.variable} ${display.variable} h-full`} suppressHydrationWarning>
       <head>
         {/* Marks JS availability so scroll-reveal styles only apply when they can be undone. */}
         <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }} />
       </head>
       <body className="flex min-h-full flex-col">
-        <JsonLd data={[organizationJsonLd(), websiteJsonLd()]} />
+        <JsonLd data={[organizationJsonLd(content), websiteJsonLd()]} />
         {children}
         <div className="grain" aria-hidden="true" />
         <AnalyticsProvider />

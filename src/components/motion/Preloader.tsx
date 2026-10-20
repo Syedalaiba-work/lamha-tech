@@ -49,7 +49,7 @@ export function Preloader() {
           key="preloader"
           role="status"
           aria-label="Loading"
-          className="fixed inset-0 z-[100] flex items-end justify-between bg-abyss px-6 pb-8 text-white sm:px-10 sm:pb-10"
+          className="dark-section fixed inset-0 z-[100] flex items-end justify-between bg-abyss px-6 pb-8 text-white sm:px-10 sm:pb-10"
           initial={{ y: 0 }}
           exit={{ y: "-100%", transition: { duration: 0.8, ease: [0.76, 0, 0.24, 1] } }}
         >
