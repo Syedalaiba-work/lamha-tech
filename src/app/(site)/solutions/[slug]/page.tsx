@@ -14,6 +14,7 @@ import { HoverPreview } from "@/components/services/HoverPreview";
 import { LRise } from "@/components/motion/LRise";
 import { CTASection } from "@/components/sections/CTASection";
 import { AudienceGlyph } from "@/components/solutions/AudienceGlyph";
+import { ModuleVisual } from "@/components/three/ModuleVisual";
 
 // Must stay true: portal edits revalidate every page (the footer is on all of them), and Next 16
 // answers an expired dynamicParams=false path with 404 instead of rebuilding it. Unknown slugs
@@ -64,7 +65,7 @@ export default async function SolutionPage({ params }: PageProps<"/solutions/[sl
         }
         visual={
           <div className="mx-auto max-w-md">
-            <AudienceGlyph kind={solution.slug} dark={dark} />
+            <ModuleVisual formation={({ startups: "single", smes: "cluster", enterprise: "lattice", custom: "scatter" } as const)[solution.slug as "startups"] ?? "cluster"} tone={dark ? "dark" : "light"} fallback={<AudienceGlyph kind={solution.slug} dark={dark} />} />
           </div>
         }
       />

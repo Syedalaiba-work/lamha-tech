@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/Button";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { CTASection } from "@/components/sections/CTASection";
 import { LRise } from "@/components/motion/LRise";
+import { ModuleVisual } from "@/components/three/ModuleVisual";
 
 export const metadata: Metadata = buildMetadata({
   title: "Work — Ideas Built Into Real Products",
@@ -26,6 +27,7 @@ export default function WorkPage() {
       <JsonLd data={breadcrumbJsonLd([{ name: "Home", path: "/" }, { name: "Work", path: "/work" }])} />
       <PageHero
         label="Our work"
+        art={<ModuleVisual formation="single" fallback={null} />}
         size="mega"
         title={
           <>

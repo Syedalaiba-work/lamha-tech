@@ -16,6 +16,7 @@ export function LRise({
   children,
   className,
   surface = "bg-navy",
+  underlay,
   id,
   as: Tag = "section",
   ...rest
@@ -24,6 +25,8 @@ export function LRise({
   className?: string;
   /** Background classes for the rising surface. */
   surface?: string;
+  /** Colour showing through the L-notch while the surface rises (defaults to the page). */
+  underlay?: string;
   id?: string;
   as?: "section" | "div";
   "aria-labelledby"?: string;
@@ -48,6 +51,7 @@ export function LRise({
 
   return (
     <MotionTag ref={ref as never} id={id} className={cn("relative isolate", (!live || risen) && surface, className)} {...rest}>
+      {underlay && live && !risen && <div aria-hidden="true" className={cn("absolute inset-x-0 top-0 -z-20 h-[45vh]", underlay)} />}
       <motion.div aria-hidden="true" className={cn("absolute inset-0 -z-10", surface)} style={live ? { clipPath: clip } : undefined} />
       <motion.div style={live ? { opacity: contentOpacity } : undefined}>{children}</motion.div>
     </MotionTag>

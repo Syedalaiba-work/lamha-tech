@@ -12,6 +12,7 @@ import { CareerCard } from "@/components/careers/CareerCard";
 import { ViewTracker } from "@/components/analytics/ViewTracker";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import { CTASection } from "@/components/sections/CTASection";
+import { ModuleVisual } from "@/components/three/ModuleVisual";
 
 export const metadata: Metadata = buildMetadata({
   title: "Careers",
@@ -37,6 +38,7 @@ export default async function CareersPage() {
       <JsonLd data={breadcrumbJsonLd([{ name: "Home", path: "/" }, { name: "Careers", path: "/careers" }])} />
       <PageHero
         surface="blue"
+        art={<ModuleVisual formation="scatter" tone="dark" fallback={null} />}
         label="Careers"
         title="Build what comes next with us."
         description="Join a team building a global technology company around software, engineering and emerging technologies."

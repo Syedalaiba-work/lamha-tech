@@ -30,6 +30,7 @@ export function PageHero({
   actions,
   visual,
   aside,
+  art,
   surface = "paper",
   size = "giant",
   visualBelow = false,
@@ -44,6 +45,8 @@ export function PageHero({
   actions?: React.ReactNode;
   visual?: React.ReactNode;
   aside?: React.ReactNode;
+  /** Decorative 3D stage in the upper right of the hero (md+); does not affect the text layout. */
+  art?: React.ReactNode;
   surface?: HeroSurface;
   size?: "mega" | "giant" | "display" | "h1";
   visualBelow?: boolean;
@@ -61,6 +64,7 @@ export function PageHero({
 
   return (
     <section data-hero className={cn("relative overflow-hidden", s.section, !compact && "flex min-h-[86svh] flex-col", className)}>
+      {art && <div className="pointer-events-none absolute right-[calc(var(--gutter)-2rem)] top-[calc(var(--header-h)+1rem)] hidden w-[min(34vw,540px)] md:block">{art}</div>}
       <div className={cn("container-x relative flex w-full flex-1 flex-col pt-[calc(var(--header-h)+2.5rem)]", compact ? "pb-16 sm:pb-20" : "pb-14 sm:pb-20")}>
         <div className="flex flex-wrap items-center justify-between gap-4">
           {breadcrumbs ? (

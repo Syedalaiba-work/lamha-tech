@@ -32,7 +32,8 @@ export default function Template({ children }: { children: React.ReactNode }) {
           transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1], delay: 0.05 }}
         />
       )}
-      <motion.div initial={{ opacity: 0, y: curtain ? 40 : 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: curtain ? 0.2 : 0 }}>
+      {/* First load: no initial opacity, so the server-rendered page paints at once (LCP); the preloader covers it anyway. */}
+      <motion.div initial={curtain ? { opacity: 0, y: 40 } : false} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: curtain ? 0.2 : 0 }}>
         {children}
       </motion.div>
     </>

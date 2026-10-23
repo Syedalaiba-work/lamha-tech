@@ -28,7 +28,7 @@ export function Manifesto() {
   const scrollYProgress = useScrollProgress(text, ["start", 0.85], ["end", 0.45]);
   const words = TEXT.split(" ");
   return (
-    <LRise className="dark-section text-white" surface="bg-navy" aria-labelledby="manifesto-label">
+    <LRise className="dark-section text-white" surface="bg-navy" underlay="bg-blue" aria-labelledby="manifesto-label">
       <div className="container-x pb-28 pt-40 sm:pb-36 sm:pt-48 lg:pb-44 lg:pt-56">
         <SectionLabel number="01" tone="dark" as="div">
           <span id="manifesto-label">What drives us</span>

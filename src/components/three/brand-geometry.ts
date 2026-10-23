@@ -35,6 +35,26 @@ export function createLModuleGeometry(): THREE.ExtrudeGeometry {
   return g;
 }
 
+/**
+ * Hero-quality L-module: same outline, deeper body and a rounder, multi-segment bevel so studio
+ * reflections roll across the edges (the quality jump comes from the highlights, not the polycount).
+ */
+export function createLModuleGeometryHQ(): THREE.ExtrudeGeometry {
+  const s = new THREE.Shape();
+  s.moveTo(0, 0);
+  s.lineTo(0.72, 0);
+  s.lineTo(0.72, 0.24);
+  s.lineTo(0.36, 0.24);
+  s.lineTo(0.24, 0.36);
+  s.lineTo(0.24, 1.0);
+  s.lineTo(0, 1.0);
+  s.closePath();
+  const g = new THREE.ExtrudeGeometry(s, { depth: 0.22, bevelEnabled: true, bevelSize: 0.034, bevelThickness: 0.04, bevelSegments: 5, curveSegments: 1 });
+  g.center();
+  g.computeVertexNormals();
+  return g;
+}
+
 /** Diamond node: a square bipyramid flattened in depth, reading as the guideline's blue diamond from the front. */
 export function createNodeGeometry(size = 0.12): THREE.BufferGeometry {
   const g = new THREE.OctahedronGeometry(size, 0);

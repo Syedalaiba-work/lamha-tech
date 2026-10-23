@@ -13,6 +13,7 @@ import { ProcessTimeline } from "@/components/sections/ProcessTimeline";
 import { LeadershipGrid } from "@/components/sections/LeadershipGrid";
 import { CTASection } from "@/components/sections/CTASection";
 import { LRise } from "@/components/motion/LRise";
+import { ModuleVisual } from "@/components/three/ModuleVisual";
 
 export const metadata: Metadata = buildMetadata({
   title: "About Us",
@@ -42,6 +43,7 @@ export default async function AboutPage() {
       <JsonLd data={breadcrumbJsonLd([{ name: "Home", path: "/" }, { name: "About", path: "/about" }])} />
       <PageHero
         label="About LAMHA Technologies"
+        art={<ModuleVisual formation="stairs" fallback={null} />}
         title={
           <>
             A technology company driven by <span className="text-blue">real impact.</span>

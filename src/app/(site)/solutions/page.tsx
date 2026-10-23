@@ -9,6 +9,7 @@ import { JsonLd } from "@/components/ui/JsonLd";
 import { Button } from "@/components/ui/Button";
 import { AudienceGlyph } from "@/components/solutions/AudienceGlyph";
 import { cn } from "@/lib/utils";
+import { ModuleVisual } from "@/components/three/ModuleVisual";
 
 export const metadata: Metadata = buildMetadata({
   title: "Solutions for Startups, SMEs and Enterprise",
@@ -30,6 +31,7 @@ export default function SolutionsPage() {
       <JsonLd data={breadcrumbJsonLd([{ name: "Home", path: "/" }, { name: "Solutions", path: "/solutions" }])} />
       <PageHero
         label="Solutions"
+        art={<ModuleVisual formation="cluster" fallback={null} />}
         title={
           <>
             Built around the way <span className="text-blue">your organization</span> works.
@@ -84,7 +86,7 @@ export default function SolutionsPage() {
                     </div>
                     <div className="lg:col-span-5">
                       <div className="mx-auto mb-6 max-w-sm lg:max-w-none lg:[&_svg]:max-h-[26vh]">
-                        <AudienceGlyph kind={s.slug} dark={sf.dark} />
+                        <ModuleVisual formation={({ startups: "single", smes: "cluster", enterprise: "lattice", custom: "scatter" } as const)[s.slug as "startups"] ?? "cluster"} tone={sf.dark ? "dark" : "light"} className="aspect-auto h-[28vh]" fallback={<AudienceGlyph kind={s.slug} dark={sf.dark} />} />
                       </div>
                       <p className={cn("label-caps", sf.dark ? "text-white" : "text-slate-600")}>What we often see</p>
                       <ul className={cn("mt-3 border-t", sf.dark ? "border-white/25" : "border-ink/15")}>

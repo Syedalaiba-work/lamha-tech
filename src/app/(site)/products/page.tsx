@@ -6,6 +6,7 @@ import { JsonLd } from "@/components/ui/JsonLd";
 import { Button } from "@/components/ui/Button";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { CTASection } from "@/components/sections/CTASection";
+import { ModuleVisual } from "@/components/three/ModuleVisual";
 
 export const metadata: Metadata = buildMetadata({
   title: "Products & R&D",
@@ -64,7 +65,7 @@ export default function ProductsPage() {
         }
         visual={
           <div className="mx-auto max-w-md">
-            <TwoEngines />
+            <ModuleVisual formation="pair" fallback={<TwoEngines />} />
           </div>
         }
       />

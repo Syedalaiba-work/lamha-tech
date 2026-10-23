@@ -2,7 +2,7 @@
   "name": "lamha-website",
   "version": "0.1.0",
   "private": true,
-  "description": "LAMHA Technologies (LAMHA TECHNOLOGIES (PRIVATE) LIMITED) \u2014 corporate website",
+  "description": "LAMHA Technologies (LAMHA TECHNOLOGIES (PRIVATE) LIMITED) — corporate website",
   "scripts": {
     "dev": "next dev",
     "prebuild": "node scripts/prebuild.mjs",
@@ -30,6 +30,7 @@
     "lucide-react": "^1.0.0",
     "motion": "^13.4.4",
     "next": "16.3.6",
+    "postprocessing": "6.39.5",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "react-hook-form": "^7.60.0",

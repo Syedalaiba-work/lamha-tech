@@ -121,3 +121,51 @@ Honest assessment: the site now has a distinct, coherent, art-directed system an
 - **Assets**: no approved video/reel, no case studies, no vector logo master (BLOCKED, unchanged), and the service hover previews reuse the existing UI-style SVG illustrations. Commissioned imagery would raise the ceiling more than further code.
 - **Type**: Montserrat (brand-mandated) is less distinctive than the references' custom/condensed faces.
 - **Not verified**: real GPUs/phones (all measurements used software GL), Safari, a screen-reader walkthrough, Lusion's footer and menu.
+
+---
+
+# Iteration 2.1 — cinematic journey and shared 3D language
+
+Branch `redesign/immersive-2.1`, cut from `356c287` (2.0 stays intact on `redesign/immersive-2.0`). Nothing deployed.
+
+## 8. What the references showed this time (re-inspected 2026-10-23)
+
+- **Lusion hero**: about a dozen large connector pieces close to the camera, each colour with its own finish (gloss white, velvet blue, gloss black with hard studio reflections), soft contact darkening between pieces, and a refractive "smear" that follows the pointer. The density and proximity of the pieces, not their number, create the depth.
+- **Wezero**: unchanged; no 3D, impact from type, colour wipes and stacked panels.
+- Conclusion for LAMHA: fewer, larger, closer modules; distinct materials per colour; studio-style reflections; a pointer response with its own meaning (not a copy of the smear); and a continuous camera instead of separate sections.
+
+## 9. What changed in 2.1
+
+| Area | Change |
+| --- | --- |
+| Home journey | Hero and the Ideas / Systems / Impact chapters merged into **one pinned WebGL journey** (`HomeJourney`, `JourneyScene`). One camera path through four keyframes (wide → close on idea clusters → high three-quarter orbit of the lattice → low angle up the staircase); the set itself moves light → navy → brand blue; chapter panels share the same timeline (`journey-timeline.ts`). Phase rail at the top left. |
+| Formations | Problems (wide scatter around the tagline) → Ideas (four small clusters, "thoughts forming", with orbiting nodes) → Systems (5 × 6 interlocking lattice) → Impact (three-lane staircase, nodes climbing). Per-module stagger so changes read as assembly. |
+| Materials and light | Three finishes: navy enamel (clearcoat), satin ceramic (sheen), brand-blue velvet (sheen); higher-quality L-module bevels (`createLModuleGeometryHQ`); procedural studio of softbox Lightformers (`studio.tsx`, no HDR download, CSP-safe); per-phase key/rim retune; nodes turn white on the blue field. |
+| Pointer | "Order spreads from the cursor": modules near the pointer turn into their lattice alignment, lift towards the camera and take a blue cast; a cool light follows the pointer; camera parallax. |
+| Post-processing | Assessed with a side-by-side capture of the same frame. Selective **bloom** (threshold 0.95, so only emissive nodes and hot specular edges glow) adds visible depth and glints; kept on "high" quality only (desktop, ≥ 6 cores, ≥ 4 GB). `PerformanceMonitor` drops to "standard" (no bloom, no contact shadows, lower DPR) on sustained low frame rates. Contact shadows on the light phases only. `postprocessing@6.39.5` pinned (released 6 weeks earlier; the newer React wrapper was skipped as too recent). |
+| Inner pages | `ModuleStage` / `ModuleVisual`: the same modules, materials and studio on inner pages, one formation per page — Services lattice, Solutions cluster (and per audience: single / cluster / lattice / scatter), Products interlocking pair, About staircase, Careers scatter on blue, Work single module. Pointer tilt and lift, renders only while visible, SVG fallback without WebGL, still frame under reduced motion. |
+| Navigation | **Cover → navigate → reveal**: internal clicks raise the navy curtain first (window-capture listener, so Next does not navigate twice), then the template curtain lifts. Skips modified clicks, new tabs, downloads, hash/same-page and external links, admin/API routes and reduced motion; a pulsing L-module appears only if the next page is slow; an 8-second safety lifts the cover if a navigation fails. |
+| Performance fixes found during testing | The first page no longer renders at opacity 0 behind the template (LCP); the journey is server-rendered so its headline is the first, largest paint (home LCP 2.1–3.6 s → 1.05–1.28 s locally); the hand-off from the blue journey into the navy manifesto no longer shows the light page through the L-notch (`LRise underlay`). |
+
+## 10. Validation of 2.1 (local production build, software WebGL)
+
+| Check | Result |
+| --- | --- |
+| Typecheck / lint / unit tests / build | pass / pass / 118 of 118 / pass (44 pages) |
+| Contrast scan, 22 routes | 0 failures (logo-lockup descriptor exempt, as in 2.0) |
+| Keyboard | skip link first; journey's hidden "See what we build" is inert until its phase; menu Enter / Tab trap / Escape + focus return |
+| Reduced motion | static hero + stacked chapters (journey not mounted); inner stages render one still frame |
+| No WebGL | SVG hero + stacked chapters; inner pages show their SVG compositions; 0 errors |
+| Phone 390 × 844 | home journey + 11 routes: 0 horizontal overflow, 0 console errors |
+| Contact form | inline errors, focus to first invalid field, valid submission succeeds (test record removed) |
+| Page transition | cover at 250 ms, navigation ≈ 600 ms, new page revealed by 1.1 s |
+| Home LCP (local) | 1.05–1.28 s, element = the "Problems" headline |
+| 3D payload | three.js chunk ≈ 239 KB gzip (lazy, as before); bloom chunk ≈ 18 KB gzip, high quality only |
+
+## 11. Remaining gaps and limits (honest)
+
+- **Not run**: real GPUs, phones, Safari/iOS and a screen reader. All 3D was rendered with software WebGL (≈ 6 fps), so smoothness, bloom cost and the `PerformanceMonitor` fallback threshold are unverified on real hardware.
+- **No-JavaScript visitors** see only the loading skeleton and the footer on every route. This is pre-existing (the live site behaves the same): `loading.tsx` makes Next stream pages behind a boundary that needs JavaScript to swap in. Content remains in the HTML for search engines. The journey ships a `noscript` layout, but it cannot show until that boundary is changed (a separate decision, because the boundary was added to fix layout shift).
+- **3D assets**: modules are procedural (original, generated in code). No Blender/glTF tooling was available, so there are no sculpted or scanned assets, no baked lighting or ambient occlusion, and no depth-of-field pass. Lusion's level of bespoke modelling and post-production is still ahead.
+- **Pointer effect** is subtle in stills; it needs a real-device check for strength.
+- **Content gaps unchanged**: no reel/video, no case studies, no vector logo master.

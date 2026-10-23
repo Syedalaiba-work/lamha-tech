@@ -8,6 +8,7 @@ import { CTASection } from "@/components/sections/CTASection";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { Button } from "@/components/ui/Button";
 import { SectionLabel } from "@/components/ui/SectionLabel";
+import { ModuleVisual } from "@/components/three/ModuleVisual";
 
 export const metadata: Metadata = buildMetadata({
   title: "Services",
@@ -23,6 +24,7 @@ export default function ServicesPage() {
       <PageHero
         surface="cloud"
         size="mega"
+        art={<ModuleVisual formation="lattice" fallback={null} />}
         label="Our services"
         title={
           <>

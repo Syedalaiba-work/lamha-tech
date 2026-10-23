@@ -4,6 +4,7 @@ import { getContent } from "@/lib/server/content";
 import { buildMetadata, webPageJsonLd } from "@/lib/seo";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { HomeHero } from "@/components/sections/home/HomeHero";
+import { HomeJourney } from "@/components/sections/home/HomeJourney";
 import { Manifesto } from "@/components/sections/home/Manifesto";
 import { Chapters } from "@/components/sections/home/Chapters";
 import { ServiceIndex } from "@/components/sections/home/ServiceIndex";
@@ -29,9 +30,16 @@ export default async function HomePage() {
   return (
     <>
       <JsonLd data={webPageJsonLd({ title: `${site.name} | Technology & Software Solutions`, description: site.description, path: "/" })} />
-      <HomeHero />
+      {/* The pinned WebGL journey (Problems → Ideas → Systems → Impact); static hero + stacked chapters for reduced motion / no WebGL. */}
+      <HomeJourney
+        fallback={
+          <>
+            <HomeHero />
+            <Chapters />
+          </>
+        }
+      />
       <Manifesto />
-      <Chapters />
       <ServiceIndex number="02" />
       <TechnologySection number="03" />
       <EngagementStrip number="04" />
