@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Briefcase, Clock, MapPin } from "lucide-react";
 import { jobs, visibleJobs } from "@/data/jobs";
 import { buildMetadata, breadcrumbJsonLd } from "@/lib/seo";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
@@ -10,9 +9,7 @@ import { JsonLd } from "@/components/ui/JsonLd";
 import { Button } from "@/components/ui/Button";
 import { ApplicationForm } from "@/components/careers/ApplicationForm";
 import { ViewTracker } from "@/components/analytics/ViewTracker";
-import { DarkBackdrop } from "@/components/visuals/GridPattern";
-import { HeroField } from "@/components/three/HeroField";
-import { HeroParallax } from "@/components/motion/HeroParallax";
+import { Rise, TextReveal } from "@/components/motion/Motion";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 
 // Must stay true: portal edits revalidate every page (the footer is on all of them), and Next 16
@@ -41,15 +38,15 @@ function List({ title, items }: { title: string; items: string[] }) {
   if (items.length === 0) return null;
   return (
     <div>
-      <h2 className="text-h3 font-semibold text-navy">{title}</h2>
-      <ul className="mt-4 space-y-3">
-        {items.map((it) => (
-          <li key={it} className="flex gap-3 text-[0.95rem] leading-relaxed text-slate-700">
-            <span aria-hidden="true" className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-blue" />
+      <h2 className="font-display text-h3 font-bold text-navy">{title}</h2>
+      <ol className="mt-6 border-t border-ink/15">
+        {items.map((it, i) => (
+          <li key={it} className="grid grid-cols-[2.5rem_1fr] gap-x-3 border-b border-ink/15 py-4 text-[1.02rem] leading-relaxed text-slate-700">
+            <span className="tabular pt-0.5 text-sm font-bold text-blue">{String(i + 1).padStart(2, "0")}</span>
             {it}
           </li>
         ))}
-      </ul>
+      </ol>
     </div>
   );
 }
@@ -64,55 +61,53 @@ export default async function JobPage({ params }: PageProps<"/careers/[slug]">) 
       <ViewTracker event={ANALYTICS_EVENTS.JOB_VIEW} props={{ job: job.slug, status: job.status }} />
       <JsonLd data={breadcrumbJsonLd([{ name: "Home", path: "/" }, { name: "Careers", path: "/careers" }, { name: job.title, path: `/careers/${job.slug}` }])} />
 
-      <section data-hero className="dark-section relative flex min-h-[70vh] flex-col justify-center overflow-hidden bg-deep text-white">
-        <DarkBackdrop />
-        <HeroField base="wave" />
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(7,17,41,0.85)_0%,rgba(7,17,41,0.5)_45%,rgba(7,17,41,0)_75%)]" />
-        <HeroParallax className="container-x relative w-full pb-14 pt-[calc(var(--header-h)+2.5rem)] sm:pb-16">
-          <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Careers", href: "/careers" }, { label: job.title }]} className="mb-8" />
-          <div className="flex flex-wrap items-center gap-3">
-            <SectionLabel tone="dark">{job.department}</SectionLabel>
-            {job.status === "demo" && <Tag tone="dark" accent>Demo listing</Tag>}
+      <section data-hero className="relative bg-cloud">
+        <div className="container-x pb-16 pt-[calc(var(--header-h)+2.5rem)] sm:pb-20">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Careers", href: "/careers" }, { label: job.title }]} tone="light" />
+            <div className="flex flex-wrap items-center gap-3">
+              <SectionLabel>{job.department}</SectionLabel>
+              {job.status === "demo" && <Tag accent>Demo listing</Tag>}
+            </div>
           </div>
-          <h1 className="mt-5 text-h1 font-semibold">{job.title}</h1>
-          <p className="mt-5 max-w-2xl text-lg leading-relaxed text-slate-300">{job.summary}</p>
-          <dl className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate-300">
-            <div className="inline-flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-blue-2" aria-hidden="true" />
-              <dt className="sr-only">Location</dt>
-              <dd>{job.location}</dd>
-            </div>
-            <div className="inline-flex items-center gap-2">
-              <Clock className="h-4 w-4 text-blue-2" aria-hidden="true" />
-              <dt className="sr-only">Employment type</dt>
-              <dd>{job.employmentType}</dd>
-            </div>
-            <div className="inline-flex items-center gap-2">
-              <Briefcase className="h-4 w-4 text-blue-2" aria-hidden="true" />
-              <dt className="sr-only">Department</dt>
-              <dd>{job.department}</dd>
-            </div>
-          </dl>
-          <div className="mt-8">
-            <Button href="#apply" size="lg" icon="arrow">
-              Apply for this role
-            </Button>
+          <h1 className="mt-16 max-w-[14ch] text-giant font-extrabold text-navy sm:mt-24">
+            <TextReveal lines={[job.title]} delay={0.05} />
+          </h1>
+          <div className="mt-12 grid gap-10 border-t border-ink/15 pt-10 lg:grid-cols-12">
+            <Rise delay={0.2} className="lg:col-span-6">
+              <p className="text-lead text-slate-700">{job.summary}</p>
+              <Button href="#apply" size="lg" icon="arrow" className="mt-8">
+                Apply for this role
+              </Button>
+            </Rise>
+            <dl className="grid grid-cols-2 gap-6 lg:col-span-5 lg:col-start-8">
+              {[
+                ["Location", job.location],
+                ["Employment type", job.employmentType],
+                ["Department", job.department],
+              ].map(([k, v]) => (
+                <div key={k}>
+                  <dt className="label-caps text-slate-600">{k}</dt>
+                  <dd className="mt-2 font-display text-lg font-bold text-navy">{v}</dd>
+                </div>
+              ))}
+            </dl>
           </div>
-        </HeroParallax>
+        </div>
       </section>
 
-      <section className="bg-white">
+      <section className="bg-paper">
         <div className="container-x section-y">
           <div className="grid gap-16 lg:grid-cols-12">
-            <div className="space-y-12 lg:col-span-7">
+            <div className="space-y-16 lg:col-span-7">
               {job.status === "demo" && (
-                <div className="rounded-md border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-slate-700">
+                <div className="border-l-2 border-blue bg-blue-50 px-4 py-3 text-[0.95rem] text-slate-700">
                   This is a demonstration listing used to validate the careers experience. It does not represent an approved open vacancy.
                 </div>
               )}
               <div>
-                <h2 className="text-h3 font-semibold text-navy">About the role</h2>
-                <p className="mt-4 text-[0.95rem] leading-relaxed text-slate-700">{job.description}</p>
+                <h2 className="font-display text-h3 font-bold text-navy">About the role</h2>
+                <p className="mt-5 text-lead text-slate-700">{job.description}</p>
               </div>
               <List title="Responsibilities" items={job.responsibilities} />
               <List title="Requirements" items={job.requirements} />
@@ -120,10 +115,10 @@ export default async function JobPage({ params }: PageProps<"/careers/[slug]">) 
               <List title="Benefits" items={job.benefits} />
             </div>
             <aside id="apply" className="scroll-mt-24 lg:col-span-5">
-              <div className="rounded-lg border border-slate-200 bg-cloud p-6 sm:p-8">
+              <div className="border-t-2 border-navy bg-cloud p-6 sm:p-8 lg:sticky lg:top-24">
                 <SectionLabel>Apply</SectionLabel>
-                <h2 className="mt-3 text-h3 font-semibold text-navy">Application for {job.title}</h2>
-                <p className="mt-2 text-sm text-slate-600">Attach your CV and share links where relevant. We review every application.</p>
+                <h2 className="mt-4 font-display text-h3 font-bold text-navy">Application for {job.title}</h2>
+                <p className="mt-2 text-[0.95rem] text-slate-600">Attach your CV and share links where relevant. We review every application.</p>
                 <div className="mt-8">
                   <ApplicationForm roleTitle={job.title} roleSlug={job.slug} />
                 </div>

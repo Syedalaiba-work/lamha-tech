@@ -3,7 +3,7 @@ import { buildMetadata, breadcrumbJsonLd } from "@/lib/seo";
 import { careerValues, visibleJobs } from "@/data/jobs";
 import { getContent } from "@/lib/server/content";
 import { PageHero } from "@/components/sections/PageHero";
-import { SectionHeading } from "@/components/ui/SectionHeading";
+import { SectionLabel } from "@/components/ui/SectionLabel";
 import { Reveal } from "@/components/ui/Reveal";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { Button } from "@/components/ui/Button";
@@ -36,18 +36,14 @@ export default async function CareersPage() {
       <ViewTracker event={ANALYTICS_EVENTS.CAREER_VIEW} />
       <JsonLd data={breadcrumbJsonLd([{ name: "Home", path: "/" }, { name: "Careers", path: "/careers" }])} />
       <PageHero
-        number="11"
+        surface="blue"
         label="Careers"
-        title={
-          <>
-            Build What Comes Next <span className="text-gradient-blue">With Us.</span>
-          </>
-        }
+        title="Build what comes next with us."
         description="Join a team building a global technology company around software, engineering and emerging technologies."
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "Careers" }]}
         actions={
           <>
-            <Button href="#open-positions" size="lg" icon="arrow">
+            <Button href="#open-positions" variant="secondary" size="lg" icon="arrow">
               View open positions
             </Button>
             <Button href={`mailto:${site.contact.careersEmail}`} variant="outline-light" size="lg">
@@ -57,15 +53,15 @@ export default async function CareersPage() {
         }
       />
 
-      {/* Philosophy strip */}
-      <section aria-label="Engineering philosophy" className="border-b border-slate-200 bg-white">
-        <div className="container-x">
-          <ol className="grid grid-cols-2 divide-slate-200 md:grid-cols-4 md:divide-x">
+      {/* Philosophy — four words */}
+      <section aria-label="Engineering philosophy" className="bg-paper">
+        <div className="container-x section-y-sm">
+          <ol className="grid gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
             {philosophy.map((p) => (
-              <li key={p.number} className="py-6 md:px-8 md:first:pl-0 md:last:pr-0">
-                <span className="font-mono text-xs text-blue">{p.number}</span>
-                <p className="mt-2 text-xl font-semibold tracking-tight text-navy">{p.title}</p>
-                <p className="mt-1 text-sm text-slate-500">{p.description}</p>
+              <li key={p.number} className="border-l-2 border-navy pl-6 lg:pr-6">
+                <span className="tabular text-sm font-bold text-blue">{p.number}</span>
+                <p className="mt-3 font-display text-[clamp(2rem,3.6vw,3.5rem)] font-extrabold leading-none tracking-[-0.05em] text-navy">{p.title.charAt(0) + p.title.slice(1).toLowerCase()}</p>
+                <p className="mt-4 text-[1rem] leading-relaxed text-slate-600">{p.description}</p>
               </li>
             ))}
           </ol>
@@ -75,44 +71,55 @@ export default async function CareersPage() {
       {/* Why join */}
       <section aria-labelledby="values-heading" className="bg-cloud">
         <div className="container-x section-y">
-          <SectionHeading number="01" label="Why join LAMHA" title={<span id="values-heading">Work that matters, with room to grow.</span>} />
-          <ul className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <SectionLabel number="01">Why join LAMHA</SectionLabel>
+          <h2 id="values-heading" className="mt-8 text-h1 font-extrabold text-navy">
+            Work that matters, <span className="text-blue">with room to grow.</span>
+          </h2>
+          <ol className="mt-16 grid gap-x-16 md:grid-cols-2">
             {careerValues.map((v, i) => (
               <Reveal key={v.number} as="li" delay={i * 60}>
-                <div className="h-full rounded-lg border border-slate-200 bg-white p-6">
-                  <span className="font-mono text-xs text-blue">{v.number}</span>
-                  <h3 className="mt-4 text-lg font-semibold text-navy">{v.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-slate-600">{v.description}</p>
+                <div className="border-t border-ink/15 py-8">
+                  <span className="tabular text-sm font-bold text-blue">{v.number}</span>
+                  <h3 className="mt-3 font-display text-[clamp(1.6rem,2.6vw,2.5rem)] font-bold leading-[1.05] tracking-[-0.04em] text-navy">{v.title}</h3>
+                  <p className="mt-3 max-w-lg text-[1.02rem] leading-relaxed text-slate-600">{v.description}</p>
                 </div>
               </Reveal>
             ))}
-          </ul>
+          </ol>
         </div>
       </section>
 
       {/* Open positions */}
-      <section id="open-positions" aria-labelledby="positions-heading" className="scroll-mt-20 bg-white">
+      <section id="open-positions" aria-labelledby="positions-heading" className="scroll-mt-20 bg-paper">
         <div className="container-x section-y">
-          <SectionHeading number="02" label="Open positions" title={<span id="positions-heading">Open positions</span>} description="Roles are published here as they are approved. Applications are received through each role page." />
+          <div className="grid gap-8 lg:grid-cols-12 lg:items-end">
+            <div className="lg:col-span-8">
+              <SectionLabel number="02">Open positions</SectionLabel>
+              <h2 id="positions-heading" className="mt-8 text-h1 font-extrabold text-navy">
+                Open positions
+              </h2>
+            </div>
+            <p className="text-lead text-slate-600 lg:col-span-4">Roles are published here as they are approved. Applications are received through each role page.</p>
+          </div>
           {hasDemo && (
-            <div className="mt-8 flex flex-wrap items-center gap-3 rounded-md border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-slate-700">
+            <div className="mt-10 flex flex-wrap items-center gap-3 border-l-2 border-blue bg-blue-50 px-4 py-3 text-[0.95rem] text-slate-700">
               <Tag accent>Demo listings</Tag>
               <span>The positions below are demonstration entries used to validate the careers experience. They are not approved vacancies.</span>
             </div>
           )}
           {visibleJobs.length === 0 ? (
-            <div className="mt-10 rounded-lg border border-dashed border-slate-300 p-10 text-center">
-              <p className="text-lg font-medium text-navy">Open positions will be published here.</p>
-              <p className="mt-2 text-sm text-slate-500">
-                Interested in working with us? Write to <a className="text-blue underline-offset-2 hover:underline" href={`mailto:${site.contact.careersEmail}`}>{site.contact.careersEmail}</a>.
+            <div className="mt-12 border-t border-ink/15 py-12">
+              <p className="font-display text-h3 font-bold text-navy">Open positions will be published here.</p>
+              <p className="mt-3 text-[1rem] text-slate-600">
+                Interested in working with us? Write to <a className="link-draw text-blue" href={`mailto:${site.contact.careersEmail}`}>{site.contact.careersEmail}</a>.
               </p>
             </div>
           ) : (
-            <ul className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {visibleJobs.map((job, i) => (
-                <Reveal key={job.slug} as="li" delay={i * 60}>
-                  <CareerCard job={job} className="h-full" />
-                </Reveal>
+            <ul className="mt-12 border-t border-ink/15">
+              {visibleJobs.map((job) => (
+                <li key={job.slug} className="border-b border-ink/15">
+                  <CareerCard job={job} />
+                </li>
               ))}
             </ul>
           )}

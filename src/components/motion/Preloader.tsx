@@ -2,42 +2,31 @@
 
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { LamhaMark } from "@/components/ui/Logo";
 import { usePrefersReducedMotion } from "./useReducedMotion";
 
 const noop = () => () => {};
+const EASE = [0.76, 0, 0.24, 1] as const;
 
-/** Intro on every page open (full load / refresh): counter to 100 with the mark, then the curtain lifts. */
+/**
+ * First-load intro (full load / refresh only): the L-form draws, the two diamond nodes land, the
+ * tagline appears, then the navy curtain lifts with a chamfered leading edge. ~1.3 s. Skipped for
+ * reduced motion; nothing renders during SSR so content is never hidden without JavaScript.
+ */
 export function Preloader() {
   const reduced = usePrefersReducedMotion();
-  // Server snapshot = false so nothing renders during SSR/hydration; the client mounts it immediately after.
   const mounted = useSyncExternalStore(noop, () => true, () => false);
   const [done, setDone] = useState(false);
-  const [count, setCount] = useState(0);
   const show = mounted && !reduced && !done;
 
   useEffect(() => {
     if (!show) return;
     document.documentElement.classList.add("preloading");
-    const start = performance.now();
-    const duration = 1100;
-    let raf = 0;
-    let timer = 0;
-    const tick = (t: number) => {
-      const p = Math.min(1, (t - start) / duration);
-      setCount(Math.round(p * 100));
-      if (p < 1) raf = requestAnimationFrame(tick);
-      else {
-        timer = window.setTimeout(() => {
-          document.documentElement.classList.remove("preloading");
-          setDone(true);
-        }, 250);
-      }
-    };
-    raf = requestAnimationFrame(tick);
+    const t = window.setTimeout(() => {
+      document.documentElement.classList.remove("preloading");
+      setDone(true);
+    }, 1250);
     return () => {
-      cancelAnimationFrame(raf);
-      window.clearTimeout(timer);
+      window.clearTimeout(t);
       document.documentElement.classList.remove("preloading");
     };
   }, [show]);
@@ -49,19 +38,27 @@ export function Preloader() {
           key="preloader"
           role="status"
           aria-label="Loading"
-          className="dark-section fixed inset-0 z-[100] flex items-end justify-between bg-abyss px-6 pb-8 text-white sm:px-10 sm:pb-10"
-          initial={{ y: 0 }}
-          exit={{ y: "-100%", transition: { duration: 0.8, ease: [0.76, 0, 0.24, 1] } }}
+          data-overlay
+          className="dark-section fixed inset-0 z-[100] flex items-center justify-center bg-navy text-white"
+          initial={{ clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 100% 100%, 0% 100%)" }}
+          exit={{ clipPath: "polygon(0% 0%, 100% 0%, 100% 0%, 100% 0%, 0% 0%)", transition: { duration: 0.9, ease: EASE } }}
         >
-          <div className="flex items-center gap-3">
-            <LamhaMark tone="light" className="h-9 w-9" />
-            <span className="text-sm font-bold tracking-[0.25em]">LAMHA</span>
+          <div className="flex flex-col items-center gap-8">
+            <svg viewBox="0 0 32 32" className="h-20 w-20 sm:h-24 sm:w-24" aria-hidden="true">
+              <motion.path
+                d="M4 3h7v14.5l3.5 3.5H28v7H4z"
+                fill="#FFFFFF"
+                initial={{ clipPath: "inset(0 0 100% 0)" }}
+                animate={{ clipPath: "inset(0 0 0% 0)" }}
+                transition={{ duration: 0.6, ease: EASE }}
+              />
+              <motion.path d="M20.5 5.5l4.5 4.5-4.5 4.5L16 10z" fill="#1769E0" initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.55, duration: 0.35 }} style={{ transformOrigin: "20.5px 10px" }} />
+              <motion.path d="M27.5 2.5l2.5 2.5-2.5 2.5L25 5z" fill="#2E7CF6" initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.7, duration: 0.35 }} style={{ transformOrigin: "27.5px 5px" }} />
+            </svg>
+            <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 0.6 }} className="label-caps text-slate-300">
+              Technology That Turns Problems Into Progress
+            </motion.p>
           </div>
-          <div className="text-right">
-            <p className="label-caps text-slate-500">Technology That Turns Problems Into Progress</p>
-            <p className="mt-2 font-mono text-6xl font-semibold tabular-nums leading-none sm:text-8xl">{String(count).padStart(3, "0")}</p>
-          </div>
-          <motion.div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-px origin-left bg-blue-2" style={{ scaleX: count / 100 }} />
         </motion.div>
       )}
     </AnimatePresence>

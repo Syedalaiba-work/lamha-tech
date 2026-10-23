@@ -3,8 +3,6 @@ import { SectionLabel } from "@/components/ui/SectionLabel";
 import { Reveal } from "@/components/ui/Reveal";
 import { Button } from "@/components/ui/Button";
 import { LeadershipCard } from "@/components/leadership/LeadershipCard";
-import { GhostNumber } from "@/components/motion/GhostNumber";
-import { Tilt } from "@/components/motion/Motion";
 import { cn } from "@/lib/utils";
 
 /** About the company + leadership. The company column keeps this section from reading as executives only. */
@@ -14,7 +12,6 @@ export async function LeadershipGrid({ number = "10", tone = "light", showLink =
   const dark = tone === "dark";
   return (
     <section aria-labelledby="leadership-heading" className={cn("relative overflow-hidden", dark ? "dark-section bg-deep text-white" : "bg-cloud")}>
-      <GhostNumber value={number} tone={tone} />
       <div className="container-x section-y relative">
         <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
           {/* Company column */}
@@ -22,7 +19,7 @@ export async function LeadershipGrid({ number = "10", tone = "light", showLink =
             <SectionLabel number={number} tone={tone}>
               About the company
             </SectionLabel>
-            <h2 id="leadership-heading" className={cn("mt-4 text-h2 font-semibold", dark ? "text-white" : "text-navy")}>
+            <h2 id="leadership-heading" className={cn("mt-8 text-h2 font-extrabold", dark ? "text-white" : "text-navy")}>
               The company and the people behind it.
             </h2>
             <p className={cn("mt-5 text-[0.95rem] leading-relaxed", dark ? "text-slate-300" : "text-slate-700")}>{site.about.short}</p>
@@ -59,9 +56,7 @@ export async function LeadershipGrid({ number = "10", tone = "light", showLink =
             <ul className="mt-6 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
               {publishedLeadership.map((l, i) => (
                 <Reveal key={l.slug} as="li" delay={i * 70}>
-                  <Tilt max={5}>
-                    <LeadershipCard leader={l} tone={tone} />
-                  </Tilt>
+                  <LeadershipCard leader={l} tone={tone} />
                 </Reveal>
               ))}
             </ul>

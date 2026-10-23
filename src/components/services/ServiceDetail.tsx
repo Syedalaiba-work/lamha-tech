@@ -1,9 +1,9 @@
-import { Check } from "lucide-react";
-import { getFamily, getRelatedServices, type Service } from "@/data/services";
+import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
+import { getFamily, getRelatedServices, type Service, type ServiceFamilyId } from "@/data/services";
 import { site } from "@/data/site";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { SectionLabel } from "@/components/ui/SectionLabel";
-import { SectionHeading } from "@/components/ui/SectionHeading";
 import { FAQ } from "@/components/ui/FAQ";
 import { Reveal } from "@/components/ui/Reveal";
 import { JsonLd } from "@/components/ui/JsonLd";
@@ -11,19 +11,15 @@ import { Button } from "@/components/ui/Button";
 import { TrackedCTA } from "@/components/analytics/TrackedLink";
 import { ViewTracker } from "@/components/analytics/ViewTracker";
 import { ServiceVisual } from "@/components/visuals/ServiceVisual";
-import { DarkBackdrop } from "@/components/visuals/GridPattern";
-import { AccentCanvas } from "@/components/three/AccentCanvas";
-import { accentForVisual } from "@/components/three/variants";
-import { HeroParallax } from "@/components/motion/HeroParallax";
-import { Magnetic, Rise, TextReveal, Tilt } from "@/components/motion/Motion";
+import { Magnetic, Rise, TextReveal } from "@/components/motion/Motion";
+import { LRise } from "@/components/motion/LRise";
 import { SectionNav } from "./SectionNav";
-
-import { ServiceCard } from "./ServiceCard";
 import { ProcessTimeline } from "@/components/sections/ProcessTimeline";
-import { TechnologyGrid } from "@/components/sections/TechnologyGrid";
+import { SystemMap } from "@/components/sections/home/SystemMap";
 import { CTASection } from "@/components/sections/CTASection";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import { breadcrumbJsonLd, faqJsonLd, serviceJsonLd } from "@/lib/seo";
+import { cn } from "@/lib/utils";
 
 const SECTIONS = [
   { id: "overview", label: "Overview" },
@@ -36,18 +32,35 @@ const SECTIONS = [
   { id: "faqs", label: "FAQs" },
 ];
 
-function CheckList({ items, columns = 2 }: { items: string[]; columns?: 1 | 2 }) {
+/** Each service family has its own hero field, so the 13 pages read as three distinct stories. */
+const FAMILY_SURFACE: Record<ServiceFamilyId, { cls: string; dark: boolean }> = {
+  "technology-engineering": { cls: "dark-section bg-navy text-white", dark: true },
+  "digital-experience": { cls: "bg-cloud text-navy", dark: false },
+  "growth-optimization": { cls: "dark-section bg-blue text-white", dark: true },
+};
+
+/** Editorial list: index + text, hairline rules. Used for "what we do", deliverables and quality. */
+function RuleList({ items, columns = 1, dark = false }: { items: string[]; columns?: 1 | 2; dark?: boolean }) {
   return (
-    <ul className={columns === 2 ? "grid gap-3 sm:grid-cols-2" : "grid gap-3"}>
-      {items.map((item) => (
-        <li key={item} className="flex items-start gap-3 text-[0.95rem] leading-relaxed text-slate-700">
-          <span className="mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue">
-            <Check className="h-3 w-3" strokeWidth={3} aria-hidden="true" />
-          </span>
-          {item}
+    <ol className={cn("border-t", dark ? "border-white/20" : "border-ink/15", columns === 2 && "sm:grid sm:grid-cols-2 sm:gap-x-10")}>
+      {items.map((item, i) => (
+        <li key={item} className={cn("grid grid-cols-[2.5rem_1fr] gap-x-3 border-b py-4", dark ? "border-white/20" : "border-ink/15")}>
+          <span className={cn("tabular pt-0.5 text-sm font-bold", dark ? "text-blue-200" : "text-blue")}>{String(i + 1).padStart(2, "0")}</span>
+          <span className={cn("text-[1.02rem] leading-relaxed", dark ? "text-slate-200" : "text-slate-700")}>{item}</span>
         </li>
       ))}
-    </ul>
+    </ol>
+  );
+}
+
+function Heading({ n, label, title, id }: { n: string; label: string; title: React.ReactNode; id?: string }) {
+  return (
+    <>
+      <SectionLabel number={n}>{label}</SectionLabel>
+      <h2 id={id} className="mt-6 text-h2 font-extrabold text-navy">
+        {title}
+      </h2>
+    </>
   );
 }
 
@@ -57,6 +70,7 @@ export function ServiceDetail({ service }: { service: Service }) {
   const related = getRelatedServices(service);
   const path = `/services/${service.slug}`;
   const startHref = `${site.cta.primary.href}?service=${encodeURIComponent(service.navLabel)}`;
+  const surface = FAMILY_SURFACE[service.family];
 
   return (
     <>
@@ -69,58 +83,61 @@ export function ServiceDetail({ service }: { service: Service }) {
         ]}
       />
 
-      {/* Hero */}
-      <section data-hero className="dark-section relative flex min-h-[68vh] flex-col justify-center overflow-hidden bg-deep text-white">
-        <DarkBackdrop />
-        {/* The module accent (right column) is the hero's single 3D element; no background sculpture. */}
-        <HeroParallax className="container-x relative w-full pb-16 pt-[calc(var(--header-h)+2.5rem)] sm:pb-20 lg:pb-24">
-          <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Services", href: "/services" }, { label: service.title }]} className="mb-10" />
-          <div className="grid gap-12 lg:grid-cols-12 lg:items-center">
-            <div className="lg:col-span-6">
-              <SectionLabel number={service.globalNumber} tone="dark">
-                {family.title} · Service {service.number}
-              </SectionLabel>
-              <h1 className="mt-6 text-h1 font-semibold">
+      {/* Hero — family-coloured field, oversized title, the service's own illustration as the focal piece. */}
+      <section data-hero className={cn("relative flex min-h-[92svh] flex-col overflow-hidden", surface.cls)}>
+        <div className="container-x relative flex w-full flex-1 flex-col pb-14 pt-[calc(var(--header-h)+2.5rem)] sm:pb-20">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Services", href: "/services" }, { label: service.title }]} tone={surface.dark ? "dark" : "light"} />
+            <SectionLabel number={service.globalNumber} tone={surface.dark ? "dark" : "light"}>
+              {family.title} · Service {service.number}
+            </SectionLabel>
+          </div>
+          <div className="mt-14 grid flex-1 items-end gap-14 lg:mt-20 lg:grid-cols-12">
+            <div className="lg:col-span-7">
+              <h1 className={cn("text-display font-extrabold", surface.dark ? "text-white" : "text-navy")}>
                 <TextReveal lines={[service.title]} delay={0.05} />
               </h1>
-              <Rise delay={0.35}>
-                <p className="mt-6 max-w-xl text-lg leading-relaxed text-slate-300">{service.outcome}</p>
+              <Rise delay={0.3}>
+                <p className={cn("mt-10 max-w-xl text-lead", surface.dark ? "text-slate-200" : "text-slate-700")}>{service.outcome}</p>
               </Rise>
-              <Rise delay={0.5}>
-                <div className="mt-8 flex flex-wrap gap-3">
+              <Rise delay={0.4}>
+                <div className="mt-10 flex flex-wrap gap-3">
                   <Magnetic>
-                    <TrackedCTA href={startHref} event={ANALYTICS_EVENTS.START_PROJECT_CLICK} eventProps={{ location: "service_hero", service: service.slug }} size="lg" icon="arrow">
+                    <TrackedCTA href={startHref} event={ANALYTICS_EVENTS.START_PROJECT_CLICK} eventProps={{ location: "service_hero", service: service.slug }} variant={service.family === "growth-optimization" ? "secondary" : "primary"} size="lg" icon="arrow">
                       Start a Project
                     </TrackedCTA>
                   </Magnetic>
-                  <Magnetic strength={0.2}>
-                    <Button href="/contact" variant="outline-light" size="lg">
-                      Talk to us
-                    </Button>
-                  </Magnetic>
+                  <Button href="/contact" variant={surface.dark ? "outline-light" : "outline"} size="lg">
+                    Talk to us
+                  </Button>
                 </div>
               </Rise>
             </div>
-            <div className="lg:col-span-6">
-              <Rise delay={0.2}>
-                <AccentCanvas variant={accentForVisual[service.visual]} fallback={<ServiceVisual kind={service.visual} label={service.title} />} />
+            <div className="lg:col-span-5">
+              <Rise delay={0.15}>
+                <figure className="chamfer-lg relative bg-abyss p-3 shadow-[0_40px_80px_-40px_rgba(11,27,58,0.6)] sm:p-4">
+                  <ServiceVisual kind={service.visual} label={service.title} />
+                  <figcaption className="flex items-center justify-between border-t border-white/15 px-2 pt-3 text-[0.8rem] font-semibold text-slate-300">
+                    <span>{service.navLabel}</span>
+                    <span className="tabular">{service.globalNumber} / 13</span>
+                  </figcaption>
+                </figure>
               </Rise>
             </div>
           </div>
-        </HeroParallax>
+        </div>
       </section>
-      {/* Sticky in-page navigation with active section */}
       <SectionNav sections={SECTIONS} />
 
       {/* 01 Overview */}
-      <section id="overview" className="scroll-mt-20 bg-white">
+      <section id="overview" className="scroll-mt-20 bg-paper">
         <div className="container-x section-y">
-          <div className="grid gap-10 lg:grid-cols-12">
-            <div className="lg:col-span-4">
+          <div className="grid gap-12 lg:grid-cols-12">
+            <div className="lg:col-span-6">
               <SectionLabel number="01">Overview</SectionLabel>
-              <h2 className="mt-4 text-h2 font-semibold text-navy">{service.tagline}</h2>
+              <h2 className="mt-6 text-h1 font-extrabold text-navy">{service.tagline}</h2>
             </div>
-            <div className="space-y-5 text-lg leading-relaxed text-slate-600 lg:col-span-7 lg:col-start-6">
+            <div className="space-y-6 text-lead text-slate-600 lg:col-span-5 lg:col-start-8 lg:pt-16">
               {service.overview.map((p, i) => (
                 <Reveal key={i} as="p" delay={i * 80}>
                   {p}
@@ -134,96 +151,106 @@ export function ServiceDetail({ service }: { service: Service }) {
       {/* 02 What we do */}
       <section id="what-we-do" className="scroll-mt-20 bg-cloud">
         <div className="container-x section-y">
-          <SectionHeading number="02" label="What we do" title={`${service.title} at LAMHA`} />
-          <div className="mt-10">
-            <CheckList items={service.whatWeDo} />
+          <Heading n="02" label="What we do" title={`${service.title} at LAMHA`} />
+          <div className="mt-14">
+            <RuleList items={service.whatWeDo} columns={2} />
           </div>
         </div>
       </section>
 
-      {/* 03 Capabilities */}
-      <section id="capabilities" className="scroll-mt-20 bg-white">
+      {/* 03 Capabilities — large editorial rows */}
+      <section id="capabilities" className="scroll-mt-20 bg-paper">
         <div className="container-x section-y">
-          <SectionHeading number="03" label="Capabilities" title="What we bring to the engagement" />
-          <ul className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <Heading n="03" label="Capabilities" title="What we bring to the engagement" />
+          <ol className="mt-16 border-t border-ink/15">
             {service.capabilities.map((c, i) => (
-              <Reveal key={c.title} as="li" delay={i * 60}>
-                <Tilt className="h-full">
-                  <div className="card-surface card-hover h-full p-6">
-                    <span className="font-mono text-xs text-blue">{String(i + 1).padStart(2, "0")}</span>
-                    <h3 className="mt-4 text-lg font-semibold text-navy">{c.title}</h3>
-                    <p className="mt-2 text-sm leading-relaxed text-slate-600">{c.description}</p>
-                  </div>
-                </Tilt>
+              <Reveal key={c.title} as="li" delay={i * 50}>
+                <div className="grid gap-x-8 gap-y-3 border-b border-ink/15 py-8 md:grid-cols-12">
+                  <span className="tabular text-sm font-bold text-blue md:col-span-1">{String(i + 1).padStart(2, "0")}</span>
+                  <h3 className="font-display text-[clamp(1.5rem,2.6vw,2.4rem)] font-bold leading-[1.05] tracking-[-0.04em] text-navy md:col-span-5">{c.title}</h3>
+                  <p className="text-[1.02rem] leading-relaxed text-slate-600 md:col-span-6">{c.description}</p>
+                </div>
               </Reveal>
             ))}
-          </ul>
+          </ol>
         </div>
       </section>
 
       {/* 04 Process */}
       <section id="process" className="scroll-mt-20 bg-cloud">
         <div className="container-x section-y">
-          <SectionHeading number="04" label="Process" title="How we deliver" description="Six stages, applied to this service." />
-          <div className="mt-12">
+          <div className="grid gap-8 lg:grid-cols-12 lg:items-end">
+            <div className="lg:col-span-8">
+              <Heading n="04" label="Process" title="How we deliver" />
+            </div>
+            <p className="text-lead text-slate-600 lg:col-span-4">Six stages, applied to this service.</p>
+          </div>
+          <div className="mt-20">
             <ProcessTimeline notes={service.process} />
           </div>
         </div>
       </section>
 
-      {/* 05 Technology */}
-      <section id="technology" className="dark-section scroll-mt-20 relative overflow-hidden bg-deep text-white">
-        <DarkBackdrop glow={false} />
-        <div className="container-x section-y relative">
-          <SectionHeading
-            number="05"
-            label="Technology & implementation"
-            title="Chosen for the problem, not the trend."
-            description="Categories most relevant to this service are highlighted. Specific stacks are agreed per engagement; we describe capabilities at category level until stack details are finalized."
-            tone="dark"
-          >
-            <Button href="/technology" variant="outline-light" size="sm" icon="arrow">
-              Technology approach
-            </Button>
-          </SectionHeading>
-          <div className="mt-12">
-            <TechnologyGrid tone="dark" highlight={service.technology} />
+      {/* 05 Technology — the system map with this service's categories in focus */}
+      <LRise id="technology" className="dark-section scroll-mt-20 text-white" surface="bg-abyss">
+        <div className="container-x pb-28 pt-40 sm:pt-48 lg:pb-36">
+          <div className="grid gap-10 lg:grid-cols-12 lg:items-end">
+            <div className="lg:col-span-8">
+              <SectionLabel number="05" tone="dark">
+                Technology &amp; implementation
+              </SectionLabel>
+              <h2 className="mt-6 text-h1 font-extrabold text-white">
+                Chosen for the problem, <span className="text-blue-200">not the trend.</span>
+              </h2>
+            </div>
+            <div className="lg:col-span-4">
+              <p className="text-[1.02rem] leading-relaxed text-slate-300">Categories most relevant to this service are in focus. Specific stacks are agreed per engagement; we describe capabilities at category level until stack details are finalized.</p>
+              <Button href="/technology" variant="outline-light" icon="arrow" className="mt-6">
+                Technology approach
+              </Button>
+            </div>
+          </div>
+          <div className="mt-16">
+            <SystemMap highlight={service.technology} />
           </div>
         </div>
-      </section>
+      </LRise>
 
       {/* 06 Deliverables + 07 Quality */}
-      <section id="deliverables" className="scroll-mt-20 bg-white">
+      <section id="deliverables" className="scroll-mt-20 bg-paper">
         <div className="container-x section-y">
-          <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
+          <div className="grid gap-16 lg:grid-cols-2">
             <div>
-              <SectionLabel number="06">Deliverables</SectionLabel>
-              <h2 className="mt-4 text-h3 font-semibold text-navy">What you receive</h2>
-              <div className="mt-8">
-                <CheckList items={service.deliverables} columns={1} />
+              <Heading n="06" label="Deliverables" title="What you receive" />
+              <div className="mt-12">
+                <RuleList items={service.deliverables} />
               </div>
             </div>
             <div>
-              <SectionLabel number="07">Quality &amp; security</SectionLabel>
-              <h2 className="mt-4 text-h3 font-semibold text-navy">Built in, not bolted on</h2>
-              <div className="mt-8">
-                <CheckList items={service.quality} columns={1} />
+              <Heading n="07" label="Quality & security" title="Built in, not bolted on" />
+              <div className="mt-12">
+                <RuleList items={service.quality} />
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 08 Use cases */}
+      {/* 08 Use cases — statements */}
       <section id="use-cases" className="scroll-mt-20 bg-cloud">
         <div className="container-x section-y">
-          <SectionHeading number="08" label="Use cases" title="Typical engagements" description="Illustrative scenarios, not client references." />
-          <ol className="mt-12 grid gap-4 md:grid-cols-2">
+          <div className="grid gap-8 lg:grid-cols-12 lg:items-end">
+            <div className="lg:col-span-8">
+              <Heading n="08" label="Use cases" title="Typical engagements" />
+            </div>
+            <p className="text-lead text-slate-600 lg:col-span-4">Illustrative scenarios, not client references.</p>
+          </div>
+          <ol className="mt-14 grid gap-x-12 md:grid-cols-2">
             {service.useCases.map((u, i) => (
               <Reveal key={u} as="li" delay={i * 60}>
-                <div className="flex h-full items-start gap-5 rounded-lg border border-slate-200 bg-white p-6">
-                  <span className="font-mono text-sm text-blue">{String(i + 1).padStart(2, "0")}</span>
-                  <p className="text-[0.95rem] font-medium leading-relaxed text-navy">{u}</p>
+                <div className="flex items-start gap-5 border-t border-ink/15 py-7">
+                  <span className="tabular pt-1 text-sm font-bold text-blue">{String(i + 1).padStart(2, "0")}</span>
+                  <p className="font-display text-xl font-bold leading-snug tracking-tight text-navy sm:text-2xl">{u}</p>
                 </div>
               </Reveal>
             ))}
@@ -232,12 +259,11 @@ export function ServiceDetail({ service }: { service: Service }) {
       </section>
 
       {/* 09 FAQs */}
-      <section id="faqs" className="scroll-mt-20 bg-white">
+      <section id="faqs" className="scroll-mt-20 bg-paper">
         <div className="container-x section-y">
-          <div className="grid gap-10 lg:grid-cols-12">
+          <div className="grid gap-12 lg:grid-cols-12">
             <div className="lg:col-span-4">
-              <SectionLabel number="09">FAQs</SectionLabel>
-              <h2 className="mt-4 text-h2 font-semibold text-navy">Common questions</h2>
+              <Heading n="09" label="FAQs" title="Common questions" />
             </div>
             <div className="lg:col-span-7 lg:col-start-6">
               <FAQ items={service.faqs} />
@@ -246,20 +272,28 @@ export function ServiceDetail({ service }: { service: Service }) {
         </div>
       </section>
 
-      {/* Related */}
+      {/* Related — big rows */}
       {related.length > 0 && (
         <section aria-labelledby="related-heading" className="bg-cloud">
           <div className="container-x section-y">
-            <SectionHeading number="10" label="Related services" title="Often combined with" as="h2">
-              <Button href="/services" variant="outline" size="sm" icon="arrow">
+            <div className="flex flex-wrap items-end justify-between gap-8">
+              <Heading n="10" label="Related services" title="Often combined with" id="related-heading" />
+              <Button href="/services" variant="outline" icon="arrow">
                 All services
               </Button>
-            </SectionHeading>
-            <ul className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {related.map((r, i) => (
-                <Reveal key={r.slug} as="li" delay={i * 60}>
-                  <ServiceCard service={r} showNumber={false} className="h-full" />
-                </Reveal>
+            </div>
+            <ul className="mt-14 border-t border-ink/15">
+              {related.map((r) => (
+                <li key={r.slug} className="border-b border-ink/15">
+                  <Link
+                    href={`/services/${r.slug}`}
+                    className="group relative isolate grid grid-cols-[1fr_auto] items-center gap-x-6 gap-y-1 overflow-hidden px-2 py-6 before:absolute before:inset-0 before:-z-10 before:origin-left before:scale-x-0 before:bg-navy before:transition-transform before:duration-500 before:ease-[var(--ease-out-expo)] hover:before:scale-x-100 focus-visible:before:scale-x-100 sm:px-4 md:grid-cols-[minmax(0,1fr)_minmax(0,24rem)_auto]"
+                  >
+                    <span className="col-start-1 row-start-1 font-display text-[clamp(1.5rem,3vw,2.75rem)] font-bold tracking-[-0.045em] text-navy transition-colors group-hover:text-white group-focus-visible:text-white">{r.title}</span>
+                    <span className="col-start-1 row-start-2 text-[0.95rem] text-slate-600 transition-colors group-hover:text-slate-200 group-focus-visible:text-slate-200 md:col-start-2 md:row-start-1">{r.tagline}</span>
+                    <ArrowUpRight aria-hidden="true" className="col-start-2 row-start-1 h-6 w-6 text-slate-500 transition-[color,transform] duration-500 group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-white md:col-start-3" />
+                  </Link>
+                </li>
               ))}
             </ul>
           </div>

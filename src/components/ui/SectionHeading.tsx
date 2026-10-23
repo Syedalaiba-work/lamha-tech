@@ -29,20 +29,20 @@ export function SectionHeading({
   return (
     <div
       className={cn(
-        "flex flex-col gap-6 md:flex-row md:items-end md:justify-between",
+        "flex flex-col gap-8 md:flex-row md:items-end md:justify-between",
         align === "center" && "md:flex-col md:items-center md:text-center",
         className,
       )}
     >
-      <div className={cn("max-w-3xl", align === "center" && "mx-auto")}>
+      <div className={cn("max-w-5xl", align === "center" && "mx-auto")}>
         {label && (
-          <SectionLabel number={number} tone={tone} className={cn("mb-5", align === "center" && "justify-center")}>
+          <SectionLabel number={number} tone={tone} className={cn("mb-7", align === "center" && "justify-center")}>
             {label}
           </SectionLabel>
         )}
-        <Tag className={cn(sizeCls, "font-semibold", tone === "dark" ? "text-white" : "text-navy")}>{title}</Tag>
+        <Tag className={cn(sizeCls, "font-bold", tone === "dark" ? "text-white" : "text-navy")}>{title}</Tag>
         {description && (
-          <p className={cn("mt-5 max-w-2xl text-base leading-relaxed sm:text-lg", tone === "dark" ? "text-slate-300" : "text-slate-600", align === "center" && "mx-auto")}>
+          <p className={cn("mt-7 max-w-2xl text-lead", tone === "dark" ? "text-slate-300" : "text-slate-600", align === "center" && "mx-auto")}>
             {description}
           </p>
         )}

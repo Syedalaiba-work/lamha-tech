@@ -27,13 +27,13 @@ export default async function LeadershipPage() {
       <JsonLd data={breadcrumbJsonLd([{ name: "Home", path: "/" }, { name: "About", path: "/about" }, { name: "Leadership", path: "/about/leadership" }])} />
       <JsonLd data={peopleJsonLd(publishedLeadership)} />
       <PageHero
-        number="10"
         label="Leadership"
+        size="giant"
         title="The people accountable for the work."
         description="LAMHA Technologies's leadership combines founding vision, executive management and board oversight. Approved biographies and portraits will be published as they become available."
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "About", href: "/about" }, { label: "Leadership" }]}
         actions={
-          <Button href="/about" variant="outline-light" size="lg">
+          <Button href="/about" variant="outline" size="lg">
             About LAMHA
           </Button>
         }

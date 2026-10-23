@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ArrowRight, Briefcase, Globe2, Mail, MessageSquare, Phone } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { buildMetadata, breadcrumbJsonLd } from "@/lib/seo";
 import { getContent } from "@/lib/server/content";
@@ -8,6 +8,7 @@ import { ContactForm } from "@/components/forms/ContactForm";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { Button } from "@/components/ui/Button";
 import { SocialIcon, hasSocialIcon } from "@/components/ui/SocialIcon";
+import { LocalTime } from "@/components/motion/LocalTime";
 
 export const metadata: Metadata = buildMetadata({
   title: "Contact",
@@ -20,16 +21,16 @@ export default async function ContactPage() {
   // Owner-editable values (portal → Website content); falls back to the src/data defaults.
   const { site } = await getContent();
   const channels = [
-    { icon: Briefcase, title: "New project", description: "Share requirements, budget and timeline through the structured project form.", href: "/start-a-project", cta: "Start a Project", email: site.contact.projectsEmail },
-    { icon: Mail, title: "General inquiries", description: "Questions about LAMHA Technologies, partnerships or press.", href: null, cta: null, email: site.contact.generalEmail },
-    { icon: MessageSquare, title: "Careers", description: "Applications, introductions and questions about working with us.", href: "/careers", cta: "View careers", email: site.contact.careersEmail },
+    { title: "New project", description: "Share requirements, budget and timeline through the structured project form.", href: "/start-a-project", cta: "Start a Project", email: site.contact.projectsEmail },
+    { title: "General inquiries", description: "Questions about LAMHA Technologies, partnerships or press.", href: null, cta: null, email: site.contact.generalEmail },
+    { title: "Careers", description: "Applications, introductions and questions about working with us.", href: "/careers", cta: "View careers", email: site.contact.careersEmail },
   ];
   const socials = site.social.filter((s) => s.href);
   return (
     <>
       <JsonLd data={breadcrumbJsonLd([{ name: "Home", path: "/" }, { name: "Contact", path: "/contact" }])} />
       <PageHero
-        number="13"
+        size="mega"
         label="Contact"
         title="Let's talk."
         description="Choose the channel that fits your request. For new projects, the Start a Project form gives us the context we need to respond well."
@@ -39,26 +40,39 @@ export default async function ContactPage() {
             Start a Project
           </Button>
         }
-        compact
+        aside={
+          <div className="border-t border-ink/15 pt-6">
+            <a href={`mailto:${site.contact.generalEmail}`} className="link-draw block w-fit break-all font-display text-2xl font-bold text-navy sm:text-3xl">
+              {site.contact.generalEmail}
+            </a>
+            {site.contact.phone && (
+              <a href={`tel:${site.contact.phone.replace(/\s+/g, "")}`} className="link-draw mt-2 block w-fit font-display text-xl font-bold text-blue">
+                {site.contact.phone}
+              </a>
+            )}
+            <p className="mt-4 text-[0.95rem] text-slate-600">
+              {site.contact.city}, {site.contact.country} · <LocalTime className="tabular" />
+            </p>
+          </div>
+        }
       />
 
-      <section aria-label="Contact channels" className="bg-white">
-        <div className="container-x py-12 sm:py-16">
-          <ul className="grid gap-4 md:grid-cols-3">
-            {channels.map((c) => (
-              <li key={c.title} className="flex h-full flex-col rounded-lg border border-slate-200 bg-cloud p-6">
-                <span className="flex h-10 w-10 items-center justify-center rounded-md border border-slate-200 bg-white text-blue">
-                  <c.icon className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
-                </span>
-                <h2 className="mt-5 text-lg font-semibold text-navy">{c.title}</h2>
-                <p className="mt-2 flex-1 text-sm leading-relaxed text-slate-600">{c.description}</p>
-                <a href={`mailto:${c.email}`} className="mt-4 text-sm font-medium text-blue underline-offset-2 hover:underline">
+      {/* Channels */}
+      <section aria-label="Contact channels" className="bg-cloud">
+        <div className="container-x section-y-sm">
+          <ul className="grid gap-12 md:grid-cols-3 md:gap-10">
+            {channels.map((c, i) => (
+              <li key={c.title} className="flex flex-col border-t-2 border-navy pt-6">
+                <span className="tabular text-sm font-bold text-blue">{String(i + 1).padStart(2, "0")}</span>
+                <h2 className="mt-3 font-display text-h3 font-bold text-navy">{c.title}</h2>
+                <p className="mt-3 flex-1 text-[1rem] leading-relaxed text-slate-600">{c.description}</p>
+                <a href={`mailto:${c.email}`} className="link-draw mt-5 w-fit break-all text-[0.98rem] font-semibold text-blue">
                   {c.email}
                 </a>
                 {c.href && c.cta && (
-                  <Link href={c.href} className="group mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-navy hover:text-blue">
-                    {c.cta}
-                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+                  <Link href={c.href} className="group mt-3 inline-flex w-fit items-center gap-1.5 font-semibold text-navy">
+                    <span className="link-draw">{c.cta}</span>
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
                   </Link>
                 )}
               </li>
@@ -67,58 +81,61 @@ export default async function ContactPage() {
         </div>
       </section>
 
-      <section aria-labelledby="message-heading" className="bg-cloud">
+      {/* Message */}
+      <section aria-labelledby="message-heading" className="bg-paper">
         <div className="container-x section-y">
-          <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
-            <div className="lg:col-span-4">
-              <h2 id="message-heading" className="text-h2 font-semibold text-navy">
-                Send a message
+          <div className="grid gap-14 lg:grid-cols-12 lg:gap-16">
+            <div className="lg:col-span-5">
+              <h2 id="message-heading" className="text-h1 font-extrabold text-navy">
+                Send a <span className="text-blue">message.</span>
               </h2>
-              <p className="mt-4 text-[0.95rem] leading-relaxed text-slate-600">For anything that is not a project inquiry. We will review your message and contact you using the details submitted.</p>
-              <div className="mt-8 space-y-3">
+              <p className="mt-6 max-w-md text-lead text-slate-600">For anything that is not a project inquiry. We will review your message and contact you using the details submitted.</p>
+              <dl className="mt-10 border-t border-ink/15">
                 {site.contact.phone && (
-                  <a href={`tel:${site.contact.phone.replace(/\s+/g, "")}`} className="flex items-center gap-3 rounded-md border border-slate-200 bg-white p-4 text-sm text-navy hover:border-blue-200">
-                    <Phone className="h-4 w-4 shrink-0 text-blue" aria-hidden="true" />
-                    <span>
-                      <span className="block text-xs uppercase tracking-[0.12em] text-slate-500">Phone</span>
-                      {site.contact.phone}
-                    </span>
-                  </a>
+                  <div className="border-b border-ink/15 py-4">
+                    <dt className="label-caps text-slate-600">Phone</dt>
+                    <dd className="mt-1">
+                      <a href={`tel:${site.contact.phone.replace(/\s+/g, "")}`} className="link-draw text-lg font-semibold text-navy">
+                        {site.contact.phone}
+                      </a>
+                    </dd>
+                  </div>
                 )}
-                <a href={`mailto:${site.contact.generalEmail}`} className="flex items-center gap-3 rounded-md border border-slate-200 bg-white p-4 text-sm text-navy hover:border-blue-200">
-                  <Mail className="h-4 w-4 shrink-0 text-blue" aria-hidden="true" />
-                  <span>
-                    <span className="block text-xs uppercase tracking-[0.12em] text-slate-500">Email</span>
-                    {site.contact.generalEmail}
-                  </span>
-                </a>
-                {socials.map((s) => (
-                  <a
-                    key={s.label}
-                    href={s.href!}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-3 rounded-md border border-slate-200 bg-white p-4 text-sm text-navy hover:border-blue-200"
-                  >
-                    {hasSocialIcon(s.label) ? <SocialIcon platform={s.label} className="text-blue" /> : <Globe2 className="h-4 w-4 shrink-0 text-blue" aria-hidden="true" />}
-                    <span className="min-w-0">
-                      <span className="block text-xs uppercase tracking-[0.12em] text-slate-500">{s.label}</span>
-                      <span className="block truncate">{s.href!.replace(/^https?:\/\/(www\.)?/, "")}</span>
-                      <span className="sr-only"> (opens in a new tab)</span>
-                    </span>
-                  </a>
-                ))}
-                <div className="flex items-start gap-3 rounded-md border border-slate-200 bg-white p-4 text-sm text-slate-600">
-                  <Globe2 className="mt-0.5 h-4 w-4 shrink-0 text-blue" aria-hidden="true" />
-                  <p>
-                    <span className="block font-medium text-navy">{site.contact.city}, {site.contact.country}</span>
-                    Remote-first delivery for clients worldwide. Full office address will be published once confirmed.
-                  </p>
+                <div className="border-b border-ink/15 py-4">
+                  <dt className="label-caps text-slate-600">Email</dt>
+                  <dd className="mt-1">
+                    <a href={`mailto:${site.contact.generalEmail}`} className="link-draw break-all text-lg font-semibold text-navy">
+                      {site.contact.generalEmail}
+                    </a>
+                  </dd>
                 </div>
-              </div>
+                {socials.map((s) => (
+                  <div key={s.label} className="border-b border-ink/15 py-4">
+                    <dt className="label-caps flex items-center gap-2 text-slate-600">
+                      {hasSocialIcon(s.label) && <SocialIcon platform={s.label} className="h-3.5 w-3.5" />}
+                      {s.label}
+                    </dt>
+                    <dd className="mt-1">
+                      <a href={s.href!} target="_blank" rel="noopener noreferrer" className="link-draw block truncate text-lg font-semibold text-navy">
+                        {s.href!.replace(/^https?:\/\/(www\.)?/, "")}
+                        <span className="sr-only"> (opens in a new tab)</span>
+                      </a>
+                    </dd>
+                  </div>
+                ))}
+                <div className="border-b border-ink/15 py-4">
+                  <dt className="label-caps text-slate-600">Studio</dt>
+                  <dd className="mt-1 text-[1rem] text-slate-700">
+                    <span className="font-semibold text-navy">
+                      {site.contact.city}, {site.contact.country}
+                    </span>
+                    . Remote-first delivery for clients worldwide. Full office address will be published once confirmed.
+                  </dd>
+                </div>
+              </dl>
             </div>
-            <div className="lg:col-span-8">
-              <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-[var(--shadow-card)] sm:p-8">
+            <div className="lg:col-span-7">
+              <div className="border-t-2 border-navy bg-white p-5 shadow-[0_30px_60px_-40px_rgba(11,27,58,0.35)] sm:p-10">
                 <ContactForm />
               </div>
             </div>

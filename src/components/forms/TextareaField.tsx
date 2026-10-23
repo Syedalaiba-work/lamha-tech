@@ -23,7 +23,7 @@ export function TextareaField({ id, label, error, hint, required, className, wra
         aria-invalid={error ? true : undefined}
         aria-describedby={error || hint ? msgId : undefined}
         aria-required={required || undefined}
-        className={cn(inputBase, "min-h-[9rem] resize-y py-3 leading-relaxed", error ? "border-red-400 focus:ring-red-200 focus:border-red-500" : "border-slate-300 hover:border-slate-400", className)}
+        className={cn(inputBase, "min-h-[9rem] resize-y py-3 leading-relaxed", error ? "border-red-400 focus:ring-red-200 focus:border-red-500" : "border-ink/20 hover:border-ink/40", className)}
         {...props}
       />
       <FieldMessage id={msgId} error={error} hint={hint} />

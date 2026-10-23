@@ -106,6 +106,8 @@ export default async function LeaderProfilePage({ params }: PageProps<"/about/le
       <JsonLd data={profilePageJsonLd(leader)} />
 
       <PageHero
+        surface="navy"
+        size="display"
         label={leader.role}
         title={leader.name}
         description={

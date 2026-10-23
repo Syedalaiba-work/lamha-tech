@@ -6,22 +6,27 @@ import { cn } from "@/lib/utils";
 export type ButtonVariant = "primary" | "secondary" | "outline" | "outline-light" | "ghost" | "ghost-light";
 export type ButtonSize = "sm" | "md" | "lg";
 
+/**
+ * Buttons carry the brand chamfer (the L-form's 45° inner corner) and a fill that sweeps in from the
+ * left on hover/focus. Inside `.dark-section` the filled variants invert their sweep so it stays visible.
+ */
 const base =
-  "group/btn inline-flex items-center justify-center gap-2 rounded-sm font-semibold uppercase tracking-[0.12em] whitespace-nowrap transition-[background-color,color,border-color,box-shadow,transform] duration-200 ease-out disabled:pointer-events-none disabled:opacity-60 select-none";
+  "group/btn relative isolate inline-flex items-center justify-center gap-3 overflow-hidden font-semibold tracking-[-0.01em] whitespace-nowrap select-none transition-[color,border-color,transform] duration-300 ease-[var(--ease-out-expo)] active:translate-y-px disabled:pointer-events-none disabled:opacity-60 " +
+  "before:absolute before:inset-0 before:-z-10 before:origin-left before:scale-x-0 before:transition-transform before:duration-500 before:ease-[var(--ease-out-expo)] hover:before:scale-x-100 focus-visible:before:scale-x-100";
 
 const variants: Record<ButtonVariant, string> = {
-  primary: "bg-blue text-white hover:bg-white hover:text-navy active:translate-y-px",
-  secondary: "bg-navy text-white hover:bg-navy-800 active:translate-y-px",
-  outline: "border border-slate-300 bg-white text-ink hover:border-slate-400 hover:bg-slate-50 active:translate-y-px",
-  "outline-light": "border border-white/25 bg-white/0 text-white hover:border-white/50 hover:bg-white/10 active:translate-y-px",
-  ghost: "text-blue hover:text-blue-700 px-0",
-  "ghost-light": "text-white hover:text-blue-200 px-0",
+  primary: "chamfer bg-blue text-white before:bg-navy in-[.dark-section]:before:bg-white in-[.dark-section]:hover:text-navy in-[.dark-section]:focus-visible:text-navy",
+  secondary: "chamfer bg-navy text-white before:bg-blue in-[.dark-section]:bg-white in-[.dark-section]:text-navy in-[.dark-section]:before:bg-blue in-[.dark-section]:hover:text-white",
+  outline: "border border-ink/25 text-ink before:bg-navy hover:border-navy hover:text-white focus-visible:text-white",
+  "outline-light": "border border-white/35 text-white before:bg-white hover:border-white hover:text-navy focus-visible:text-navy",
+  ghost: "px-0 text-blue before:hidden hover:text-navy",
+  "ghost-light": "px-0 text-white before:hidden hover:text-blue-200",
 };
 
 const sizes: Record<ButtonSize, string> = {
-  sm: "h-9 px-3.5 text-[0.7rem]",
-  md: "h-11 px-5 text-xs",
-  lg: "h-12 px-6 text-[0.8rem]",
+  sm: "h-10 px-4 text-[0.875rem]",
+  md: "h-12 px-6 text-[0.95rem]",
+  lg: "h-14 px-7 text-base",
 };
 
 type CommonProps = {
@@ -38,14 +43,20 @@ type ButtonAsButton = CommonProps & { href?: undefined } & Omit<ComponentPropsWi
 export type ButtonProps = ButtonAsLink | ButtonAsButton;
 
 function IconFor({ icon }: { icon: CommonProps["icon"] }) {
-  if (icon === "external") return <ArrowUpRight aria-hidden="true" className="h-4 w-4 transition-transform duration-200 group-hover/btn:-translate-y-0.5 group-hover/btn:translate-x-0.5" />;
-  if (icon === "arrow") return <ArrowRight aria-hidden="true" className="h-4 w-4 transition-transform duration-200 group-hover/btn:translate-x-0.5" />;
+  if (icon === "external")
+    return <ArrowUpRight aria-hidden="true" className="h-[1.1em] w-[1.1em] transition-transform duration-300 group-hover/btn:-translate-y-0.5 group-hover/btn:translate-x-0.5" />;
+  if (icon === "arrow")
+    return <ArrowRight aria-hidden="true" className="h-[1.1em] w-[1.1em] transition-transform duration-300 group-hover/btn:translate-x-1" />;
   return null;
+}
+
+export function buttonClasses({ variant = "primary", size = "md", className }: { variant?: ButtonVariant; size?: ButtonSize; className?: string } = {}) {
+  return cn(base, variants[variant], variant === "ghost" || variant === "ghost-light" ? "h-auto" : sizes[size], className);
 }
 
 export function Button(props: ButtonProps) {
   const { variant = "primary", size = "md", icon = "none", className, children } = props;
-  const cls = cn(base, variants[variant], (variant === "ghost" || variant === "ghost-light") ? "h-auto" : sizes[size], className);
+  const cls = buttonClasses({ variant, size, className });
 
   if ("href" in props && typeof props.href === "string") {
     const { href, variant: _v, size: _s, icon: _i, className: _c, children: _ch, ...rest } = props;

@@ -22,17 +22,17 @@ export function SectionNav({ sections }: { sections: { id: string; label: string
   }, [sections]);
 
   return (
-    <nav data-subnav aria-label="On this page" className="dark-section sticky top-0 z-40 border-b border-white/10 bg-deep/95 text-white backdrop-blur">
+    <nav data-subnav aria-label="On this page" className="sticky top-0 z-40 border-b border-ink/10 bg-paper/90 text-navy backdrop-blur-md">
       <div className="container-x -mx-5 overflow-x-auto px-5 sm:mx-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        <ul className="flex gap-6 whitespace-nowrap py-3.5 text-sm">
+        <ul className="flex gap-7 whitespace-nowrap py-4 text-[0.9rem] font-medium">
           {sections.map((s) => (
             <li key={s.id}>
               <a
                 href={`#${s.id}`}
                 aria-current={active === s.id ? "location" : undefined}
                 className={cn(
-                  "relative py-1 transition-colors after:absolute after:inset-x-0 after:-bottom-[0.95rem] after:h-0.5 after:origin-left after:scale-x-0 after:bg-blue-2 after:transition-transform after:duration-300",
-                  active === s.id ? "text-white after:scale-x-100" : "text-slate-300 hover:text-white",
+                  "relative py-1 transition-colors after:absolute after:inset-x-0 after:-bottom-[1.05rem] after:h-0.5 after:origin-left after:scale-x-0 after:bg-blue after:transition-transform after:duration-300",
+                  active === s.id ? "text-navy after:scale-x-100" : "text-slate-600 hover:text-navy",
                 )}
               >
                 {s.label}

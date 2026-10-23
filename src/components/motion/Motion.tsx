@@ -45,7 +45,7 @@ export function TextReveal({
             {words.map((word, wi) => {
               const i = index++;
               return (
-                <span key={wi} className="word-hover inline-block overflow-hidden pb-[0.08em] -mb-[0.08em] align-bottom">
+                <span key={wi} className="word-hover inline-block overflow-hidden pb-[0.18em] -mb-[0.18em] pr-[0.04em] -mr-[0.04em] align-bottom">
                   <motion.span className="inline-block will-change-transform" variants={wordVariants} custom={delay + i * stagger}>
                     {word}
                     {typeof line === "string" && wi < words.length - 1 ? " " : null}

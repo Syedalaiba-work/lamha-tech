@@ -4,8 +4,6 @@ import { buildMetadata, breadcrumbJsonLd } from "@/lib/seo";
 import { getContent } from "@/lib/server/content";
 import { whyLamha } from "@/data/whyLamha";
 import { PageHero } from "@/components/sections/PageHero";
-import { Statement } from "@/components/sections/Statement";
-import { SectionHeading } from "@/components/ui/SectionHeading";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { Reveal } from "@/components/ui/Reveal";
 import { JsonLd } from "@/components/ui/JsonLd";
@@ -14,6 +12,7 @@ import { Portrait } from "@/components/leadership/LeadershipCard";
 import { ProcessTimeline } from "@/components/sections/ProcessTimeline";
 import { LeadershipGrid } from "@/components/sections/LeadershipGrid";
 import { CTASection } from "@/components/sections/CTASection";
+import { LRise } from "@/components/motion/LRise";
 
 export const metadata: Metadata = buildMetadata({
   title: "About Us",
@@ -42,88 +41,100 @@ export default async function AboutPage() {
     <>
       <JsonLd data={breadcrumbJsonLd([{ name: "Home", path: "/" }, { name: "About", path: "/about" }])} />
       <PageHero
-        number="09"
         label="About LAMHA Technologies"
         title={
           <>
-            A Technology Company Driven by <span className="text-gradient-blue">Real Impact.</span>
+            A technology company driven by <span className="text-blue">real impact.</span>
           </>
         }
         description="We exist to solve meaningful problems through technology, engineering and continuous innovation."
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "About" }]}
-        field="wave"
         actions={
           <>
             <Button href="/start-a-project" size="lg" icon="arrow">
               Start a Project
             </Button>
-            <Button href="/about/leadership" variant="outline-light" size="lg">
+            <Button href="/about/leadership" variant="outline" size="lg">
               Leadership
             </Button>
           </>
         }
+        aside={
+          <dl className="grid grid-cols-2 gap-6 border-t border-ink/15 pt-6">
+            <div>
+              <dt className="label-caps text-slate-600">Based in</dt>
+              <dd className="mt-2 font-display text-xl font-bold text-navy">
+                {site.contact.city}, {site.contact.country}
+              </dd>
+            </div>
+            <div>
+              <dt className="label-caps text-slate-600">Delivery</dt>
+              <dd className="mt-2 font-display text-xl font-bold text-navy">Remote-first, worldwide</dd>
+            </div>
+          </dl>
+        }
       />
 
-      {/* About LAMHA */}
-      <section aria-labelledby="story-heading" className="bg-white">
+      {/* Who we are — a statement */}
+      <section aria-labelledby="story-heading" className="bg-paper">
         <div className="container-x section-y">
-          <div className="grid gap-10 lg:grid-cols-12">
-            <div className="lg:col-span-4">
-              <SectionLabel number="01">About LAMHA Technologies</SectionLabel>
-              <h2 id="story-heading" className="mt-4 text-h2 font-semibold text-navy">
-                Who we are
-              </h2>
-            </div>
-            <div className="space-y-5 text-lg leading-relaxed text-slate-600 lg:col-span-7 lg:col-start-6">
-              <p>{site.positioning}</p>
-              <p>{site.name} operates as a multidisciplinary team across software engineering, digital product design, quality, security and automation, working with businesses, startups and organizations internationally.</p>
-              <p className="font-medium text-navy">{site.supportingLine}</p>
-            </div>
+          <SectionLabel number="01">Who we are</SectionLabel>
+          <h2 id="story-heading" className="sr-only">
+            Who we are
+          </h2>
+          <p className="mt-10 max-w-[30ch] font-display text-h1 font-bold text-navy">{site.positioning}</p>
+          <div className="mt-14 grid gap-10 border-t border-ink/15 pt-10 lg:grid-cols-12">
+            <p className="text-lead text-slate-600 lg:col-span-6">
+              {site.name} operates as a multidisciplinary team across software engineering, digital product design, quality, security and automation, working with businesses, startups and organizations internationally.
+            </p>
+            <p className="font-display text-h3 font-bold text-blue lg:col-span-5 lg:col-start-8">{site.supportingLine}</p>
           </div>
         </div>
       </section>
 
-      <Statement number="02" label="Our vision" text={site.vision} tone="dark" aside={{ title: "Mission", body: site.mission }} />
-
-      {/* Why we exist */}
-      <section aria-labelledby="why-exist-heading" className="bg-cloud">
-        <div className="container-x section-y">
-          <SectionHeading number="02" label="Why we exist" title={<span id="why-exist-heading">Mission and vision</span>} />
-          <dl className="mt-12 grid gap-6 md:grid-cols-2">
-            <Reveal>
-              <div className="h-full rounded-lg border border-slate-200 bg-white p-8">
-                <dt className="label-caps text-blue">Mission</dt>
-                <dd className="mt-4 text-xl font-medium leading-relaxed text-navy">{site.mission}</dd>
-              </div>
-            </Reveal>
-            <Reveal delay={80}>
-              <div className="h-full rounded-lg border border-slate-200 bg-white p-8">
-                <dt className="label-caps text-blue">Vision</dt>
-                <dd className="mt-4 text-xl font-medium leading-relaxed text-navy">{site.vision}</dd>
-              </div>
-            </Reveal>
+      {/* Mission and vision — a navy chapter */}
+      <LRise className="dark-section text-white" surface="bg-navy" aria-labelledby="why-exist-heading">
+        <div className="container-x pb-28 pt-40 sm:pt-48 lg:pb-40 lg:pt-56">
+          <SectionLabel number="02" tone="dark">
+            Why we exist
+          </SectionLabel>
+          <h2 id="why-exist-heading" className="sr-only">
+            Mission and vision
+          </h2>
+          <dl className="mt-12 space-y-20">
+            <div className="grid gap-6 lg:grid-cols-12">
+              <dt className="label-caps text-blue-200 lg:col-span-2 lg:pt-4">Mission</dt>
+              <dd className="font-display text-h1 font-bold text-white lg:col-span-10">{site.mission}</dd>
+            </div>
+            <div className="grid gap-6 lg:grid-cols-12">
+              <dt className="label-caps text-blue-200 lg:col-span-2 lg:pt-4">Vision</dt>
+              <dd className="font-display text-h2 font-bold text-slate-200 lg:col-span-10">{site.vision}</dd>
+            </div>
           </dl>
         </div>
-      </section>
+      </LRise>
 
       {/* What we believe */}
-      <section aria-labelledby="beliefs-heading" className="bg-white">
+      <section aria-labelledby="beliefs-heading" className="bg-paper">
         <div className="container-x section-y">
-          <SectionHeading number="03" label="What we believe" title={<span id="beliefs-heading">Principles that guide the work</span>} />
-          <ul className="mt-12 grid gap-px overflow-hidden rounded-lg border border-slate-200 bg-slate-200 sm:grid-cols-2">
+          <SectionLabel number="03">What we believe</SectionLabel>
+          <h2 id="beliefs-heading" className="mt-8 text-h1 font-extrabold text-navy">
+            Principles that <span className="text-blue">guide the work.</span>
+          </h2>
+          <ol className="mt-16 grid gap-x-16 md:grid-cols-2">
             {beliefs.map((b, i) => (
               <Reveal key={b.title} as="li" delay={i * 60}>
-                <div className="h-full bg-white p-7">
-                  <span className="font-mono text-xs text-blue">{String(i + 1).padStart(2, "0")}</span>
-                  <h3 className="mt-4 text-lg font-semibold text-navy">{b.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-slate-600">{b.description}</p>
+                <div className="border-t border-ink/15 py-8">
+                  <span className="tabular text-sm font-bold text-blue">{String(i + 1).padStart(2, "0")}</span>
+                  <h3 className="mt-3 font-display text-[clamp(1.6rem,2.6vw,2.5rem)] font-bold leading-[1.05] tracking-[-0.04em] text-navy">{b.title}</h3>
+                  <p className="mt-3 max-w-lg text-[1.02rem] leading-relaxed text-slate-600">{b.description}</p>
                 </div>
               </Reveal>
             ))}
-          </ul>
-          <ul className="mt-6 flex flex-wrap gap-2" aria-label="Operating principles">
+          </ol>
+          <ul className="mt-10 flex flex-wrap gap-2" aria-label="Operating principles">
             {whyLamha.map((w) => (
-              <li key={w.number} className="rounded-full border border-slate-200 px-3 py-1 text-xs font-medium text-slate-600">
+              <li key={w.number} className="border border-ink/15 px-3 py-1.5 text-sm font-medium text-slate-700">
                 {w.title}
               </li>
             ))}
@@ -134,29 +145,32 @@ export default async function AboutPage() {
       {/* How we work */}
       <section aria-labelledby="about-process-heading" className="bg-cloud">
         <div className="container-x section-y">
-          <SectionHeading number="04" label="How we work" title={<span id="about-process-heading">Six stages from discovery to evolution</span>} />
-          <div className="mt-12">
+          <SectionLabel number="04">How we work</SectionLabel>
+          <h2 id="about-process-heading" className="mt-8 text-h1 font-extrabold text-navy">
+            Six stages from discovery <span className="text-blue">to evolution.</span>
+          </h2>
+          <div className="mt-20">
             <ProcessTimeline />
           </div>
         </div>
       </section>
 
       {/* Founder */}
-      <section aria-labelledby="founder-heading" className="bg-white">
+      <section aria-labelledby="founder-heading" className="bg-paper">
         <div className="container-x section-y">
-          <div className="grid items-center gap-12 lg:grid-cols-12">
+          <div className="grid items-end gap-12 lg:grid-cols-12">
             <div className="lg:col-span-5">
               <Reveal>
-                <Portrait leader={founder} size="lg" className="max-w-sm" />
+                <Portrait leader={founder} size="lg" />
               </Reveal>
             </div>
-            <div className="lg:col-span-7">
+            <div className="lg:col-span-6 lg:col-start-7">
               <SectionLabel number="05">Founder</SectionLabel>
-              <h2 id="founder-heading" className="mt-4 text-h2 font-semibold text-navy">
+              <h2 id="founder-heading" className="mt-8 text-giant font-extrabold text-navy">
                 {founder.name}
               </h2>
-              <p className="mt-2 text-lg font-medium text-blue">{founder.role}</p>
-              <p className="mt-6 max-w-xl text-lg leading-relaxed text-slate-600">{founder.bio ?? "Approved founder biography coming soon. The founder is the primary public leadership feature at launch; biography and portrait will be published once approved."}</p>
+              <p className="mt-4 font-display text-h3 font-bold text-blue">{founder.role}</p>
+              <p className="mt-8 max-w-xl text-lead text-slate-600">{founder.bio ?? "Approved founder biography coming soon. The founder is the primary public leadership feature at launch; biography and portrait will be published once approved."}</p>
             </div>
           </div>
         </div>
@@ -166,24 +180,27 @@ export default async function AboutPage() {
       <LeadershipGrid number="06" />
 
       {/* Company information: the same facts the Organization structured data states */}
-      <section aria-labelledby="company-facts-heading" className="border-t border-slate-200 bg-white">
+      <section aria-labelledby="company-facts-heading" className="bg-paper">
         <div className="container-x section-y-sm">
-          <SectionHeading number="06b" label="Company information" title={<span id="company-facts-heading">LAMHA Technologies at a glance</span>} />
-          <dl className="mt-10 grid gap-x-10 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
+          <SectionLabel number="07">Company information</SectionLabel>
+          <h2 id="company-facts-heading" className="mt-8 text-h2 font-extrabold text-navy">
+            LAMHA Technologies at a glance
+          </h2>
+          <dl className="mt-12 grid gap-x-10 border-t border-ink/15 sm:grid-cols-2 lg:grid-cols-3">
             {[
               { label: "Legal name", value: site.legalName },
               { label: "Type", value: "Technology and software company" },
               { label: "Location", value: `${site.contact.city}, ${site.contact.country} · remote-first, serving clients worldwide` },
-              { label: "Website", value: <a className="text-blue hover:underline" href={site.url}>{site.url.replace(/^https?:\/\//, "")}</a> },
-              { label: "Email", value: <a className="text-blue hover:underline" href={`mailto:${site.contact.generalEmail}`}>{site.contact.generalEmail}</a> },
-              ...(site.contact.phone ? [{ label: "Phone", value: <a className="text-blue hover:underline" href={`tel:${site.contact.phone.replace(/\s+/g, "")}`}>{site.contact.phone}</a> }] : []),
+              { label: "Website", value: <a className="link-draw text-blue" href={site.url}>{site.url.replace(/^https?:\/\//, "")}</a> },
+              { label: "Email", value: <a className="link-draw text-blue" href={`mailto:${site.contact.generalEmail}`}>{site.contact.generalEmail}</a> },
+              ...(site.contact.phone ? [{ label: "Phone", value: <a className="link-draw text-blue" href={`tel:${site.contact.phone.replace(/\s+/g, "")}`}>{site.contact.phone}</a> }] : []),
               { label: "Founder", value: founder.name },
-              { label: "Leadership", value: <Link className="text-blue hover:underline" href="/about/leadership">Founder, Co-Founder, CEO and Board</Link> },
-              { label: "Services", value: <Link className="text-blue hover:underline" href="/services">13 services across engineering, digital experience and growth</Link> },
+              { label: "Leadership", value: <Link className="link-draw text-blue" href="/about/leadership">Founder, Co-Founder, CEO and Board</Link> },
+              { label: "Services", value: <Link className="link-draw text-blue" href="/services">13 services across engineering, digital experience and growth</Link> },
             ].map((row) => (
-              <div key={row.label}>
-                <dt className="label-caps text-slate-500">{row.label}</dt>
-                <dd className="mt-2 text-base text-navy">{row.value}</dd>
+              <div key={row.label} className="border-b border-ink/15 py-6">
+                <dt className="label-caps text-slate-600">{row.label}</dt>
+                <dd className="mt-2 text-[1.02rem] text-navy">{row.value}</dd>
               </div>
             ))}
           </dl>
@@ -191,18 +208,20 @@ export default async function AboutPage() {
       </section>
 
       {/* Where we're going */}
-      <section aria-labelledby="direction-heading" className="dark-section bg-deep text-white">
+      <section aria-labelledby="direction-heading" className="dark-section bg-blue text-white">
         <div className="container-x section-y">
-          <SectionHeading number="07" label="Where we're going" title={<span id="direction-heading">Two engines, one direction</span>} description="LAMHA Technologies combines technology services with proprietary technology, and is preparing the ground for future engineering frontiers." tone="dark" />
-          <ol className="mt-12 grid gap-4 md:grid-cols-3">
+          <p className="label-caps text-white">08 · Where we&apos;re going</p>
+          <h2 id="direction-heading" className="mt-8 text-giant font-extrabold text-white">
+            Two engines, one direction.
+          </h2>
+          <p className="mt-8 max-w-2xl text-lead text-white">LAMHA Technologies combines technology services with proprietary technology, and is preparing the ground for future engineering frontiers.</p>
+          <ol className="mt-16 grid gap-10 border-t border-white/30 pt-10 md:grid-cols-3">
             {direction.map((d, i) => (
-              <Reveal key={d.title} as="li" delay={i * 70}>
-                <div className="h-full rounded-lg border border-white/10 bg-white/[0.03] p-7">
-                  <span className="font-mono text-xs text-blue-200">{String(i + 1).padStart(2, "0")}</span>
-                  <h3 className="mt-4 text-lg font-semibold text-white">{d.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-slate-400">{d.description}</p>
-                </div>
-              </Reveal>
+              <li key={d.title}>
+                <span className="tabular font-display text-h2 font-extrabold text-white">{String(i + 1).padStart(2, "0")}</span>
+                <h3 className="mt-4 font-display text-2xl font-bold text-white">{d.title}</h3>
+                <p className="mt-3 text-[1.02rem] leading-relaxed text-white">{d.description}</p>
+              </li>
             ))}
           </ol>
         </div>

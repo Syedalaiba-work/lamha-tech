@@ -8,13 +8,11 @@ export function Portrait({ leader, className, size = "md" }: { leader: Leader; c
   return (
     <div
       className={cn(
-        "relative overflow-hidden rounded-lg border border-white/10 bg-gradient-to-br from-navy-700 via-navy to-abyss",
+        "relative overflow-hidden rounded-sm bg-navy",
         size === "lg" ? "aspect-[4/5]" : "aspect-square",
         className,
       )}
     >
-      <div aria-hidden="true" className="absolute inset-0 grid-texture opacity-60" />
-      <div aria-hidden="true" className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-blue/30 blur-3xl" />
       {leader.portrait ? (
         <Image
           src={leader.portrait}
@@ -42,7 +40,7 @@ export function LeadershipCard({ leader, tone = "light", className }: { leader: 
     <article id={leader.slug} className={cn("group flex h-full flex-col scroll-mt-28", className)}>
       <Portrait leader={leader} className="transition-transform duration-500 ease-[var(--ease-out-expo)] group-hover:-translate-y-1" />
       <div className="mt-5">
-        <h3 className={cn("text-lg font-semibold", dark ? "text-white" : "text-navy")}>
+        <h3 className={cn("font-display text-xl font-bold tracking-tight", dark ? "text-white" : "text-navy")}>
           <Link href={leaderPath(leader)} className="rounded-sm hover:underline">
             {leader.name}
           </Link>

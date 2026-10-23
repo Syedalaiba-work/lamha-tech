@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
-import { DecodeText } from "@/components/motion/DecodeText";
 
+/** Small caps eyebrow: an optional index number, a short rule and the label. Quiet by design. */
 export function SectionLabel({
   number,
   children,
@@ -15,20 +15,10 @@ export function SectionLabel({
   as?: "p" | "span" | "div";
 }) {
   return (
-    <Tag
-      className={cn(
-        "label-caps inline-flex items-center gap-3",
-        tone === "dark" ? "text-slate-400" : "text-slate-500",
-        className,
-      )}
-    >
-      {number && (
-        <span className={cn("font-mono text-[0.75rem] font-semibold tabular-nums tracking-normal", tone === "dark" ? "text-blue-2" : "text-blue")}>
-          {number}
-        </span>
-      )}
-      {number && <span aria-hidden="true" className={cn("h-px w-6", tone === "dark" ? "bg-white/25" : "bg-slate-300")} />}
-      <span>{typeof children === "string" ? <DecodeText text={children} /> : children}</span>
+    <Tag className={cn("label-caps inline-flex items-center gap-3", tone === "dark" ? "text-slate-300" : "text-slate-600", className)}>
+      {number && <span className={cn("tabular font-bold tracking-[0.04em]", tone === "dark" ? "text-blue-200" : "text-blue")}>{number}</span>}
+      {number && <span aria-hidden="true" className={cn("h-px w-8", tone === "dark" ? "bg-white/30" : "bg-ink/25")} />}
+      <span>{children}</span>
     </Tag>
   );
 }

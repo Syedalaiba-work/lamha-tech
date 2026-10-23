@@ -18,7 +18,7 @@ const display = Montserrat({
   variable: "--font-display-face",
   subsets: ["latin"],
   display: "swap",
-  weight: ["500", "600", "700"],
+  weight: ["500", "600", "700", "800"],
 });
 
 const mono = JetBrains_Mono({
@@ -93,7 +93,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export const viewport: Viewport = {
-  themeColor: "#06070b",
+  themeColor: "#fbfcfe",
   width: "device-width",
   initialScale: 1,
 };
@@ -110,7 +110,6 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       <body className="flex min-h-full flex-col">
         <JsonLd data={[organizationJsonLd(content), websiteJsonLd()]} />
         {children}
-        <div className="grain" aria-hidden="true" />
         <AnalyticsProvider />
       </body>
     </html>

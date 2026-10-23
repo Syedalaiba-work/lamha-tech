@@ -1,17 +1,25 @@
 import { Breadcrumb, type Crumb } from "@/components/ui/Breadcrumb";
 import { SectionLabel } from "@/components/ui/SectionLabel";
-import { DarkBackdrop } from "@/components/visuals/GridPattern";
-import { AccentCanvas } from "@/components/three/AccentCanvas";
-import type { AccentVariant } from "@/components/three/AccentScene";
-import { HeroField, type HeroFieldBase } from "@/components/three/HeroField";
-import { HeroParallax } from "@/components/motion/HeroParallax";
 import { Rise, TextReveal } from "@/components/motion/Motion";
 import { cn } from "@/lib/utils";
 
+export type HeroSurface = "paper" | "cloud" | "navy" | "blue";
+
+const SURFACES: Record<HeroSurface, { section: string; dark: boolean }> = {
+  paper: { section: "bg-paper text-navy", dark: false },
+  cloud: { section: "bg-cloud text-navy", dark: false },
+  navy: { section: "dark-section bg-navy text-white", dark: true },
+  blue: { section: "dark-section bg-blue text-white", dark: true },
+};
+
 /**
- * Standard dark page hero used by every inner page.
- * - `field`: particle formation behind the hero that explodes on scroll-out (false to disable)
- * - `accent`: 3D form on the right (with `visual` as its non-WebGL fallback), or `visual` alone
+ * Inner-page hero — typographic and light-first by default. Pages compose it differently:
+ * `surface` sets the field (paper / cloud / navy / blue), `size` the title scale, `visual` an optional
+ * right-hand (or below, with `visualBelow`) art piece, `aside` a short fact column. One focal element
+ * per hero; no background particle fields.
+ *
+ * Legacy props `accent` and `field` are accepted for compatibility and ignored (the old 3D accents and
+ * particle fields are retired in Redesign 2.0).
  */
 export function PageHero({
   number,
@@ -21,8 +29,10 @@ export function PageHero({
   breadcrumbs,
   actions,
   visual,
-  accent,
-  field = "sphere",
+  aside,
+  surface = "paper",
+  size = "giant",
+  visualBelow = false,
   className,
   compact = false,
 }: {
@@ -33,54 +43,76 @@ export function PageHero({
   breadcrumbs?: Crumb[];
   actions?: React.ReactNode;
   visual?: React.ReactNode;
-  accent?: AccentVariant;
-  field?: HeroFieldBase | false;
+  aside?: React.ReactNode;
+  surface?: HeroSurface;
+  size?: "mega" | "giant" | "display" | "h1";
+  visualBelow?: boolean;
+  /** @deprecated retired; ignored */
+  accent?: string;
+  /** @deprecated retired; ignored */
+  field?: string | false;
   className?: string;
   compact?: boolean;
 }) {
-  const hasVisual = Boolean(visual || accent);
-  // One 3D focal element per hero: a page visual/accent replaces the background sculpture.
-  const showField = Boolean(field) && !compact && !hasVisual;
+  const s = SURFACES[surface];
+  const titleSize = size === "mega" ? "text-mega" : size === "display" ? "text-display" : size === "h1" ? "text-h1" : "text-giant";
   const titleNode = typeof title === "string" ? <TextReveal lines={[title]} delay={0.05} /> : title;
+  const split = Boolean(visual) && !visualBelow;
+
   return (
-    <section data-hero className={cn("dark-section relative overflow-hidden bg-deep text-white", !compact && "flex min-h-[64vh] flex-col justify-center", className)}>
-      <DarkBackdrop />
-      {showField && field && <HeroField base={field} />}
-      {/* readability veil over the field on the text side */}
-      {showField && <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(7,17,41,0.85)_0%,rgba(7,17,41,0.55)_45%,rgba(7,17,41,0)_75%)]" />}
-      <div className={cn("container-x relative w-full pt-[calc(var(--header-h)+3rem)]", compact ? "pb-14 sm:pb-16" : "pb-20 sm:pb-24", hasVisual && "lg:pb-28")}>
-        <HeroParallax>
-          {breadcrumbs && (
+    <section data-hero className={cn("relative overflow-hidden", s.section, !compact && "flex min-h-[86svh] flex-col", className)}>
+      <div className={cn("container-x relative flex w-full flex-1 flex-col pt-[calc(var(--header-h)+2.5rem)]", compact ? "pb-16 sm:pb-20" : "pb-14 sm:pb-20")}>
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          {breadcrumbs ? (
             <Rise y={8}>
-              <Breadcrumb items={breadcrumbs} className="mb-8" />
+              <Breadcrumb items={breadcrumbs} tone={s.dark ? "dark" : "light"} />
             </Rise>
+          ) : (
+            <span />
           )}
-          <div className={cn("grid gap-12", hasVisual && "lg:grid-cols-12 lg:items-center")}>
-            <div className={cn(hasVisual ? "lg:col-span-6" : "max-w-3xl")}>
-              <Rise y={8} delay={0.05}>
-                <SectionLabel number={number} tone="dark">
-                  {label}
-                </SectionLabel>
-              </Rise>
-              <h1 className="mt-6 text-h1 font-semibold text-white">{titleNode}</h1>
-              {description && (
-                <Rise delay={0.3}>
-                  <p className="mt-6 max-w-2xl text-lg leading-relaxed text-slate-300">{description}</p>
-                </Rise>
-              )}
-              {actions && (
-                <Rise delay={0.45}>
-                  <div className="mt-8 flex flex-wrap items-center gap-3">{actions}</div>
-                </Rise>
-              )}
-            </div>
-            {hasVisual && (
-              <div className="lg:col-span-6">
-                <Rise delay={0.2}>{accent ? <AccentCanvas variant={accent} fallback={visual} /> : visual}</Rise>
+          <Rise y={8} delay={0.05}>
+            <SectionLabel number={number} tone={s.dark ? "dark" : "light"}>
+              {label}
+            </SectionLabel>
+          </Rise>
+        </div>
+
+        <div className={cn("grid flex-1 gap-12", compact ? "mt-14" : "mt-16 sm:mt-24", split && "lg:grid-cols-12 lg:items-end")}>
+          <div className={cn("flex flex-col justify-end", split ? "lg:col-span-7" : "")}>
+            <h1 className={cn(titleSize, "max-w-[16ch] font-extrabold", s.dark ? "text-white" : "text-navy")}>{titleNode}</h1>
+            {(description || actions || aside) && (
+              <div className={cn("mt-10 grid gap-10 sm:mt-14", !split && "lg:grid-cols-12")}>
+                <div className={cn(!split && "lg:col-span-6")}>
+                  {description && (
+                    <Rise delay={0.25}>
+                      <p className={cn("max-w-2xl text-lead", s.dark ? "text-slate-200" : "text-slate-600")}>{description}</p>
+                    </Rise>
+                  )}
+                  {actions && (
+                    <Rise delay={0.35}>
+                      <div className="mt-8 flex flex-wrap items-center gap-3">{actions}</div>
+                    </Rise>
+                  )}
+                </div>
+                {aside && !split && (
+                  <Rise delay={0.4} className="lg:col-span-5 lg:col-start-8">
+                    {aside}
+                  </Rise>
+                )}
               </div>
             )}
           </div>
-        </HeroParallax>
+          {split && (
+            <div className="lg:col-span-5">
+              <Rise delay={0.2}>{visual}</Rise>
+            </div>
+          )}
+        </div>
+        {visual && visualBelow && (
+          <Rise delay={0.2} className="mt-16">
+            {visual}
+          </Rise>
+        )}
       </div>
     </section>
   );

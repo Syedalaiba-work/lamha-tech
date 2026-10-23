@@ -2,7 +2,7 @@ import type { ComponentPropsWithRef } from "react";
 import { cn } from "@/lib/utils";
 
 export const inputBase =
-  "block w-full rounded-md border bg-white px-3.5 text-[0.95rem] text-ink placeholder:text-slate-500 transition-[border-color,box-shadow] duration-200 focus:outline-none focus:ring-2 focus:ring-blue/30 focus:border-blue disabled:bg-slate-50 disabled:text-slate-500";
+  "block w-full rounded-none border bg-white px-4 text-base text-ink placeholder:text-slate-500 transition-[border-color,box-shadow] duration-200 focus:outline-none focus:ring-2 focus:ring-blue/25 focus:border-blue disabled:bg-slate-50 disabled:text-slate-500";
 
 export function FieldLabel({ htmlFor, required, children, optionalText = "Optional" }: { htmlFor: string; required?: boolean; children: React.ReactNode; optionalText?: string }) {
   return (
@@ -58,7 +58,7 @@ export function FormField({ id, label, error, hint, required, className, wrapper
         aria-invalid={error ? true : undefined}
         aria-describedby={error || hint ? msgId : undefined}
         aria-required={required || undefined}
-        className={cn(inputBase, "h-12", error ? "border-red-400 focus:ring-red-200 focus:border-red-500" : "border-slate-300 hover:border-slate-400", className)}
+        className={cn(inputBase, "h-12", error ? "border-red-400 focus:ring-red-200 focus:border-red-500" : "border-ink/20 hover:border-ink/40", className)}
         {...props}
       />
       <FieldMessage id={msgId} error={error} hint={hint} />
