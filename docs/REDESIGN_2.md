@@ -169,3 +169,29 @@ Branch `redesign/immersive-2.1`, cut from `356c287` (2.0 stays intact on `redesi
 - **3D assets**: modules are procedural (original, generated in code). No Blender/glTF tooling was available, so there are no sculpted or scanned assets, no baked lighting or ambient occlusion, and no depth-of-field pass. Lusion's level of bespoke modelling and post-production is still ahead.
 - **Pointer effect** is subtle in stills; it needs a real-device check for strength.
 - **Content gaps unchanged**: no reel/video, no case studies, no vector logo master.
+
+# Iteration 2.2 — content in the initial HTML, measured 3D cost (checkpoint)
+
+Branch `redesign/immersive-2.2`, cut from `6998fe1`. Nothing pushed or deployed. This branch was closed as a checkpoint when the full-site overhaul (3.0) began; its visual refinements and final validation continue there.
+
+## 12. Rendering fix (no JavaScript, delayed JavaScript, failed 3D)
+
+- **Root cause**: `src/app/(site)/loading.tsx` made every route a Suspense boundary, so even static pages streamed a skeleton followed by the real content in `<div hidden id="S:0">`, which only JavaScript swaps in. Removed. On all 17 checked routes the initial HTML now has 0 hidden streamed segments, no skeleton, and the `h1` outside any hidden container (before: 1 / yes / inside).
+- **Motion initial states** (`opacity:0` inline styles) are made visible by a `noscript` rule, and by a CSS failsafe (`html:not(.hydrated)`) that reveals them after 2.5 s if JavaScript is slow or fails; `MotionProvider` sets `hydrated` on mount. Pointer-only UI (service hover preview, journey rail and chapter panels) is marked `data-js-only` and stays hidden.
+- **3D isolation**: `SceneBoundary` keeps a WebGL failure local (journey: no canvas, content remains; inner pages: SVG composition).
+
+## 13. 3D performance — measured on this machine's integrated GPU
+
+Hardware path: headless Edge, ANGLE Direct3D 11 on **Intel Iris Xe** (i7-12800H). This is a real GPU, not SwiftShader, but still headless on a laptop; frame times snap to 120 Hz / 60 Hz steps and vary by run (power and thermal state), so figures are ranges.
+
+| Measurement (1440 × 900, DPR 1) | Result |
+| --- | --- |
+| High tier (bloom + contact shadows), frame rate | 62–121 fps; median 8.3–16.5 ms, 95th percentile 9–17 ms; 29–30 draw calls, ≈ 10 k triangles, 16 programs |
+| Standard tier | 64–100 fps; median 8.6–11.8 ms, 95th percentile ≈ 21–23 ms; 4 draw calls, 5 k triangles, 7 programs |
+| Lite tier (on-demand frames) | 0 frames while idle; renders only on scroll, pointer or settling |
+| Cold-load main-thread shader linking | **1.18–1.20 s → 0.50–0.58 s** (high), **0.97–1.05 s → 0.40–0.43 s** (standard), A/B on the same build (`?warm=0`) |
+
+- **Shader warm-up** (`ShaderWarmup` in `studio.tsx`): module materials are compiled with `compileAsync` (KHR_parallel_shader_compile, supported here) before first use, with instance colours allocated up front so the warm-up builds the same program variant, and the render-target variant when bloom draws the scene. Modules stay hidden and the intro waits until the programs are ready (4-second cap). The module materials no longer rebuild when the tier changes.
+- **Remaining cost**: ≈ 0.4 s for three.js's PMREM GGX convolution shader (a 256-sample loop that D3D11 unrolls), compiled synchronously the first time the studio environment is used. A pre-baked environment map would remove it; it was not done because it adds a ≈ 0.5–1.5 MB download.
+- **Tier stepping**: `PerformanceMonitor` now steps high → standard → lite; `?quality=high|standard|lite` forces a tier; `?perf` publishes counters on `window.__lamhaPerf` (now counting every render pass).
+- **Not measured**: real phones, Safari/iOS, the discrete NVIDIA GPU in this laptop, and screen readers.

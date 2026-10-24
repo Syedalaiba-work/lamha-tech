@@ -1,5 +1,7 @@
 "use client";
 
+import { useLayoutEffect } from "react";
+import { useThree } from "@react-three/fiber";
 import { Environment, Lightformer } from "@react-three/drei";
 import * as THREE from "three";
 
@@ -34,3 +36,42 @@ export const MODULE_COLORS = {
   ceramic: { base: new THREE.Color("#f2f5fa"), hot: new THREE.Color("#d3e2fb") },
   velvet: { base: new THREE.Color("#1769E0"), hot: new THREE.Color("#2E7CF6") },
 };
+
+/**
+ * Compiles the scene's materials before they are first drawn. With KHR_parallel_shader_compile the driver
+ * links the programs off the main thread (the physical materials took ~0.4 s each to link synchronously
+ * on first render); the caller keeps its meshes hidden until onReady. Gives up waiting after 4 s.
+ * Mount it after the meshes so their instance-colour attributes already exist (they change the program).
+ * `offscreen` compiles the variant used when a composer draws the scene into a render target (linear output).
+ */
+export function ShaderWarmup({ onReady, offscreen = false }: { onReady: () => void; offscreen?: boolean }) {
+  const gl = useThree((s) => s.gl);
+  const scene = useThree((s) => s.scene);
+  const camera = useThree((s) => s.camera);
+  useLayoutEffect(() => {
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      onReady();
+    };
+    // Diagnostic A/B switch (?warm=0): skip the warm-up so first use compiles synchronously, as before.
+    if (new URLSearchParams(window.location.search).get("warm") === "0") {
+      finish();
+      return;
+    }
+    const timer = window.setTimeout(finish, 4000);
+    const previous = gl.getRenderTarget();
+    const target = offscreen ? new THREE.WebGLRenderTarget(1, 1) : null;
+    gl.setRenderTarget(target);
+    // compileAsync creates the programs synchronously, so the target can be restored straight away.
+    gl.compileAsync(scene, camera).then(finish, finish);
+    gl.setRenderTarget(previous);
+    target?.dispose();
+    return () => {
+      done = true;
+      window.clearTimeout(timer);
+    };
+  }, [gl, scene, camera, onReady, offscreen]);
+  return null;
+}

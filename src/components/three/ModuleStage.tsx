@@ -1,10 +1,10 @@
 "use client";
 
-import { useMemo, useRef } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { createLModuleGeometryHQ, createNodeGeometry, mulberry32 } from "./brand-geometry";
-import { MODULE_COLORS, Studio, createModuleMaterials } from "./studio";
+import { MODULE_COLORS, ShaderWarmup, Studio, createModuleMaterials } from "./studio";
 
 /**
  * A small interactive 3D stage for inner-page heroes, built from the same brand modules, materials
@@ -66,6 +66,14 @@ function Pieces({ formation, tone, interactive }: { formation: StageFormation; t
   const mats = useMemo(() => createModuleMaterials(), []);
   const nodeMat = useMemo(() => new THREE.MeshStandardMaterial({ color: tone === "dark" ? "#7fb0ff" : "#1769E0", emissive: tone === "dark" ? "#7fb0ff" : "#1769E0", emissiveIntensity: 0.7, roughness: 0.2 }), [tone]);
   const counts = useMemo(() => [0, 1, 2].map((k) => data.pieces.filter((p) => p.kind === k).length), [data]);
+  const colors = useMemo(() => counts.map((c) => new Float32Array(Math.max(1, c) * 3).fill(1)), [counts]);
+  // Hidden until the shaders are compiled (see ShaderWarmup); the intro starts after that.
+  const [warm, setWarm] = useState(false);
+  const onWarm = useCallback(() => setWarm(true), []);
+  const invalidate = useThree((s) => s.invalidate);
+  useEffect(() => {
+    if (warm) invalidate();
+  }, [warm, invalidate]);
   const refs = [useRef<THREE.InstancedMesh>(null), useRef<THREE.InstancedMesh>(null), useRef<THREE.InstancedMesh>(null)];
   const nodeRef = useRef<THREE.InstancedMesh>(null);
   const group = useRef<THREE.Group>(null);
@@ -77,7 +85,7 @@ function Pieces({ formation, tone, interactive }: { formation: StageFormation; t
     const s = st.current;
     const real = Math.min(delta, 0.25);
     s.t += real;
-    s.intro = Math.min(1, s.intro + real / 1.4);
+    if (warm) s.intro = Math.min(1, s.intro + real / 1.4);
     const k = 1 - Math.exp(-real * 4);
     s.mx = THREE.MathUtils.lerp(s.mx, interactive ? frame.pointer.x : 0, k);
     s.my = THREE.MathUtils.lerp(s.my, interactive ? frame.pointer.y : 0, k);
@@ -132,12 +140,17 @@ function Pieces({ formation, tone, interactive }: { formation: StageFormation; t
   });
 
   return (
-    <group ref={group}>
-      <instancedMesh ref={refs[0]} args={[geo.module, mats.navy, Math.max(1, counts[0]!)]} frustumCulled={false} />
-      <instancedMesh ref={refs[1]} args={[geo.module, mats.ceramic, Math.max(1, counts[1]!)]} frustumCulled={false} />
-      <instancedMesh ref={refs[2]} args={[geo.module, mats.velvet, Math.max(1, counts[2]!)]} frustumCulled={false} />
-      <instancedMesh ref={nodeRef} args={[geo.node, nodeMat, Math.max(1, data.nodes.length)]} frustumCulled={false} />
-    </group>
+    <>
+      <group ref={group} visible={warm}>
+        {([mats.navy, mats.ceramic, mats.velvet] as const).map((mat, k) => (
+          <instancedMesh key={k} ref={refs[k]} args={[geo.module, mat, Math.max(1, counts[k]!)]} frustumCulled={false}>
+            <instancedBufferAttribute attach="instanceColor" args={[colors[k]!, 3]} />
+          </instancedMesh>
+        ))}
+        <instancedMesh ref={nodeRef} args={[geo.node, nodeMat, Math.max(1, data.nodes.length)]} frustumCulled={false} />
+      </group>
+      <ShaderWarmup onReady={onWarm} />
+    </>
   );
 }
 

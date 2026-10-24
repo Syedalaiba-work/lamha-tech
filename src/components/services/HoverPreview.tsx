@@ -49,6 +49,7 @@ export function HoverPreview({ children, className }: { children: React.ReactNod
       {children}
       <motion.div
         aria-hidden="true"
+        data-js-only
         className="pointer-events-none fixed left-0 top-0 z-[60] hidden w-[300px] overflow-hidden border border-white/15 bg-deep shadow-2xl lg:block"
         style={{ x: sx, y: sy, opacity: kind ? 1 : 0, scale: kind ? 1 : 0.92 }}
         transition={{ opacity: { duration: 0.25 }, scale: { duration: 0.35 } }}

@@ -106,6 +106,10 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       <head>
         {/* Marks JS availability so scroll-reveal styles only apply when they can be undone. */}
         <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }} />
+        {/* Without JavaScript, animation starting states (inline opacity 0 / offsets) would hide real content: show it. */}
+        <noscript>
+          <style>{`[style*="opacity:0"]:not([data-js-only]){opacity:1!important;transform:none!important}`}</style>
+        </noscript>
       </head>
       <body className="flex min-h-full flex-col">
         <JsonLd data={[organizationJsonLd(content), websiteJsonLd()]} />

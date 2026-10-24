@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useMounted, usePrefersReducedMotion, useWebGLSupport } from "@/components/motion/useReducedMotion";
 import type { StageFormation, StageTone } from "./ModuleStage";
+import { SceneBoundary } from "./SceneBoundary";
 import { cn } from "@/lib/utils";
 
 const ModuleStage = dynamic(() => import("./ModuleStage"), { ssr: false });
@@ -32,7 +33,9 @@ export function ModuleVisual({ formation, tone = "light", fallback, className }:
     <div ref={box} aria-hidden="true" className={cn("relative aspect-[5/4] w-full", className)}>
       {mounted && webgl ? (
         <div className="absolute inset-0">
-          <ModuleStage formation={formation} tone={tone} active={active} reduced={reduced} />
+          <SceneBoundary fallback={<div className="absolute inset-0 flex items-center justify-center">{fallback}</div>}>
+            <ModuleStage formation={formation} tone={tone} active={active} reduced={reduced} />
+          </SceneBoundary>
         </div>
       ) : (
         <div className="absolute inset-0 flex items-center justify-center">{fallback}</div>

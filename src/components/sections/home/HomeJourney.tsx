@@ -13,6 +13,7 @@ import { useScrollProgress } from "@/components/motion/useScrollProgress";
 import { useMediaQuery, useMounted, usePrefersReducedMotion, useWebGLSupport } from "@/components/motion/useReducedMotion";
 import { PHASE_NAMES, phaseAt, rgb, stageColor } from "@/components/three/journey-timeline";
 import type { JourneyQuality, ProgressRef } from "@/components/three/JourneyScene";
+import { SceneBoundary } from "@/components/three/SceneBoundary";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import { cn } from "@/lib/utils";
 
@@ -63,12 +64,12 @@ export function HomeJourney({ fallback }: { fallback: ReactNode }) {
 }
 
 /** Without JavaScript the journey cannot pin or animate: unpin it and show every chapter in reading order. */
-const NOSCRIPT_CSS = `[data-journey]{height:auto!important}[data-journey-stage]{position:relative!important;height:auto!important;min-height:100svh;overflow:visible!important;background:#f3f6fb!important}[data-journey-panel]{position:relative!important;opacity:1!important;transform:none!important;inset:auto!important;width:auto!important;background:none!important}[data-journey-panel]:first-of-type{margin-top:100svh}[data-journey-panel] *{color:#0B1B3A!important}[data-journey-panel] [inert]{display:none}`;
+const NOSCRIPT_CSS = `[data-journey]{height:auto!important}[data-journey-stage]{position:relative!important;height:auto!important;min-height:100svh;overflow:visible!important;background:#f3f6fb!important}[data-journey-panel]{position:relative!important;opacity:1!important;transform:none!important;inset:auto!important;width:auto!important;background:none!important}[data-journey-flow]{position:relative!important;inset:auto!important}[data-journey-h1]{min-height:calc(100svh - 12rem)}[data-journey-panel] *{color:#0B1B3A!important}[data-journey-panel] [inert]{display:none}`;
 
 function initialQuality(mobile: boolean): JourneyQuality {
   // Diagnostic override for side-by-side comparisons (?quality=standard|high); never needed by visitors.
   const forced = new URLSearchParams(window.location.search).get("quality");
-  if (forced === "standard" || forced === "high") return forced;
+  if (forced === "standard" || forced === "high" || forced === "lite") return forced;
   if (mobile) return "standard";
   const nav = navigator as Navigator & { deviceMemory?: number };
   const cores = nav.hardwareConcurrency ?? 8;
@@ -135,11 +136,13 @@ function Journey() {
         className={cn("sticky top-0 h-[100svh] min-h-[600px] overflow-hidden", dark && "dark-section")}
       >
         <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-          <JourneyScene progress={progress} active={active} mobile={mobile} quality={quality} onDecline={() => setQuality("standard")} eventSource={stage} pointerActive={pointerActive} />
+          <SceneBoundary>
+            <JourneyScene progress={progress} active={active} mobile={mobile} quality={quality} onDecline={() => setQuality((q) => (q === "high" ? "standard" : "lite"))} eventSource={stage} pointerActive={pointerActive} />
+          </SceneBoundary>
         </div>
 
         {/* Problems: the tagline, one heading set as a composition (above the 3D). */}
-        <h1 id="hero-heading" className="pointer-events-none absolute inset-0 z-[1] flex flex-col justify-between px-[var(--gutter)] pb-[clamp(15rem,40vh,19rem)] pt-[calc(var(--header-h)+clamp(2rem,6vh,4rem))] font-display md:pb-[clamp(9rem,24vh,15rem)]">
+        <h1 id="hero-heading" data-journey-flow data-journey-h1 className="pointer-events-none absolute inset-0 z-[1] flex flex-col justify-between px-[var(--gutter)] pb-[clamp(15rem,40vh,19rem)] pt-[calc(var(--header-h)+clamp(2rem,6vh,4rem))] font-display md:pb-[clamp(9rem,24vh,15rem)]">
           <motion.span style={{ opacity: o0 }} className="label-caps block text-slate-600">
             Technology that turns
           </motion.span>
@@ -154,7 +157,7 @@ function Journey() {
           </motion.span>
         </h1>
 
-        <motion.div style={{ opacity: o0 }} inert={phase !== 0} className="absolute inset-x-0 bottom-0 z-10">
+        <motion.div data-journey-flow style={{ opacity: o0 }} inert={phase !== 0} className="absolute inset-x-0 bottom-0 z-10">
           <div className="container-x flex flex-col gap-6 pb-[clamp(1.5rem,4vh,2.75rem)] md:flex-row md:items-end md:justify-between">
             <p className="max-w-[34rem] text-[0.98rem] leading-relaxed text-slate-700 md:text-lead">
               <span className="max-md:hidden">LAMHA Technologies is a software engineering and digital product company in Islamabad, Pakistan. </span>We design, build, test and evolve software, web and mobile products for businesses worldwide.
@@ -184,7 +187,7 @@ function Journey() {
         ))}
 
         {/* Phase rail */}
-        <motion.ol aria-hidden="true" style={{ opacity: railOpacity }} className="pointer-events-none absolute left-[var(--gutter)] top-[calc(var(--header-h)+1.25rem)] z-[2] hidden items-center gap-6 lg:flex">
+        <motion.ol aria-hidden="true" data-js-only style={{ opacity: railOpacity }} className="pointer-events-none absolute left-[var(--gutter)] top-[calc(var(--header-h)+1.25rem)] z-[2] hidden items-center gap-6 lg:flex">
           {PHASE_NAMES.map((name, i) => (
             <li key={name} className="flex items-center gap-3 text-[0.72rem] font-semibold uppercase tracking-[0.16em]">
               <span className={cn("h-[2px] transition-all duration-500", phase === i ? "w-8 bg-blue-2" : dark ? "w-3 bg-white/30" : "w-3 bg-ink/20")} />
@@ -207,6 +210,7 @@ function ChapterPanel({ ch, p, last, activeNow }: { ch: (typeof CHAPTERS)[number
   return (
     <motion.article
       data-journey-panel
+      data-js-only
       aria-labelledby={`journey-${ch.n}`}
       style={{ opacity, y }}
       className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] max-md:bg-[linear-gradient(to_top,var(--stage-bg)_62%,transparent)] md:inset-y-0 md:right-auto md:flex md:w-[min(46rem,52vw)] md:flex-col md:justify-center"
