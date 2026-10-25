@@ -108,7 +108,7 @@ export default function WorkPage() {
       <section data-hero aria-labelledby="work-heading" className="bg-paper">
         <div className="container-x pb-20 pt-[calc(var(--header-h)+2.5rem)] sm:pb-28">
           <div className="flex flex-wrap items-center justify-between gap-4">
-            <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Work" }]} />
+            <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Work" }]} tone="light" />
             <p className="label-tech text-slate-600">Client work · Studio studies</p>
           </div>
           <h1 id="work-heading" className="mt-16 font-display text-mega text-navy sm:mt-24">

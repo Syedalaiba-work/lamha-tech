@@ -104,7 +104,8 @@ export function HomeReel({ number = 1 }: { number?: number }) {
           {copy}
         </motion.div>
 
-        <motion.div style={{ opacity: meta }} className={cn("absolute inset-x-0 bottom-0 z-10")}>
+        {/* Fades in late in the scroll, but shows at once if keyboard focus reaches its link (never focus an invisible element). */}
+        <motion.div style={{ opacity: meta }} className={cn("absolute inset-x-0 bottom-0 z-10 focus-within:!opacity-100")}>
           <div className="container-x pb-8">{footer}</div>
         </motion.div>
       </div>

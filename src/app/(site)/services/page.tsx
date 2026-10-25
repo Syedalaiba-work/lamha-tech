@@ -41,7 +41,7 @@ export default function ServicesPage() {
       <section data-hero aria-labelledby="services-heading" className="relative bg-paper">
         <div className="container-x pb-16 pt-[calc(var(--header-h)+2.5rem)]">
           <div className="flex flex-wrap items-center justify-between gap-4">
-            <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Services" }]} />
+            <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Services" }]} tone="light" />
             <p className="label-tech text-slate-600">13 services · 3 families · 1 process</p>
           </div>
           <h1 id="services-heading" className="mt-14 font-display text-giant text-navy sm:mt-20">

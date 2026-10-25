@@ -48,7 +48,7 @@ export default async function AboutPage() {
       <section data-hero aria-labelledby="about-heading" className="bg-paper">
         <div className="container-x pb-20 pt-[calc(var(--header-h)+2.5rem)]">
           <div className="flex flex-wrap items-center justify-between gap-4">
-            <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "About" }]} />
+            <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "About" }]} tone="light" />
             <p className="label-tech text-slate-600">About LAMHA Technologies</p>
           </div>
           <div className="mt-14 grid gap-14 lg:mt-20 lg:grid-cols-12 lg:items-end">

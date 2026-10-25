@@ -30,7 +30,7 @@ export default async function LeadershipPage() {
       <section data-hero aria-labelledby="leadership-heading" className="bg-paper">
         <div className="container-x pb-16 pt-[calc(var(--header-h)+2.5rem)]">
           <div className="flex flex-wrap items-center justify-between gap-4">
-            <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "About", href: "/about" }, { label: "Leadership" }]} />
+            <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "About", href: "/about" }, { label: "Leadership" }]} tone="light" />
             <p className="label-tech text-slate-600">Leadership · {publishedLeadership.length} people</p>
           </div>
           <h1 id="leadership-heading" className="mt-14 max-w-[14ch] font-display text-giant text-navy sm:mt-20">
