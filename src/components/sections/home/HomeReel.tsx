@@ -40,7 +40,7 @@ export function HomeReel({ number = 1 }: { number?: number }) {
     const open = ease(ramp(v, 0.17, 0.44)); // L → rectangle (after the headline has left)
     const bleed = ease(ramp(v, 0.36, 0.66)); // rectangle → full frame
     el.style.setProperty("--fa", lerp(0.42, 1, open).toFixed(4));
-    el.style.setProperty("--fb", lerp(0.5, 0, open).toFixed(4));
+    el.style.setProperty("--fb", lerp(narrow ? 0.5 : 0.6, 0, open).toFixed(4));
     el.style.setProperty("--fc", lerp(0.06, 0, open).toFixed(4));
     el.style.setProperty("--mx", `${lerp(mx0, 0, bleed).toFixed(3)}%`);
     el.style.setProperty("--my", `${lerp(my0, 0, bleed).toFixed(3)}%`);
@@ -55,7 +55,7 @@ export function HomeReel({ number = 1 }: { number?: number }) {
       <SectionIndex n={number} tone="dark">
         Studio film
       </SectionIndex>
-      <h2 id="reel-heading" className="mt-6 max-w-[12ch] font-display text-h1 font-medium text-white">
+      <h2 id="reel-heading" className="mt-6 max-w-[12ch] font-display text-h2 font-medium text-white">
         From scattered parts to <span className="kinetic [--wght:780]">working systems.</span>
       </h2>
       <p className="mt-6 max-w-sm text-[0.98rem] leading-relaxed text-slate-300 max-md:hidden">{film.caption}</p>
