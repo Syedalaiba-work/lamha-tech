@@ -429,7 +429,9 @@ def drift(tf, t, i, amp=0.18, spin=1.0):
     p, q, s = tf
     ph = i * 1.37
     p = p + Vector((math.sin(math.tau * t + ph) * amp, math.cos(math.tau * 2 * t + ph) * amp * 0.6, math.sin(math.tau * t + ph * 2) * amp * 0.8))
-    q = q @ q_from_euler(math.tau * t * spin * ((i % 3) - 1 or 1) * 0.5, math.tau * t * spin * 0.5, 0)
+    # Whole turns per loop on each axis, so the tumble at t=1 equals t=0 (a half turn made the loop jump).
+    turns = max(1, round(spin))
+    q = q @ q_from_euler(math.tau * t * turns * ((i % 3) - 1 or 1), math.tau * t * turns, 0)
     return (p, q, s)
 
 

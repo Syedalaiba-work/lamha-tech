@@ -197,3 +197,19 @@ Durations 0.2 / 0.45 / 0.8 / 1.2 s; `expo-out (0.16, 1, 0.3, 1)` for entrances, 
 - **Films are fixed renders**: changing one means re-rendering in Blender (about 8–16 s per frame on this GPU); scripts and parameters are committed for that.
 - **Footer reveal** is limited to wide screens taller than 780 px by design (the footer has to fit one viewport to be revealed cleanly).
 - **PMREM shader compile** (about 0.4 s on the Iris Xe) remains on the first home visit.
+
+## 11. Final pre-release review (2026-10-25)
+
+Scope: the exact branch head, clean `.next`, local production build (`next start`), no database configured.
+
+**Git**: linear history `main` 2a7a3f7 → 2.0 356c287 → 2.1 6998fe1 → 2.2 d4cce8c → 3.0. The remote has only `main` (still 2a7a3f7); no redesign branch was pushed. Outside the site UI, the only dependency change since `main` is `postprocessing@6.39.5` (exact pin, added in 2.1). Unchanged since `main`: `prisma/` (no new migrations), `src/app/api`, `src/app/admin`, `src/lib` (auth, RBAC, storage, email, analytics), `proxy.ts`, `next.config.ts` (CSP), `vercel.json`, sitemap/robots/manifest/OG image. Form components changed only in styling.
+
+**Defects found and fixed in this review**
+
+| Defect | Fix |
+| --- | --- |
+| *Systems in motion* (home reel, menu, Contact, Work) jumped at its 10-second loop point: the scatter tumble added half a turn per loop, so the last frame did not match the first (seam difference 12.4 against a typical frame step of 2.6). The same latent bug existed in *Ensemble* (hidden there because its modules are off-screen at the seam). | `drift()` now uses whole turns per loop; both films re-rendered and re-encoded; seams re-measured. |
+| Services, Work, About and Leadership heroes are light but used the breadcrumb's on-navy tone: the current-page label measured 1.3:1. | `tone="light"` on those four breadcrumbs (no breadcrumb is left on the default tone). |
+| Keyboard focus could land on the reel's "All studio studies" link while its caption bar was still transparent. | The caption shows whenever it contains focus. |
+
+**Verified at the reviewed head**: lint, typecheck, 118/118 tests, clean build (44 pages); crawl of 161 internal URLs (50 HTML pages, every link and asset referenced in server HTML, all 30 film files): all 200, no redirects; browser sweep of 39 routes on desktop and 33 on phone emulation: one `h1` each, no console errors, no failed requests, no horizontal overflow, every film decodes; the browser made no request to any third-party host; initial HTML on 17 routes; no-JavaScript, blocked-scripts, reduced-motion and no-WebGL states; menu keyboard semantics (open, focus in, 40-Tab trap, Escape, focus return, scroll lock); contact, project and application forms (validation, focus, no request on invalid submit; one valid contact submission to local file storage, deleted afterwards); contrast on 17 routes; CSP allows the self-hosted films; byte-range requests return 206; no secrets in the diff.
