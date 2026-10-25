@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { buildMetadata, breadcrumbJsonLd } from "@/lib/seo";
 import { careerValues, visibleJobs } from "@/data/jobs";
 import { getContent } from "@/lib/server/content";
-import { PageHero } from "@/components/sections/PageHero";
-import { SectionLabel } from "@/components/ui/SectionLabel";
+import { Breadcrumb } from "@/components/ui/Breadcrumb";
+import { SectionIndex } from "@/components/ui/RegMarks";
 import { Reveal } from "@/components/ui/Reveal";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { Button } from "@/components/ui/Button";
@@ -11,8 +11,10 @@ import { Tag } from "@/components/ui/Tag";
 import { CareerCard } from "@/components/careers/CareerCard";
 import { ViewTracker } from "@/components/analytics/ViewTracker";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
-import { CTASection } from "@/components/sections/CTASection";
-import { ModuleVisual } from "@/components/three/ModuleVisual";
+import { NextStep } from "@/components/sections/NextStep";
+import { Kinetic } from "@/components/motion/Kinetic";
+import { Film } from "@/components/media/Film";
+import { LAperture } from "@/components/media/LAperture";
 
 export const metadata: Metadata = buildMetadata({
   title: "Careers",
@@ -36,33 +38,63 @@ export default async function CareersPage() {
     <>
       <ViewTracker event={ANALYTICS_EVENTS.CAREER_VIEW} />
       <JsonLd data={breadcrumbJsonLd([{ name: "Home", path: "/" }, { name: "Careers", path: "/careers" }])} />
-      <PageHero
-        surface="blue"
-        art={<ModuleVisual formation="scatter" tone="dark" fallback={null} />}
-        label="Careers"
-        title="Build what comes next with us."
-        description="Join a team building a global technology company around software, engineering and emerging technologies."
-        breadcrumbs={[{ label: "Home", href: "/" }, { label: "Careers" }]}
-        actions={
-          <>
-            <Button href="#open-positions" variant="secondary" size="lg" icon="arrow">
-              View open positions
-            </Button>
-            <Button href={`mailto:${site.contact.careersEmail}`} variant="outline-light" size="lg">
-              Email careers
-            </Button>
-          </>
-        }
-      />
+      {/* Hero: the page's blue moment; the ensemble film through an L. */}
+      <section data-hero aria-labelledby="careers-heading" className="dark-section relative overflow-hidden bg-blue text-white">
+        <div className="container-x pb-20 pt-[calc(var(--header-h)+2.5rem)]">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Careers" }]} tone="dark" />
+            <p className="label-tech text-white">Careers · Islamabad and remote</p>
+          </div>
+          <div className="mt-14 grid gap-14 lg:mt-20 lg:grid-cols-12 lg:items-end">
+            <div className="lg:col-span-7">
+              <h1 id="careers-heading" className="font-display text-giant text-white">
+                <span className="intro-line [--i:0]">
+                  <span className="kinetic [--wght:300]">Build what</span>
+                </span>{" "}
+                <span className="intro-line [--i:1]">
+                  <span>
+                    <Kinetic from={300} to={800} start={["start", 0.95]} end={["start", 0.4]}>
+                      comes next
+                    </Kinetic>
+                  </span>
+                </span>{" "}
+                <span className="intro-line [--i:2]">
+                  <span className="kinetic [--wght:300]">with us.</span>
+                </span>
+              </h1>
+              <p className="mt-10 max-w-xl text-lead text-white">Join a team building a global technology company around software, engineering and emerging technologies.</p>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Button href="#open-positions" variant="secondary" size="lg" icon="arrow">
+                  View open positions
+                </Button>
+                <Button href={`mailto:${site.contact.careersEmail}`} variant="outline-light" size="lg">
+                  Email careers
+                </Button>
+              </div>
+            </div>
+            <figure className="lg:col-span-5">
+              <LAperture shape={{ la: 46, lb: 58, lc: 6 }} className="aspect-[4/5] w-full">
+                <Film id="team" priority size="compact" className="absolute inset-0" />
+              </LAperture>
+              <figcaption className="label-tech mt-3 text-white">Studio film · Ensemble</figcaption>
+            </figure>
+          </div>
+        </div>
+      </section>
 
       {/* Philosophy — four words */}
       <section aria-label="Engineering philosophy" className="bg-paper">
         <div className="container-x section-y-sm">
+          {/* Four words, each a step heavier than the last: build → engineer → evolve → impact. */}
           <ol className="grid gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
-            {philosophy.map((p) => (
+            {philosophy.map((p, i) => (
               <li key={p.number} className="border-l-2 border-navy pl-6 lg:pr-6">
-                <span className="tabular text-sm font-bold text-blue">{p.number}</span>
-                <p className="mt-3 font-display text-[clamp(2rem,3.6vw,3.5rem)] font-extrabold leading-none tracking-[-0.05em] text-navy">{p.title.charAt(0) + p.title.slice(1).toLowerCase()}</p>
+                <span className="tabular font-mono text-xs text-blue">{p.number}</span>
+                <p className="mt-3 font-display text-[clamp(2.25rem,4vw,4rem)] leading-none tracking-[-0.05em] text-navy">
+                  <Kinetic from={200} to={[360, 520, 680, 840][i] ?? 600}>
+                    {p.title.charAt(0) + p.title.slice(1).toLowerCase()}
+                  </Kinetic>
+                </p>
                 <p className="mt-4 text-[1rem] leading-relaxed text-slate-600">{p.description}</p>
               </li>
             ))}
@@ -73,18 +105,16 @@ export default async function CareersPage() {
       {/* Why join */}
       <section aria-labelledby="values-heading" className="bg-cloud">
         <div className="container-x section-y">
-          <SectionLabel number="01">Why join LAMHA</SectionLabel>
-          <h2 id="values-heading" className="mt-8 text-h1 font-extrabold text-navy">
-            Work that matters, <span className="text-blue">with room to grow.</span>
+          <SectionIndex n={1}>Why join LAMHA</SectionIndex>
+          <h2 id="values-heading" className="mt-8 font-display text-h1 font-medium text-navy">
+            Work that matters, <Kinetic from={300} to={760} className="text-blue">with room to grow.</Kinetic>
           </h2>
-          <ol className="mt-16 grid gap-x-16 md:grid-cols-2">
+          <ol className="mt-16 border-t border-ink/15">
             {careerValues.map((v, i) => (
-              <Reveal key={v.number} as="li" delay={i * 60}>
-                <div className="border-t border-ink/15 py-8">
-                  <span className="tabular text-sm font-bold text-blue">{v.number}</span>
-                  <h3 className="mt-3 font-display text-[clamp(1.6rem,2.6vw,2.5rem)] font-bold leading-[1.05] tracking-[-0.04em] text-navy">{v.title}</h3>
-                  <p className="mt-3 max-w-lg text-[1.02rem] leading-relaxed text-slate-600">{v.description}</p>
-                </div>
+              <Reveal key={v.number} as="li" delay={i * 60} className="group grid gap-x-10 gap-y-3 border-b border-ink/15 py-8 md:grid-cols-12">
+                <span className="tabular pt-3 font-mono text-xs text-blue md:col-span-1">{v.number}</span>
+                <h3 className="weight-hover font-display text-[clamp(1.9rem,3.6vw,3.5rem)] leading-[1.02] tracking-[-0.045em] text-navy md:col-span-6">{v.title}</h3>
+                <p className="max-w-lg text-[1.02rem] leading-relaxed text-slate-600 md:col-span-5 md:pt-3">{v.description}</p>
               </Reveal>
             ))}
           </ol>
@@ -96,8 +126,8 @@ export default async function CareersPage() {
         <div className="container-x section-y">
           <div className="grid gap-8 lg:grid-cols-12 lg:items-end">
             <div className="lg:col-span-8">
-              <SectionLabel number="02">Open positions</SectionLabel>
-              <h2 id="positions-heading" className="mt-8 text-h1 font-extrabold text-navy">
+              <SectionIndex n={2}>Open positions</SectionIndex>
+              <h2 id="positions-heading" className="mt-8 font-display text-h1 font-medium text-navy">
                 Open positions
               </h2>
             </div>
@@ -111,7 +141,7 @@ export default async function CareersPage() {
           )}
           {visibleJobs.length === 0 ? (
             <div className="mt-12 border-t border-ink/15 py-12">
-              <p className="font-display text-h3 font-bold text-navy">Open positions will be published here.</p>
+              <p className="font-display text-h3 font-medium text-navy">Open positions will be published here.</p>
               <p className="mt-3 text-[1rem] text-slate-600">
                 Interested in working with us? Write to <a className="link-draw text-blue" href={`mailto:${site.contact.careersEmail}`}>{site.contact.careersEmail}</a>.
               </p>
@@ -128,7 +158,13 @@ export default async function CareersPage() {
         </div>
       </section>
 
-      <CTASection headline="Don't see the right role yet?" description="Send a short introduction and your CV to our careers address. We keep strong profiles in mind for future openings." location="careers" />
+      <NextStep
+        headline="Don't see the right role yet?"
+        description="Send a short introduction and your CV to our careers address. We keep strong profiles in mind for future openings."
+        location="careers"
+        primary={{ href: `mailto:${site.contact.careersEmail}`, label: "Email your CV" }}
+        next={{ href: "/contact", label: "Next chapter", title: "Contact", film: "assembly" }}
+      />
     </>
   );
 }

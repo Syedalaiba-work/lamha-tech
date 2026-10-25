@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Button } from "@/components/ui/Button";
-import { SectionLabel } from "@/components/ui/SectionLabel";
+import { SectionIndex } from "@/components/ui/RegMarks";
 import { SiteShell } from "@/components/layout/SiteShell";
 
 export const metadata: Metadata = {
@@ -17,11 +17,14 @@ export default function NotFound() {
           <path d="M4 3h7v14.5l3.5 3.5H28v7H4z" fill="currentColor" />
         </svg>
         <div className="container-x relative pb-20 pt-[calc(var(--header-h)+4rem)]">
-          <SectionLabel number="404">Page not found</SectionLabel>
-          <p aria-hidden="true" className="mt-8 font-display text-mega font-extrabold text-navy">
-            404<span className="text-blue">.</span>
+          <SectionIndex n={404}>Page not found</SectionIndex>
+          <p aria-hidden="true" className="mt-8 font-display text-mega text-navy">
+            <span className="kinetic [--wght:200]">40</span>
+            <span className="kinetic text-blue [--wght:820]">4.</span>
           </p>
-          <h1 className="mt-8 max-w-3xl text-h2 font-extrabold text-navy">This route does not resolve.</h1>
+          <h1 className="mt-8 max-w-3xl font-display text-h2 font-medium text-navy">
+            A problem we haven&apos;t solved: <span className="kinetic [--wght:300]">this route does not resolve.</span>
+          </h1>
           <p className="mt-6 max-w-xl text-lead text-slate-600">The page you requested may have moved or never existed. The links below will take you back to somewhere useful.</p>
           <div className="mt-10 flex flex-wrap gap-3">
             <Button href="/" size="lg" icon="arrow">

@@ -8,7 +8,6 @@ import { processSteps } from "@/data/process";
 import { Button } from "@/components/ui/Button";
 import { TrackedCTA } from "@/components/analytics/TrackedLink";
 import { Magnetic } from "@/components/motion/Motion";
-import { LocalTime } from "@/components/motion/LocalTime";
 import { useScrollProgress } from "@/components/motion/useScrollProgress";
 import { useMediaQuery, useMounted, usePrefersReducedMotion, useWebGLSupport } from "@/components/motion/useReducedMotion";
 import { PHASE_NAMES, phaseAt, rgb, stageColor } from "@/components/three/journey-timeline";
@@ -25,6 +24,8 @@ const CHAPTERS = [
   {
     n: "01",
     word: "Ideas",
+    // Weight grows with each phase: an idea is light, a system is built, impact is solid.
+    weight: 300,
     line: "From ideas…",
     lead: "Every engagement starts with the business context and the real problem behind the request, before any technology is chosen.",
     steps: [processSteps[0]!, processSteps[1]!],
@@ -34,6 +35,7 @@ const CHAPTERS = [
   {
     n: "02",
     word: "Systems",
+    weight: 560,
     line: "…to systems…",
     lead: "Interfaces, data models, integrations and code designed and engineered together, then tested before anything ships.",
     steps: [processSteps[2]!, processSteps[3]!, processSteps[4]!],
@@ -43,6 +45,7 @@ const CHAPTERS = [
   {
     n: "03",
     word: "Impact.",
+    weight: 820,
     line: "…to impact.",
     lead: "Software, engineering and digital products that keep improving long after launch.",
     steps: [processSteps[5]!],
@@ -141,19 +144,20 @@ function Journey() {
           </SceneBoundary>
         </div>
 
-        {/* Problems: the tagline, one heading set as a composition (above the 3D). */}
+        {/* Problems: the tagline set as a composition (above the 3D). The weight axis tells the story: "Problems"
+            settles thin and loose, "Progress." solidifies heavy and tight (CSS intro, so it also runs without JS). */}
         <h1 id="hero-heading" data-journey-flow data-journey-h1 className="pointer-events-none absolute inset-0 z-[1] flex flex-col justify-between px-[var(--gutter)] pb-[clamp(15rem,40vh,19rem)] pt-[calc(var(--header-h)+clamp(2rem,6vh,4rem))] font-display md:pb-[clamp(9rem,24vh,15rem)]">
-          <motion.span style={{ opacity: o0 }} className="label-caps block text-slate-600">
-            Technology that turns
-          </motion.span>
-          <motion.span style={{ x: leftX, opacity: wordsOpacity }} className="block text-mega font-extrabold text-navy">
-            Problems
-          </motion.span>
-          <motion.span style={{ opacity: o0 }} className="label-caps block self-end text-slate-600">
-            into
-          </motion.span>
-          <motion.span style={{ x: rightX, opacity: wordsOpacity }} className="block self-end text-mega font-extrabold text-blue">
-            Progress.
+          <motion.span style={{ opacity: o0 }} className="intro-line label-caps text-slate-600 [--i:0]">
+            <span>Technology that turns</span>
+          </motion.span>{" "}
+          <motion.span style={{ x: leftX, opacity: wordsOpacity }} className="intro-line text-mega text-navy [--i:1]">
+            <span className="hero-problems kinetic">Problems</span>
+          </motion.span>{" "}
+          <motion.span style={{ opacity: o0 }} className="intro-line label-caps self-end text-slate-600 [--i:2]">
+            <span>into</span>
+          </motion.span>{" "}
+          <motion.span style={{ x: rightX, opacity: wordsOpacity }} className="intro-line self-end text-mega text-blue [--i:3]">
+            <span className="hero-progress kinetic">Progress.</span>
           </motion.span>
         </h1>
 
@@ -175,10 +179,13 @@ function Journey() {
           </div>
         </motion.div>
 
-        <motion.div style={{ opacity: o0 }} className="pointer-events-none absolute right-[var(--gutter)] top-[calc(var(--header-h)+clamp(2rem,6vh,4rem))] z-[2] hidden text-right text-[0.8rem] text-slate-600 md:block">
-          <p className="font-semibold text-navy">Islamabad · Worldwide</p>
-          <LocalTime className="mt-1 block tabular" />
-        </motion.div>
+        {/* Scroll cue: the journey is driven by scrolling. */}
+        <motion.p aria-hidden="true" data-js-only style={{ opacity: o0 }} className="intro-fade label-tech pointer-events-none absolute right-[var(--gutter)] top-[calc(var(--header-h)+clamp(2rem,6vh,4rem))] z-[2] hidden items-center gap-3 text-slate-600 [--d:1200ms] md:flex">
+          Scroll to assemble
+          <span className="relative block h-8 w-px overflow-hidden bg-ink/15">
+            <span className="absolute inset-x-0 top-0 h-1/2 animate-[scroll-cue_1.8s_var(--ease-in-out-quart)_infinite] bg-blue" />
+          </span>
+        </motion.p>
 
         {/* Ideas → Systems → Impact */}
         <h2 className="sr-only">From Ideas to Systems. From Systems to Impact.</h2>
@@ -219,7 +226,7 @@ function ChapterPanel({ ch, p, last, activeNow }: { ch: (typeof CHAPTERS)[number
         <p className={cn("label-caps", soft)}>
           <span className="tabular">{ch.n}</span> / 03 · {ch.line}
         </p>
-        <h3 id={`journey-${ch.n}`} className={cn("mt-4 font-display text-[clamp(3.6rem,9vw,9.5rem)] font-extrabold leading-[0.86] tracking-[-0.065em]", ink)}>
+        <h3 id={`journey-${ch.n}`} style={{ fontVariationSettings: `"wght" ${ch.weight}` }} className={cn("mt-4 font-display text-[clamp(3.6rem,9vw,9.5rem)] leading-[0.86] tracking-[-0.06em]", ink)}>
           {ch.word}
         </h3>
         <p className={cn("mt-5 max-w-lg text-[1rem] leading-relaxed md:text-lead", soft)}>{ch.lead}</p>

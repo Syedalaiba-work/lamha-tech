@@ -13,7 +13,7 @@ export function WhyLamhaSection({ number = "05" }: { number?: string }) {
             <SectionLabel number={number} tone="dark">
               Why LAMHA
             </SectionLabel>
-            <h2 id="why-heading" className="mt-8 text-h1 font-extrabold text-white">
+            <h2 id="why-heading" className="mt-8 text-h1 font-medium text-white">
               Engineering that starts <span className="text-blue-200">with the business.</span>
             </h2>
           </div>
@@ -23,7 +23,7 @@ export function WhyLamhaSection({ number = "05" }: { number?: string }) {
           {whyLamha.map((p, i) => (
             <Reveal key={p.number} as="li" delay={i * 40}>
               <div className="grid gap-x-8 gap-y-3 border-b border-white/20 py-9 md:grid-cols-12 md:items-baseline">
-                <span className="tabular font-display text-h3 font-extrabold text-blue-200 md:col-span-1">{p.number}</span>
+                <span className="tabular font-display text-h3 font-medium text-blue-200 md:col-span-1">{p.number}</span>
                 <h3 className="font-display text-[clamp(1.75rem,3.4vw,3.25rem)] font-bold leading-[1.02] tracking-[-0.045em] text-white md:col-span-6">{p.title}</h3>
                 <p className="text-[1.02rem] leading-relaxed text-slate-300 md:col-span-5">{p.description}</p>
               </div>

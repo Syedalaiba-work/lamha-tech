@@ -108,7 +108,7 @@ export function Chapters() {
 
             <div className="grid items-end gap-12 lg:grid-cols-12">
               <div className="lg:col-span-7">
-                <p aria-hidden="true" className="font-display text-[clamp(4.25rem,12.5vw,13rem)] font-extrabold leading-[0.84] tracking-[-0.065em]">
+                <p aria-hidden="true" className="font-display text-[clamp(4.25rem,12.5vw,13rem)] font-semibold leading-[0.84] tracking-[-0.065em]">
                   {ch.word}
                 </p>
                 <p className={cn("mt-6 max-w-xl text-lead", ch.dark ? "text-white" : "text-slate-700")}>{ch.lead}</p>

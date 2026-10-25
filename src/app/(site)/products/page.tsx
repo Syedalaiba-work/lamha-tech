@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import { buildMetadata, breadcrumbJsonLd } from "@/lib/seo";
-import { PageHero } from "@/components/sections/PageHero";
 import { Reveal } from "@/components/ui/Reveal";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { Button } from "@/components/ui/Button";
-import { SectionLabel } from "@/components/ui/SectionLabel";
-import { CTASection } from "@/components/sections/CTASection";
-import { ModuleVisual } from "@/components/three/ModuleVisual";
+import { Breadcrumb } from "@/components/ui/Breadcrumb";
+import { SectionIndex } from "@/components/ui/RegMarks";
+import { NextStep } from "@/components/sections/NextStep";
+import { Kinetic } from "@/components/motion/Kinetic";
+import { Film } from "@/components/media/Film";
+import { LAperture } from "@/components/media/LAperture";
 
 export const metadata: Metadata = buildMetadata({
   title: "Products & R&D",
@@ -26,57 +28,61 @@ const approach = [
   { number: "04", title: "Publish when approved", description: "Product details, names and availability are shared publicly only once they are approved for release." },
 ];
 
-/** Two interlocking L-modules: client services (navy) and proprietary technology (blue). Decorative. */
-function TwoEngines() {
-  return (
-    <svg viewBox="0 0 420 360" aria-hidden="true" className="h-auto w-full">
-      <path d="M40 330h230v-60H160l-40-40V60H40z" fill="#0B1B3A" />
-      <path d="M380 30H150v60h110l40 40v170h80z" fill="#1769E0" />
-      <path d="M210 160l22 22-22 22-22-22z" fill="#2E7CF6" />
-      <text x="56" y="316" fontSize="14" fontWeight="700" fill="#FFFFFF" fontFamily="var(--font-display), sans-serif">Services</text>
-      <text x="246" y="60" fontSize="14" fontWeight="700" fill="#FFFFFF" fontFamily="var(--font-display), sans-serif">Own technology</text>
-    </svg>
-  );
-}
-
 export default function ProductsPage() {
   return (
     <>
       <JsonLd data={breadcrumbJsonLd([{ name: "Home", path: "/" }, { name: "Products & R&D", path: "/products" }])} />
-      <PageHero
-        surface="cloud"
-        label="Products & R&D"
-        title={
-          <>
-            We build for ourselves, <span className="text-blue">too.</span>
-          </>
-        }
-        description="LAMHA Technologies develops internal systems, automation and technology to solve real operational problems. Selected technologies may later become reusable products."
-        breadcrumbs={[{ label: "Home", href: "/" }, { label: "Products & R&D" }]}
-        actions={
-          <>
-            <Button href="/services" size="lg" icon="arrow">
-              Explore services
-            </Button>
-            <Button href="/contact" variant="outline" size="lg">
-              Contact us
-            </Button>
-          </>
-        }
-        visual={
-          <div className="mx-auto max-w-md">
-            <ModuleVisual formation="pair" fallback={<TwoEngines />} />
+      {/* Hero: dark R&D studio; the exploded-module film through a tall L. */}
+      <section data-hero aria-labelledby="products-heading" className="dark-section relative overflow-hidden bg-abyss text-white">
+        <div className="container-x pb-20 pt-[calc(var(--header-h)+2.5rem)]">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Products & R&D" }]} tone="dark" />
+            <p className="label-tech text-slate-300">Products &amp; R&amp;D · publication status: none approved yet</p>
           </div>
-        }
-      />
+          <div className="mt-14 grid gap-14 lg:mt-20 lg:grid-cols-12 lg:items-end">
+            <div className="lg:col-span-6">
+              <h1 id="products-heading" className="font-display text-giant text-white">
+                <span className="intro-line [--i:0]">
+                  <span className="kinetic [--wght:280]">We build for</span>
+                </span>{" "}
+                <span className="intro-line [--i:1]">
+                  <span className="kinetic [--wght:280]">ourselves,</span>
+                </span>{" "}
+                <span className="intro-line [--i:2]">
+                  <span>
+                    <Kinetic from={280} to={820} start={["start", 0.95]} end={["start", 0.4]} className="text-blue-200">
+                      too.
+                    </Kinetic>
+                  </span>
+                </span>
+              </h1>
+              <p className="mt-10 max-w-xl text-lead text-slate-300">LAMHA Technologies develops internal systems, automation and technology to solve real operational problems. Selected technologies may later become reusable products.</p>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Button href="/services" size="lg" icon="arrow">
+                  Explore services
+                </Button>
+                <Button href="/contact" variant="outline-light" size="lg">
+                  Contact us
+                </Button>
+              </div>
+            </div>
+            <figure className="lg:col-span-6">
+              <LAperture shape={{ la: 40, lb: 50, lc: 6 }} className="aspect-[5/4] w-full">
+                <Film id="rnd" priority size="compact" className="absolute inset-0" />
+              </LAperture>
+              <figcaption className="label-tech mt-3 text-slate-400">Studio film · Exploded module — an internal visual study, not a product</figcaption>
+            </figure>
+          </div>
+        </div>
+      </section>
 
       <section aria-labelledby="approach-heading" className="bg-paper">
         <div className="container-x section-y">
           <div className="grid gap-8 lg:grid-cols-12 lg:items-end">
             <div className="lg:col-span-8">
-              <SectionLabel number="01">Our R&amp;D approach</SectionLabel>
-              <h2 id="approach-heading" className="mt-8 text-h1 font-extrabold text-navy">
-                Two engines: services and <span className="text-blue">proprietary technology.</span>
+              <SectionIndex n={1}>Our R&amp;D approach</SectionIndex>
+              <h2 id="approach-heading" className="mt-8 font-display text-h1 font-medium text-navy">
+                Two engines: services and <Kinetic from={300} to={760} className="text-blue">proprietary technology.</Kinetic>
               </h2>
             </div>
             <p className="text-lead text-slate-600 lg:col-span-4">LAMHA Technologies operates as a technology services company and as a builder of its own systems. The two reinforce each other.</p>
@@ -86,8 +92,8 @@ export default function ProductsPage() {
             {approach.map((a, i) => (
               <Reveal key={a.number} as="li" delay={i * 70}>
                 <div className="border-l-2 border-navy pl-6 xl:mt-[var(--rise)] xl:border-t-2 xl:pt-6" style={{ ["--rise" as string]: `${(approach.length - 1 - i) * 4}rem` }}>
-                  <span className="tabular font-display text-h2 font-extrabold text-blue">{a.number}</span>
-                  <h3 className="mt-4 font-display text-2xl font-bold tracking-tight text-navy">{a.title}</h3>
+                  <span className="tabular font-mono text-xs text-blue">STAGE {a.number}</span>
+                  <h3 className="mt-4 font-display text-[1.75rem] font-medium leading-tight tracking-[-0.03em] text-navy">{a.title}</h3>
                   <p className="mt-3 pb-2 text-[1rem] leading-relaxed text-slate-600 xl:pr-6">{a.description}</p>
                 </div>
               </Reveal>
@@ -98,9 +104,11 @@ export default function ProductsPage() {
 
       <section aria-labelledby="status-heading" className="dark-section bg-blue text-white">
         <div className="container-x section-y">
-          <p className="label-caps text-white">Publication status</p>
-          <h2 id="status-heading" className="mt-8 max-w-[20ch] text-giant font-extrabold text-white">
-            Approved product information will be published here.
+          <SectionIndex n={2} tone="dark">
+            Publication status
+          </SectionIndex>
+          <h2 id="status-heading" className="mt-8 max-w-[20ch] font-display text-giant font-medium text-white">
+            Approved product information will be <Kinetic from={300} to={800}>published here.</Kinetic>
           </h2>
           <p className="mt-10 max-w-2xl text-lead text-white">
             This page is prepared for the Products content model (name, description, status, screenshots, CTA and approved visibility). Until products are approved for public release, no product details are shown.
@@ -108,7 +116,12 @@ export default function ProductsPage() {
         </div>
       </section>
 
-      <CTASection headline="Interested in how we approach product engineering?" description="Tell us about your product idea or operational problem. We apply the same discipline to client products that we apply to our own." location="products" />
+      <NextStep
+        headline="Interested in how we approach product engineering?"
+        description="Tell us about your product idea or operational problem. We apply the same discipline to client products that we apply to our own."
+        location="products"
+        next={{ href: "/about", label: "Next chapter", title: "About LAMHA", film: "team" }}
+      />
     </>
   );
 }

@@ -13,7 +13,7 @@ export function TechnologySection({ number = "04" }: { number?: string }) {
             <SectionLabel number={number} tone="dark">
               Technology
             </SectionLabel>
-            <h2 id="technology-heading" className="mt-8 text-h1 font-extrabold text-white">
+            <h2 id="technology-heading" className="mt-8 text-h1 font-medium text-white">
               We choose technology for the problem,
               <span className="block text-blue-200">not the trend.</span>
             </h2>

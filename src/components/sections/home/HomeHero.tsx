@@ -8,7 +8,6 @@ import { site } from "@/data/site";
 import { Button } from "@/components/ui/Button";
 import { TrackedCTA } from "@/components/analytics/TrackedLink";
 import { Magnetic } from "@/components/motion/Motion";
-import { LocalTime } from "@/components/motion/LocalTime";
 import { AssemblyFallback } from "@/components/visuals/AssemblyFallback";
 import { useMediaQuery, useMounted, usePrefersReducedMotion, useWebGLSupport } from "@/components/motion/useReducedMotion";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
@@ -99,17 +98,18 @@ export function HomeHero() {
 
         {/* The tagline: one heading, set as a composition. */}
         <h1 id="hero-heading" className="pointer-events-none absolute inset-0 z-[1] flex flex-col justify-between px-[var(--gutter)] pb-[clamp(15rem,40vh,19rem)] md:pb-[clamp(9rem,24vh,15rem)] pt-[calc(var(--header-h)+clamp(2rem,6vh,4rem))] font-display">
-          <motion.span style={animated ? { opacity: o0 } : undefined} className="label-caps block text-slate-600">
-            Technology that turns
-          </motion.span>
-          <motion.span style={animated ? { x: leftX } : undefined} className="block text-mega font-extrabold text-navy">
-            Problems
-          </motion.span>
-          <motion.span style={animated ? { opacity: o0 } : undefined} className="label-caps block self-end text-slate-600">
-            into
-          </motion.span>
-          <motion.span style={animated ? { x: rightX } : undefined} className="block self-end text-mega font-extrabold text-blue">
-            Progress.
+          {/* Same typographic story as the 3D journey: "Problems" thin and loose, "Progress." heavy and tight. */}
+          <motion.span style={animated ? { opacity: o0 } : undefined} className="intro-line label-caps text-slate-600 [--i:0]">
+            <span>Technology that turns</span>
+          </motion.span>{" "}
+          <motion.span style={animated ? { x: leftX } : undefined} className="intro-line text-mega text-navy [--i:1]">
+            <span className="hero-problems kinetic">Problems</span>
+          </motion.span>{" "}
+          <motion.span style={animated ? { opacity: o0 } : undefined} className="intro-line label-caps self-end text-slate-600 [--i:2]">
+            <span>into</span>
+          </motion.span>{" "}
+          <motion.span style={animated ? { x: rightX } : undefined} className="intro-line self-end text-mega text-blue [--i:3]">
+            <span className="hero-progress kinetic">Progress.</span>
           </motion.span>
         </h1>
 
@@ -157,11 +157,6 @@ export function HomeHero() {
           </motion.div>
         )}
 
-        {/* Meta */}
-        <div className="pointer-events-none absolute right-[var(--gutter)] top-[calc(var(--header-h)+clamp(2rem,6vh,4rem))] hidden text-right text-[0.8rem] text-slate-600 md:block">
-          <p className="font-semibold text-navy">Islamabad · Worldwide</p>
-          <LocalTime className="mt-1 block tabular" />
-        </div>
         {animated && (
           <motion.div style={{ opacity: o0 }} aria-hidden="true" className="pointer-events-none absolute bottom-[clamp(1.75rem,4.5vh,3rem)] left-1/2 z-10 hidden -translate-x-1/2 items-center gap-3 text-[0.8rem] font-semibold text-slate-600 lg:flex">
             <span className="relative h-8 w-[2px] overflow-hidden bg-ink/10">
@@ -179,7 +174,7 @@ function BigWord({ children, caption, accent, style }: { children: React.ReactNo
   return (
     <motion.div aria-hidden="true" style={style} className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
       <p className="label-caps absolute left-1/2 top-[calc(var(--header-h)+clamp(2rem,6vh,4rem))] z-[2] -translate-x-1/2 text-slate-600">{caption}</p>
-      <p className={cn("text-mega font-extrabold leading-none tracking-[-0.065em] font-display", accent ? "text-blue/90" : "text-navy/90")}>{children}</p>
+      <p className={cn("kinetic text-mega leading-none tracking-[-0.06em] font-display", accent ? "text-blue/90 [--wght:820]" : "text-navy/90 [--wght:560]")}>{children}</p>
     </motion.div>
   );
 }

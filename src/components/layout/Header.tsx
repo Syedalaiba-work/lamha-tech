@@ -3,20 +3,17 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { primaryNav } from "@/data/navigation";
 import { site } from "@/data/site";
 import { LamhaLogo } from "@/components/ui/Logo";
-import { buttonClasses } from "@/components/ui/Button";
+import { LocalTime } from "@/components/motion/LocalTime";
 import { SiteMenu } from "./SiteMenu";
 import { track, ANALYTICS_EVENTS } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
 
-/** Links shown inline on wide screens; the full list (and every service) lives in the menu. */
-const INLINE = primaryNav.filter((i) => i.href !== "/");
-
 /**
- * Header: transparent, with its tone picked from whatever surface is beneath it (any ancestor with
- * `.dark-section` → light text). It hides while scrolling down and returns on a deliberate scroll up.
+ * Header: logo, the studio's coordinates and live Islamabad time, "Start a project" and the menu.
+ * Transparent, with its tone picked from the surface beneath it (any ancestor with `.dark-section` → light);
+ * hides while scrolling down and returns on a deliberate scroll up. Every page is one click away in the menu.
  */
 export function Header() {
   const pathname = usePathname();
@@ -34,7 +31,7 @@ export function Header() {
     const measure = () => {
       ticking = false;
       const y = window.scrollY;
-      // Surface under the header's centre line (the header itself is skipped).
+      // Surface under the header's centre line (the header itself and overlays are skipped).
       const probeY = Math.round((document.querySelector<HTMLElement>("[data-site-header]")?.offsetHeight ?? 76) / 2);
       const under = document.elementsFromPoint(window.innerWidth / 2, probeY).find((el) => !el.closest("[data-site-header],[data-overlay]"));
       setDark(Boolean(under?.closest(".dark-section")));
@@ -83,6 +80,8 @@ export function Header() {
     menuButton.current?.focus();
   }, []);
 
+  const pill = dark ? "border-white/30 text-white hover:border-white hover:bg-white hover:text-navy" : "border-ink/20 text-navy hover:border-navy hover:bg-navy hover:text-white";
+
   return (
     <>
       <a href="#main" className="sr-only-focusable">
@@ -91,43 +90,30 @@ export function Header() {
       <header
         data-site-header
         className={cn(
-          "fixed inset-x-0 top-0 z-50 transition-[transform,background-color,color] duration-500 ease-[var(--ease-out-expo)]",
+          "intro-fade fixed inset-x-0 top-0 z-50 transition-[transform,background-color,color] duration-500 ease-[var(--ease-out-expo)] [--d:350ms]",
           hidden && !open && "-translate-y-full",
           dark && "dark-section",
           scrolled && !open && (dark ? "bg-abyss/70 backdrop-blur-md" : "bg-paper/80 backdrop-blur-md"),
         )}
       >
-        <div className="container-x flex h-[var(--header-h)] items-center justify-between gap-6">
+        <div className="container-x grid h-[var(--header-h)] grid-cols-[1fr_auto] items-center gap-6 lg:grid-cols-[1fr_auto_1fr]">
           <LamhaLogo tone={dark ? "light" : "dark"} withDescriptor />
 
-          <nav aria-label="Primary" className="hidden xl:block">
-            <ul className="flex items-center gap-7">
-              {INLINE.map((item) => {
-                const active = pathname.startsWith(item.href);
-                return (
-                  <li key={item.href}>
-                    <Link
-                      href={item.href}
-                      aria-current={active ? "page" : undefined}
-                      className={cn(
-                        "link-draw pb-1 text-[0.9rem] font-medium transition-colors",
-                        dark ? "text-white" : "text-slate-600 hover:text-navy",
-                        active && (dark ? "text-white [background-size:100%_2px]" : "text-navy [background-size:100%_2px]"),
-                      )}
-                    >
-                      {item.label}
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </nav>
+          {/* The studio, located: coordinates and live time (Islamabad). */}
+          <p className={cn("label-tech hidden items-center gap-4 lg:flex", dark ? "text-slate-300" : "text-slate-600")}>
+            <span>33.6844° N, 73.0479° E</span>
+            <span aria-hidden="true" className={cn("h-3 w-px", dark ? "bg-white/30" : "bg-ink/25")} />
+            <LocalTime className="tabular" />
+          </p>
 
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center justify-end gap-2 sm:gap-3">
             <Link
               href={site.cta.primary.href}
               onClick={() => track(ANALYTICS_EVENTS.START_PROJECT_CLICK, { location: "header" })}
-              className={buttonClasses({ variant: dark ? "secondary" : "primary", size: "sm", className: "hidden sm:inline-flex" })}
+              className={cn(
+                "chamfer hidden h-10 items-center gap-2 px-4 text-[0.875rem] font-semibold transition-colors sm:inline-flex",
+                dark ? "bg-white text-navy hover:bg-blue hover:text-white" : "bg-navy text-white hover:bg-blue",
+              )}
             >
               {site.cta.primary.label}
             </Link>
@@ -137,15 +123,14 @@ export function Header() {
               onClick={() => setOpen(true)}
               aria-expanded={open}
               aria-controls="site-menu"
-              className={cn(
-                "group inline-flex h-10 items-center gap-3 border px-4 text-[0.875rem] font-semibold transition-colors",
-                dark ? "border-white/30 text-white hover:border-white hover:bg-white hover:text-navy" : "border-ink/20 text-navy hover:border-navy hover:bg-navy hover:text-white",
-              )}
+              className={cn("group inline-flex h-10 items-center gap-3 border px-4 text-[0.875rem] font-semibold transition-colors", pill)}
             >
               <span>Menu</span>
-              <span aria-hidden="true" className="flex w-4 flex-col gap-[5px]">
-                <span className="h-[2px] w-full bg-current transition-transform duration-300 group-hover:translate-x-0.5" />
-                <span className="h-[2px] w-2/3 self-end bg-current transition-[width] duration-300 group-hover:w-full" />
+              {/* The L-form as the menu glyph: its foot extends on hover. */}
+              <span aria-hidden="true" className="relative block h-3.5 w-3.5">
+                <span className="absolute left-0 top-0 h-full w-[2px] bg-current" />
+                <span className="absolute bottom-0 left-0 h-[2px] w-2/3 bg-current transition-[width] duration-300 group-hover:w-full" />
+                <span className="absolute right-0 top-0 h-[5px] w-[5px] rotate-45 bg-blue-2" />
               </span>
             </button>
           </div>

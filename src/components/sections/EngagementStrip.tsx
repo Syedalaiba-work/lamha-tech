@@ -16,7 +16,7 @@ export function EngagementStrip({ number = "05" }: { number?: string }) {
         <div className="grid gap-8 lg:grid-cols-12 lg:items-end">
           <div className="lg:col-span-8">
             <SectionLabel number={number}>Ways to work with us</SectionLabel>
-            <h2 id="engagement-heading" className="mt-8 text-h1 font-extrabold text-navy">
+            <h2 id="engagement-heading" className="mt-8 text-h1 font-medium text-navy">
               Three engagement models.
               <span className="block text-blue">One process.</span>
             </h2>

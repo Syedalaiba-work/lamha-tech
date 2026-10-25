@@ -83,7 +83,7 @@ export function PageHero({
 
         <div className={cn("grid flex-1 gap-12", compact ? "mt-14" : "mt-16 sm:mt-24", split && "lg:grid-cols-12 lg:items-end")}>
           <div className={cn("flex flex-col justify-end", split ? "lg:col-span-7" : "")}>
-            <h1 className={cn(titleSize, "max-w-[16ch] font-extrabold", s.dark ? "text-white" : "text-navy")}>{titleNode}</h1>
+            <h1 className={cn(titleSize, "max-w-[16ch] font-medium", s.dark ? "text-white" : "text-navy")}>{titleNode}</h1>
             {(description || actions || aside) && (
               <div className={cn("mt-10 grid gap-10 sm:mt-14", !split && "lg:grid-cols-12")}>
                 <div className={cn(!split && "lg:col-span-6")}>

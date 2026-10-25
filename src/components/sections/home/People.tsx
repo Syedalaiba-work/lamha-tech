@@ -16,7 +16,7 @@ export async function People({ number = "06" }: { number?: string }) {
         <div className="grid gap-8 lg:grid-cols-12 lg:items-end">
           <div className="lg:col-span-8">
             <SectionLabel number={number}>Leadership</SectionLabel>
-            <h2 id="people-heading" className="mt-8 text-h1 font-extrabold text-navy">
+            <h2 id="people-heading" className="mt-8 text-h1 font-medium text-navy">
               The people accountable
               <span className="block">for the work.</span>
             </h2>
@@ -33,7 +33,7 @@ export async function People({ number = "06" }: { number?: string }) {
             <li key={l.slug} className={i % 2 === 1 ? "lg:translate-y-16" : undefined}>
               <Link href={leaderPath(l)} className="group block">
                 <Portrait leader={l} size="lg" />
-                <p className="mt-4 font-display text-lg font-bold tracking-tight text-navy sm:text-xl">
+                <p className="mt-4 font-display text-lg font-medium tracking-tight text-navy sm:text-xl">
                   <span className="link-draw">{l.name}</span>
                 </p>
                 <p className="mt-1 text-sm font-medium text-blue">{l.role}</p>
@@ -46,10 +46,10 @@ export async function People({ number = "06" }: { number?: string }) {
         <div className="mt-32 grid gap-10 border-t border-ink/15 pt-12 lg:mt-44 lg:grid-cols-12">
           <div className="lg:col-span-6">
             <p className="label-caps text-slate-600">Careers</p>
-            <h2 className="mt-6 text-h2 font-extrabold text-navy">
+            <h2 className="mt-6 text-h2 font-medium text-navy">
               Build what comes next <span className="text-blue">with us.</span>
             </h2>
-            <Link href="/careers" className="group mt-8 inline-flex items-center gap-2 font-display text-xl font-bold text-navy">
+            <Link href="/careers" className="group mt-8 inline-flex items-center gap-2 font-display text-xl font-semibold text-navy">
               <span className="link-draw">View open positions</span>
               <ArrowUpRight className="h-5 w-5 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" aria-hidden="true" />
             </Link>
@@ -57,7 +57,7 @@ export async function People({ number = "06" }: { number?: string }) {
           <dl className="grid gap-x-8 gap-y-8 sm:grid-cols-2 lg:col-span-6">
             {careerValues.map((v) => (
               <div key={v.number}>
-                <dt className="flex items-baseline gap-3 font-display text-lg font-bold text-navy">
+                <dt className="flex items-baseline gap-3 font-display text-lg font-medium text-navy">
                   <span className="tabular text-sm text-blue">{v.number}</span>
                   {v.title}
                 </dt>

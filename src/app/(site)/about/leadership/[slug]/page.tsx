@@ -11,7 +11,7 @@ import { Reveal } from "@/components/ui/Reveal";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { Button } from "@/components/ui/Button";
 import { Portrait } from "@/components/leadership/LeadershipCard";
-import { CTASection } from "@/components/sections/CTASection";
+import { NextStep } from "@/components/sections/NextStep";
 import { SocialIcon } from "@/components/ui/SocialIcon";
 import { ArrowUpRight } from "lucide-react";
 
@@ -256,7 +256,7 @@ export default async function LeaderProfilePage({ params }: PageProps<"/about/le
         </div>
       </section>
 
-      <CTASection location="leadership_profile" />
+      <NextStep location="leadership_profile" next={{ href: "/about/leadership", label: "Leadership", title: "Meet the full leadership", film: "team" }} />
     </>
   );
 }

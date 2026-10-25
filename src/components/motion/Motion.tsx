@@ -218,8 +218,13 @@ export function Marquee({ children, className, duration = 40 }: { children: Reac
 /* ------------------------------------------------------------------ */
 /* Scroll progress bar                                                  */
 /* ------------------------------------------------------------------ */
+/** Scroll position: a thin vertical rail on the right edge (wide screens only). */
 export function ScrollProgress() {
   const { scrollYProgress } = useScroll();
-  const scaleX = useSpring(scrollYProgress, { stiffness: 120, damping: 30, mass: 0.3 });
-  return <motion.div aria-hidden="true" className="fixed inset-x-0 top-0 z-[70] h-0.5 origin-left bg-blue-2" style={{ scaleX }} />;
+  const scaleY = useSpring(scrollYProgress, { stiffness: 120, damping: 30, mass: 0.3 });
+  return (
+    <div aria-hidden="true" data-overlay className="pointer-events-none fixed bottom-[18vh] right-3 top-[18vh] z-[60] hidden w-px bg-current/10 text-slate-400 mix-blend-difference lg:block">
+      <motion.div className="h-full w-full origin-top bg-white" style={{ scaleY }} />
+    </div>
+  );
 }

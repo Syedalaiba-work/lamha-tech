@@ -6,7 +6,7 @@
 /* ------------------------------------------------------------------ */
 @theme {
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  /* Display: Montserrat, per the logo guidelines (06 — Typography). */
+  /* Display: Inter Tight (variable 100–900), the Inter family named by the logo guidelines (06 — Typography). */
   --font-display: var(--font-display-face), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
 
@@ -58,25 +58,28 @@
   --shadow-card-hover: 0 0 0 0 transparent;
   --shadow-glow: 0 0 0 1px rgba(46, 124, 246, 0.35);
 
-  /* Type scale — display sizes are deliberately oversized (scale contrast is the hierarchy). */
-  --text-mega: clamp(4.25rem, 15.5vw, 17rem);
+  /* Type scale (3.0): oversized display at moderate weight; scale and space carry the hierarchy, weight carries the story. */
+  --text-mega: clamp(4.5rem, 16vw, 18rem);
   --text-mega--line-height: 0.84;
-  --text-mega--letter-spacing: -0.065em;
-  --text-giant: clamp(3.25rem, 10vw, 11.5rem);
-  --text-giant--line-height: 0.88;
-  --text-giant--letter-spacing: -0.06em;
-  --text-display: clamp(2.875rem, 7vw, 7.5rem);
-  --text-display--line-height: 0.92;
-  --text-display--letter-spacing: -0.055em;
-  --text-h1: clamp(2.5rem, 5.6vw, 5.75rem);
-  --text-h1--line-height: 0.96;
-  --text-h1--letter-spacing: -0.05em;
-  --text-h2: clamp(2.125rem, 4.2vw, 4.25rem);
-  --text-h2--line-height: 1;
-  --text-h2--letter-spacing: -0.045em;
+  --text-mega--letter-spacing: -0.06em;
+  --text-giant: clamp(3.25rem, 10.5vw, 12rem);
+  --text-giant--line-height: 0.86;
+  --text-giant--letter-spacing: -0.055em;
+  --text-display: clamp(2.75rem, 7.2vw, 8rem);
+  --text-display--line-height: 0.9;
+  --text-display--letter-spacing: -0.05em;
+  --text-h1: clamp(2.5rem, 5.6vw, 6rem);
+  --text-h1--line-height: 0.95;
+  --text-h1--letter-spacing: -0.045em;
+  --text-h2: clamp(2.125rem, 4.4vw, 4.5rem);
+  --text-h2--line-height: 0.98;
+  --text-h2--letter-spacing: -0.04em;
   --text-h3: clamp(1.375rem, 2.1vw, 2rem);
   --text-h3--line-height: 1.12;
-  --text-h3--letter-spacing: -0.025em;
+  --text-h3--letter-spacing: -0.02em;
+  --text-statement: clamp(1.75rem, 3.6vw, 3.6rem);
+  --text-statement--line-height: 1.08;
+  --text-statement--letter-spacing: -0.03em;
   --text-lead: clamp(1.125rem, 1.35vw, 1.4rem);
   --text-lead--line-height: 1.55;
 
@@ -125,7 +128,7 @@
     color: #fff;
   }
   h1, h2, h3, h4 {
-    @apply font-bold text-balance;
+    @apply font-semibold text-balance;
     font-family: var(--font-display);
   }
   p {
@@ -137,6 +140,13 @@
     border-radius: 2px;
   }
   /* On navy and blue surfaces the light-context greys are too dark for small text; lift them (≥4.5:1 on navy-800). */
+  /* Pale-blue "glass" field (Digital Experience): the brand blue and the mid greys are darkened one step so
+     small text keeps ≥ 4.5:1 on #e4ecf8. */
+  .surface-glass {
+    --color-blue: #1257bd;
+    --color-slate-500: #4f5b73;
+    --color-slate-600: #3a4459;
+  }
   .dark-section {
     --color-slate-500: #8390a5;
     --color-slate-600: #657187;
@@ -186,6 +196,10 @@
 /* Small caps label: sans, not mono — the mono "terminal" look is retired. */
 @utility label-caps {
   @apply font-sans text-[0.75rem] font-semibold uppercase tracking-[0.16em];
+}
+/* Technical caption: coordinates, film metadata, specs. */
+@utility label-tech {
+  @apply font-mono text-[0.7rem] font-medium uppercase tracking-[0.08em];
 }
 @utility display-tight {
   font-family: var(--font-display);
@@ -254,9 +268,134 @@
   .word-hover:hover { transform: none; }
 }
 
-/* Intro */
-html.preloading {
+/* ------------------------------------------------------------------ */
+/* 3.0 system: kinetic weight, L-aperture, registration marks, intro   */
+/* ------------------------------------------------------------------ */
+
+/* Variable weight driven by --wght (set by <Kinetic/> from scroll); the server value is the resting weight. */
+.kinetic {
+  font-variation-settings: "wght" var(--wght, 600);
+  font-weight: normal;
+}
+
+/* Weight on attention: display type that gains weight when its row is hovered or focused (smooth, via the
+   registered --wght property). Resting weight is light; the content is the same either way. */
+.weight-hover {
+  --wght: 340;
+  font-variation-settings: "wght" var(--wght);
+  font-weight: normal;
+  transition: --wght 0.6s var(--ease-out-expo), color 0.4s var(--ease-out-expo);
+}
+.group:hover .weight-hover,
+.group:focus-visible .weight-hover,
+.weight-hover:hover {
+  --wght: 680;
+}
+@media (prefers-reduced-motion: reduce) {
+  .weight-hover { transition: none; }
+}
+
+/* L-aperture: an L-shaped window (vertical bar + foot, chamfered inner corner) that can open to a full rectangle.
+   --la: bar width, --lb: top of the foot, --lc: chamfer. --la:100%; --lb:0% is fully open. */
+.l-aperture {
+  --la: 38%;
+  --lb: 58%;
+  --lc: 5%;
+  clip-path: polygon(0 0, var(--la) 0, var(--la) calc(var(--lb) - var(--lc)), calc(var(--la) + var(--lc)) var(--lb), 100% var(--lb), 100% 100%, 0 100%);
+}
+.l-aperture-open {
+  --la: 100%;
+  --lb: 0%;
+  --lc: 0%;
+}
+
+/* Inset L-aperture (scroll-driven reels): the L sits inside margins --mx/--my and can open to the full frame.
+   --fa, --fb, --fc are unitless fractions of the inner box (bar width, foot top, chamfer). */
+.l-aperture-inset {
+  --mx: 16%;
+  --my: 14%;
+  --fa: 0.42;
+  --fb: 0.5;
+  --fc: 0.06;
+  --w: calc(100% - 2 * var(--mx));
+  --h: calc(100% - 2 * var(--my));
+  clip-path: polygon(
+    var(--mx) var(--my),
+    calc(var(--mx) + var(--w) * var(--fa)) var(--my),
+    calc(var(--mx) + var(--w) * var(--fa)) calc(var(--my) + var(--h) * (var(--fb) - var(--fc))),
+    calc(var(--mx) + var(--w) * (var(--fa) + var(--fc))) calc(var(--my) + var(--h) * var(--fb)),
+    calc(100% - var(--mx)) calc(var(--my) + var(--h) * var(--fb)),
+    calc(100% - var(--mx)) calc(100% - var(--my)),
+    var(--mx) calc(100% - var(--my))
+  );
+}
+
+/* First-visit intro, pure CSS so it also runs without JavaScript: hero lines rise from their masks, the header
+   settles. Content is never covered; with reduced motion everything is simply present. */
+@keyframes lamha-rise {
+  from { transform: translateY(105%); }
+  to { transform: none; }
+}
+@keyframes lamha-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.intro-line {
+  display: block;
   overflow: hidden;
+  /* Room for descenders (line-heights go down to 0.84). */
+  padding-bottom: 0.2em;
+  margin-bottom: -0.2em;
+}
+.intro-line > span {
+  display: inline-block;
+  animation: lamha-rise 1.1s var(--ease-out-expo) both;
+  animation-delay: calc(var(--i, 0) * 90ms + 120ms);
+}
+.intro-fade {
+  animation: lamha-fade 1s var(--ease-out-expo) both;
+  animation-delay: var(--d, 500ms);
+}
+@keyframes scroll-cue {
+  from { transform: translateY(-100%); }
+  to { transform: translateY(200%); }
+}
+
+/* Home hero: the weight axis as the story. "Problems" loosens to thin; "Progress." tightens to heavy. */
+@keyframes hero-problems {
+  from { --wght: 640; letter-spacing: -0.06em; }
+  to { --wght: 230; letter-spacing: -0.015em; }
+}
+@keyframes hero-progress {
+  from { --wght: 260; letter-spacing: -0.02em; }
+  to { --wght: 820; letter-spacing: -0.065em; }
+}
+@property --wght {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 600;
+}
+.intro-line > .hero-problems {
+  --wght: 230;
+  letter-spacing: -0.015em;
+  animation: lamha-rise 1.1s var(--ease-out-expo) both, hero-problems 1.8s var(--ease-in-out-quart) 0.5s both;
+}
+.intro-line > .hero-progress {
+  --wght: 820;
+  letter-spacing: -0.065em;
+  animation: lamha-rise 1.1s var(--ease-out-expo) 0.39s both, hero-progress 1.8s var(--ease-in-out-quart) 0.8s both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .intro-line > .hero-problems, .intro-line > .hero-progress { animation: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .intro-line > span, .intro-fade { animation: none; }
+}
+
+/* Asset hairline: reports film/3D loading at the top edge without covering anything. */
+.load-hairline {
+  transform-origin: left;
+  transition: transform 0.6s var(--ease-out-expo), opacity 0.6s ease 0.4s;
 }
 
 /* Lenis smooth scroll */
@@ -306,6 +445,8 @@ html:not(.hydrated) [style*="opacity:0"]:not([data-js-only]) {
 }
 /* If JS never runs, content must still be visible */
 html:not(.js) .reveal { opacity: 1; transform: none; }
+/* Controls that only work with JavaScript (film pause/play, etc.) are not shown without it. */
+html:not(.js) .js-only { display: none !important; }
 
 /* Underline that draws on hover/focus (links in editorial text and big index rows). */
 .link-draw {

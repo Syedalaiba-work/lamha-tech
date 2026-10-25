@@ -38,11 +38,11 @@ function List({ title, items }: { title: string; items: string[] }) {
   if (items.length === 0) return null;
   return (
     <div>
-      <h2 className="font-display text-h3 font-bold text-navy">{title}</h2>
+      <h2 className="font-display text-h3 font-medium text-navy">{title}</h2>
       <ol className="mt-6 border-t border-ink/15">
         {items.map((it, i) => (
           <li key={it} className="grid grid-cols-[2.5rem_1fr] gap-x-3 border-b border-ink/15 py-4 text-[1.02rem] leading-relaxed text-slate-700">
-            <span className="tabular pt-0.5 text-sm font-bold text-blue">{String(i + 1).padStart(2, "0")}</span>
+            <span className="tabular pt-1 font-mono text-xs text-blue">{String(i + 1).padStart(2, "0")}</span>
             {it}
           </li>
         ))}
@@ -70,7 +70,7 @@ export default async function JobPage({ params }: PageProps<"/careers/[slug]">) 
               {job.status === "demo" && <Tag accent>Demo listing</Tag>}
             </div>
           </div>
-          <h1 className="mt-16 max-w-[14ch] text-giant font-extrabold text-navy sm:mt-24">
+          <h1 className="mt-16 max-w-[14ch] font-display text-giant font-medium text-navy sm:mt-24">
             <TextReveal lines={[job.title]} delay={0.05} />
           </h1>
           <div className="mt-12 grid gap-10 border-t border-ink/15 pt-10 lg:grid-cols-12">
@@ -88,7 +88,7 @@ export default async function JobPage({ params }: PageProps<"/careers/[slug]">) 
               ].map(([k, v]) => (
                 <div key={k}>
                   <dt className="label-caps text-slate-600">{k}</dt>
-                  <dd className="mt-2 font-display text-lg font-bold text-navy">{v}</dd>
+                  <dd className="mt-2 font-display text-lg font-medium text-navy">{v}</dd>
                 </div>
               ))}
             </dl>
@@ -106,7 +106,7 @@ export default async function JobPage({ params }: PageProps<"/careers/[slug]">) 
                 </div>
               )}
               <div>
-                <h2 className="font-display text-h3 font-bold text-navy">About the role</h2>
+                <h2 className="font-display text-h3 font-medium text-navy">About the role</h2>
                 <p className="mt-5 text-lead text-slate-700">{job.description}</p>
               </div>
               <List title="Responsibilities" items={job.responsibilities} />
@@ -117,7 +117,7 @@ export default async function JobPage({ params }: PageProps<"/careers/[slug]">) 
             <aside id="apply" className="scroll-mt-24 lg:col-span-5">
               <div className="border-t-2 border-navy bg-cloud p-6 sm:p-8 lg:sticky lg:top-24">
                 <SectionLabel>Apply</SectionLabel>
-                <h2 className="mt-4 font-display text-h3 font-bold text-navy">Application for {job.title}</h2>
+                <h2 className="mt-4 font-display text-h3 font-medium text-navy">Application for {job.title}</h2>
                 <p className="mt-2 text-[0.95rem] text-slate-600">Attach your CV and share links where relevant. We review every application.</p>
                 <div className="mt-8">
                   <ApplicationForm roleTitle={job.title} roleSlug={job.slug} />

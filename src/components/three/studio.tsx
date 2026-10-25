@@ -54,6 +54,8 @@ export function ShaderWarmup({ onReady, offscreen = false }: { onReady: () => vo
       if (done) return;
       done = true;
       onReady();
+      // Lets the page's loading hairline complete (LoadHairline).
+      window.dispatchEvent(new Event("lamha:3d-ready"));
     };
     // Diagnostic A/B switch (?warm=0): skip the warm-up so first use compiles synchronously, as before.
     if (new URLSearchParams(window.location.search).get("warm") === "0") {

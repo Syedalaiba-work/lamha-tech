@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, JetBrains_Mono, Montserrat } from "next/font/google";
+import { Inter, Inter_Tight, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { site } from "@/data/site";
 import { AnalyticsProvider } from "@/components/analytics/AnalyticsProvider";
@@ -13,12 +13,12 @@ const inter = Inter({
   display: "swap",
 });
 
-// Display face: Montserrat (brand guidelines 06 — Typography: "Display: Montserrat / Inter, Bold").
-const display = Montserrat({
+// Display face: Inter Tight, the Inter family named by the brand guidelines (06 — Typography), loaded as the
+// full variable weight axis (100–900) so narrative words can move between weights ("Problems" thin, "Progress" heavy).
+const display = Inter_Tight({
   variable: "--font-display-face",
   subsets: ["latin"],
   display: "swap",
-  weight: ["500", "600", "700", "800"],
 });
 
 const mono = JetBrains_Mono({

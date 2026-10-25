@@ -5,7 +5,8 @@ import { ProjectForm } from "@/components/forms/ProjectForm";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { JsonLd } from "@/components/ui/JsonLd";
-import { Rise, TextReveal } from "@/components/motion/Motion";
+import { Rise } from "@/components/motion/Motion";
+import { Kinetic } from "@/components/motion/Kinetic";
 
 export const metadata: Metadata = buildMetadata({
   title: "Start a Project",
@@ -37,8 +38,17 @@ export default async function StartAProjectPage({ searchParams }: PageProps<"/st
             <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Start a Project" }]} tone="light" />
             <SectionLabel>Start a Project</SectionLabel>
           </div>
-          <h1 className="mt-16 max-w-[13ch] text-giant font-extrabold text-navy sm:mt-20">
-            <TextReveal lines={["Let's build something", <span key="m" className="text-blue">meaningful.</span>]} delay={0.05} />
+          <h1 className="mt-16 max-w-[13ch] font-display text-giant text-navy sm:mt-20">
+            <span className="intro-line [--i:0]">
+              <span className="kinetic [--wght:300]">Let&apos;s build something</span>
+            </span>{" "}
+            <span className="intro-line [--i:1]">
+              <span>
+                <Kinetic from={300} to={800} start={["start", 0.95]} end={["start", 0.4]} className="text-blue">
+                  meaningful.
+                </Kinetic>
+              </span>
+            </span>
           </h1>
           <Rise delay={0.25}>
             <div className="mt-12 grid gap-10 border-t border-ink/15 pt-10 lg:grid-cols-12">
@@ -46,8 +56,8 @@ export default async function StartAProjectPage({ searchParams }: PageProps<"/st
               <ol className="grid gap-6 sm:grid-cols-3 lg:col-span-6 lg:col-start-7">
                 {steps.map((s, i) => (
                   <li key={s} className="border-l-2 border-navy pl-4">
-                    <span className="tabular text-sm font-bold text-blue">{String(i + 1).padStart(2, "0")}</span>
-                    <p className="mt-2 font-display text-lg font-bold leading-snug text-navy">{s}</p>
+                    <span className="tabular font-mono text-xs text-blue">{String(i + 1).padStart(2, "0")}</span>
+                    <p className="mt-2 font-display text-lg font-medium leading-snug text-navy">{s}</p>
                   </li>
                 ))}
               </ol>
@@ -62,7 +72,7 @@ export default async function StartAProjectPage({ searchParams }: PageProps<"/st
             <div className="lg:col-span-8">
               <div className="border-t-2 border-navy bg-white p-5 shadow-[0_30px_60px_-40px_rgba(11,27,58,0.35)] sm:p-8 lg:p-12">
                 <div className="mb-10 border-b border-ink/15 pb-6">
-                  <h2 className="font-display text-h2 font-extrabold text-navy">Project inquiry</h2>
+                  <h2 className="font-display text-h2 font-medium text-navy">Project inquiry</h2>
                   <p className="mt-3 text-[0.95rem] text-slate-600">Fields marked with an asterisk are required.</p>
                 </div>
                 <ProjectForm initialService={initialService} />
@@ -75,12 +85,12 @@ export default async function StartAProjectPage({ searchParams }: PageProps<"/st
                 <dl className="mt-6 border-t border-ink/15">
                   {reassurance.map((r) => (
                     <div key={r.title} className="border-b border-ink/15 py-5">
-                      <dt className="font-display text-lg font-bold text-navy">{r.title}</dt>
+                      <dt className="font-display text-lg font-medium text-navy">{r.title}</dt>
                       <dd className="mt-1 text-[0.95rem] leading-relaxed text-slate-600">{r.description}</dd>
                     </div>
                   ))}
                   <div className="border-b border-ink/15 py-5">
-                    <dt className="font-display text-lg font-bold text-navy">Prefer email?</dt>
+                    <dt className="font-display text-lg font-medium text-navy">Prefer email?</dt>
                     <dd className="mt-1">
                       <a href={`mailto:${site.contact.projectsEmail}`} className="link-draw break-all text-[0.98rem] font-semibold text-blue">
                         {site.contact.projectsEmail}
@@ -89,7 +99,7 @@ export default async function StartAProjectPage({ searchParams }: PageProps<"/st
                   </div>
                   {site.contact.phone && (
                     <div className="border-b border-ink/15 py-5">
-                      <dt className="font-display text-lg font-bold text-navy">Prefer to call?</dt>
+                      <dt className="font-display text-lg font-medium text-navy">Prefer to call?</dt>
                       <dd className="mt-1">
                         <a href={`tel:${site.contact.phone.replace(/\s+/g, "")}`} className="link-draw text-[0.98rem] font-semibold text-blue">
                           {site.contact.phone}

@@ -17,7 +17,7 @@ export function ServiceIndex({ number = "03", headingLevel = "h2" }: { number?: 
         <div className="grid gap-10 lg:grid-cols-12 lg:items-end">
           <div className="lg:col-span-8">
             <SectionLabel number={number}>What we do</SectionLabel>
-            <Heading id="service-index-heading" className="mt-8 text-giant font-extrabold text-navy">
+            <Heading id="service-index-heading" className="mt-8 text-giant font-medium text-navy">
               {publishedServices.length} services.
               <span className="block text-blue">Three families.</span>
             </Heading>

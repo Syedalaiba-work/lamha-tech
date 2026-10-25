@@ -53,7 +53,7 @@ export function CTASection({
   const body = (
     <div className="container-x flex flex-col justify-center py-24 sm:py-28">
       <p className="label-caps text-slate-300">Start a project</p>
-      <h2 id="cta-heading" className="mt-8 max-w-[16ch] text-giant font-extrabold text-white">
+      <h2 id="cta-heading" className="mt-8 max-w-[16ch] text-giant font-medium text-white">
         {headline}
       </h2>
       <p className="mt-8 max-w-xl text-lead text-slate-300">{description}</p>
@@ -75,7 +75,7 @@ export function CTASection({
           {steps.map((s) => (
             <li key={s.n}>
               <span className="tabular text-sm font-bold text-blue-200">{s.n}</span>
-              <p className="mt-2 font-display text-lg font-bold text-white">{s.title}</p>
+              <p className="mt-2 font-display text-lg font-medium text-white">{s.title}</p>
               <p className="mt-1 text-[0.95rem] leading-relaxed text-slate-300">{s.body}</p>
             </li>
           ))}
@@ -96,8 +96,8 @@ export function CTASection({
           <motion.div aria-hidden="true" style={{ opacity: navy }} className="absolute inset-0 bg-navy" />
 
           {/* Teaser line on the light page */}
-          <motion.p aria-hidden="true" style={{ opacity: teaser }} className="absolute inset-x-0 top-[16%] text-center font-display text-h2 font-extrabold text-navy">
-            One step from <span className="text-blue">progress.</span>
+          <motion.p aria-hidden="true" style={{ opacity: teaser }} className="absolute inset-x-0 top-[16%] text-center font-display text-h2 font-light text-navy">
+            One step from <span className="font-extrabold text-blue">progress.</span>
           </motion.p>
 
           {/* The brand L-form module (not the logo lockup): scales about a point inside its riser until it fills the viewport. */}

@@ -10,9 +10,9 @@ declare global {
 }
 
 /**
- * Page transition: on client navigation a navy curtain (chamfered leading edge) lifts off the new page
- * while the content rises in. The first page load is covered by the preloader instead, so the curtain
- * only runs once the site has mounted. MotionConfig reducedMotion="user" turns both into an instant swap.
+ * Page transition, second half: after the L-wipe cover (PageTransitions), a navy curtain with a chamfered
+ * leading edge lifts off the new page while the content rises in. The first page load has no curtain: the
+ * server-rendered page paints at once and its hero runs the CSS intro. Reduced motion: an instant swap.
  */
 export default function Template({ children }: { children: React.ReactNode }) {
   // false during SSR and the hydration render (no mismatch); true for every later navigation.
@@ -32,7 +32,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
           transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1], delay: 0.05 }}
         />
       )}
-      {/* First load: no initial opacity, so the server-rendered page paints at once (LCP); the preloader covers it anyway. */}
+      {/* First load: no initial opacity, so the server-rendered page paints at once (LCP). */}
       <motion.div initial={curtain ? { opacity: 0, y: 40 } : false} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: curtain ? 0.2 : 0 }}>
         {children}
       </motion.div>

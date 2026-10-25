@@ -14,7 +14,7 @@ export function LocalTime({ className }: { className?: string }) {
   }, []);
   return (
     <span className={className} suppressHydrationWarning>
-      <span className="text-slate-500">Islamabad</span> <span className="tabular-nums">{time ?? "--:--:--"}</span> <span className="text-slate-500">PKT</span>
+      <span className="opacity-70">Islamabad</span> <span className="tabular-nums">{time ?? "--:--:--"}</span> <span className="opacity-70">PKT</span>
     </span>
   );
 }

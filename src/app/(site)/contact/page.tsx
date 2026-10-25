@@ -3,7 +3,10 @@ import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { buildMetadata, breadcrumbJsonLd } from "@/lib/seo";
 import { getContent } from "@/lib/server/content";
-import { PageHero } from "@/components/sections/PageHero";
+import { Breadcrumb } from "@/components/ui/Breadcrumb";
+import { Kinetic } from "@/components/motion/Kinetic";
+import { Film } from "@/components/media/Film";
+import { LAperture } from "@/components/media/LAperture";
 import { ContactForm } from "@/components/forms/ContactForm";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { Button } from "@/components/ui/Button";
@@ -29,33 +32,55 @@ export default async function ContactPage() {
   return (
     <>
       <JsonLd data={breadcrumbJsonLd([{ name: "Home", path: "/" }, { name: "Contact", path: "/contact" }])} />
-      <PageHero
-        size="mega"
-        label="Contact"
-        title="Let's talk."
-        description="Choose the channel that fits your request. For new projects, the Start a Project form gives us the context we need to respond well."
-        breadcrumbs={[{ label: "Home", href: "/" }, { label: "Contact" }]}
-        actions={
-          <Button href="/start-a-project" size="lg" icon="arrow">
-            Start a Project
-          </Button>
-        }
-        aside={
-          <div className="border-t border-ink/15 pt-6">
-            <a href={`mailto:${site.contact.generalEmail}`} className="link-draw block w-fit break-all font-display text-2xl font-bold text-navy sm:text-3xl">
-              {site.contact.generalEmail}
-            </a>
-            {site.contact.phone && (
-              <a href={`tel:${site.contact.phone.replace(/\s+/g, "")}`} className="link-draw mt-2 block w-fit font-display text-xl font-bold text-blue">
-                {site.contact.phone}
-              </a>
-            )}
-            <p className="mt-4 text-[0.95rem] text-slate-600">
-              {site.contact.city}, {site.contact.country} · <LocalTime className="tabular" />
-            </p>
+      {/* Immersive opening on navy (the studio, located and live), then the channels and the form on light
+          surfaces where they are plain and easy to use. */}
+      <section data-hero aria-labelledby="contact-heading" className="dark-section relative overflow-hidden bg-navy text-white">
+        <div className="container-x pb-20 pt-[calc(var(--header-h)+2.5rem)]">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Contact" }]} tone="dark" />
+            <p className="label-tech text-slate-300">33.6844° N, 73.0479° E · {site.contact.city}, {site.contact.country}</p>
           </div>
-        }
-      />
+          <div className="mt-14 grid gap-14 lg:mt-20 lg:grid-cols-12 lg:items-end">
+            <div className="lg:col-span-7">
+              <h1 id="contact-heading" className="font-display text-mega text-white">
+                <span className="intro-line [--i:0]">
+                  <span className="kinetic [--wght:300]">Let&apos;s</span>
+                </span>{" "}
+                <span className="intro-line [--i:1]">
+                  <span>
+                    <Kinetic from={300} to={800} start={["start", 0.95]} end={["start", 0.4]} className="text-blue-200">
+                      talk.
+                    </Kinetic>
+                  </span>
+                </span>
+              </h1>
+              <p className="mt-10 max-w-xl text-lead text-slate-300">Choose the channel that fits your request. For new projects, the Start a Project form gives us the context we need to respond well.</p>
+              <div className="mt-8 flex flex-wrap items-center gap-4">
+                <Button href="/start-a-project" size="lg" icon="arrow">
+                  Start a Project
+                </Button>
+                <a href={`mailto:${site.contact.generalEmail}`} className="link-draw break-all font-display text-xl font-medium text-white">
+                  {site.contact.generalEmail}
+                </a>
+              </div>
+            </div>
+            <div className="lg:col-span-5">
+              <LAperture shape={{ la: 40, lb: 52, lc: 6 }} className="aspect-[5/4] w-full">
+                <Film id="assembly" priority size="compact" className="absolute inset-0" />
+              </LAperture>
+              <div className="mt-5 flex flex-wrap items-baseline justify-between gap-4 border-t border-white/15 pt-4">
+                <p className="label-caps text-slate-400">Local time in Islamabad</p>
+                <LocalTime className="font-mono text-lg text-white" />
+              </div>
+              {site.contact.phone && (
+                <a href={`tel:${site.contact.phone.replace(/\s+/g, "")}`} className="link-draw mt-2 inline-block font-display text-xl font-medium text-blue-200">
+                  {site.contact.phone}
+                </a>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Channels */}
       <section aria-label="Contact channels" className="bg-cloud">
@@ -63,8 +88,8 @@ export default async function ContactPage() {
           <ul className="grid gap-12 md:grid-cols-3 md:gap-10">
             {channels.map((c, i) => (
               <li key={c.title} className="flex flex-col border-t-2 border-navy pt-6">
-                <span className="tabular text-sm font-bold text-blue">{String(i + 1).padStart(2, "0")}</span>
-                <h2 className="mt-3 font-display text-h3 font-bold text-navy">{c.title}</h2>
+                <span className="tabular font-mono text-xs text-blue">{String(i + 1).padStart(2, "0")}</span>
+                <h2 className="mt-3 font-display text-h3 font-medium text-navy">{c.title}</h2>
                 <p className="mt-3 flex-1 text-[1rem] leading-relaxed text-slate-600">{c.description}</p>
                 <a href={`mailto:${c.email}`} className="link-draw mt-5 w-fit break-all text-[0.98rem] font-semibold text-blue">
                   {c.email}
@@ -86,8 +111,8 @@ export default async function ContactPage() {
         <div className="container-x section-y">
           <div className="grid gap-14 lg:grid-cols-12 lg:gap-16">
             <div className="lg:col-span-5">
-              <h2 id="message-heading" className="text-h1 font-extrabold text-navy">
-                Send a <span className="text-blue">message.</span>
+              <h2 id="message-heading" className="font-display text-h1 font-medium text-navy">
+                Send a <Kinetic from={300} to={760} className="text-blue">message.</Kinetic>
               </h2>
               <p className="mt-6 max-w-md text-lead text-slate-600">For anything that is not a project inquiry. We will review your message and contact you using the details submitted.</p>
               <dl className="mt-10 border-t border-ink/15">

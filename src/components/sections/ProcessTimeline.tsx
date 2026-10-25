@@ -23,7 +23,7 @@ function Step({ i, total, step, note, progress, dark }: { i: number; total: numb
         <motion.span aria-hidden="true" style={{ scaleY: draw }} className={cn("absolute bottom-0 left-0 top-0 w-[2px] origin-top", dark ? "bg-white/70" : "bg-navy")} />
         {/* tread */}
         <motion.span aria-hidden="true" style={{ scaleX: draw }} className={cn("absolute left-0 right-0 top-0 hidden h-[2px] origin-left xl:block", dark ? "bg-white/70" : "bg-navy")} />
-        <span className={cn("tabular font-display text-h2 font-extrabold leading-none", dark ? "text-blue-200" : "text-blue")}>{step.number}</span>
+        <span className={cn("tabular font-display text-h2 font-medium leading-none", dark ? "text-blue-200" : "text-blue")}>{step.number}</span>
         <h3 className={cn("mt-4 font-display text-xl font-bold tracking-tight", dark ? "text-white" : "text-navy")}>{step.title}</h3>
         <p className={cn("mt-2 pb-2 text-[0.95rem] leading-relaxed", dark ? "text-slate-300" : "text-slate-600")}>{note ?? step.description}</p>
       </motion.div>

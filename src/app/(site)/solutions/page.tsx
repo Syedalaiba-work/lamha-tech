@@ -4,7 +4,8 @@ import { buildMetadata, breadcrumbJsonLd } from "@/lib/seo";
 import { solutions } from "@/data/solutions";
 import { PageHero } from "@/components/sections/PageHero";
 import { WhyLamhaSection } from "@/components/sections/WhyLamhaSection";
-import { CTASection } from "@/components/sections/CTASection";
+import { NextStep } from "@/components/sections/NextStep";
+import { Kinetic } from "@/components/motion/Kinetic";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { Button } from "@/components/ui/Button";
 import { AudienceGlyph } from "@/components/solutions/AudienceGlyph";
@@ -34,7 +35,7 @@ export default function SolutionsPage() {
         art={<ModuleVisual formation="cluster" fallback={null} />}
         title={
           <>
-            Built around the way <span className="text-blue">your organization</span> works.
+            Built around the way <Kinetic from={300} to={760} className="text-blue">your organization</Kinetic> works.
           </>
         }
         description="The same engineering discipline, shaped to the realities of startups, growing SMEs, enterprise teams and problems that do not fit a template."
@@ -50,7 +51,7 @@ export default function SolutionsPage() {
               <li key={s.slug} className="border-b border-ink/15">
                 <a href={`#${s.slug}`} className="group flex items-baseline gap-4 py-4">
                   <span className="tabular text-sm font-bold text-blue">{s.number}</span>
-                  <span className="font-display text-xl font-bold text-navy group-hover:text-blue">{s.navLabel}</span>
+                  <span className="weight-hover font-display text-xl text-navy group-hover:text-blue">{s.navLabel}</span>
                 </a>
               </li>
             ))}
@@ -70,15 +71,18 @@ export default function SolutionsPage() {
                 className={cn("relative flex min-h-[100svh] scroll-mt-0 flex-col [@media(min-width:1024px)_and_(min-height:720px)]:sticky [@media(min-width:1024px)_and_(min-height:720px)]:top-0", idx > 0 && "lg:chamfer-lg", sf.cls)}
               >
                 <div className="container-x flex flex-1 flex-col justify-between gap-12 pb-12 pt-24 sm:pt-28">
-                  <p className={cn("label-caps", sf.dark ? "text-white" : "text-slate-600")}>
+                  <p className={cn("label-tech", sf.dark ? "text-white" : "text-slate-600")}>
                     <span className="tabular">{s.number}</span> / {String(solutions.length).padStart(2, "0")} · {s.title}
                   </p>
                   <div className="grid items-end gap-12 lg:grid-cols-12">
                     <div className="lg:col-span-7">
-                      <h2 id={`sol-${s.slug}`} className="font-display text-[clamp(4rem,11.5vw,12rem)] font-extrabold leading-[0.86] tracking-[-0.065em]">
-                        {s.navLabel}
+                      {/* The audience name's weight follows the organisation's scale: startups light, enterprise heavy. */}
+                      <h2 id={`sol-${s.slug}`} className="font-display text-[clamp(4rem,11.5vw,12rem)] leading-[0.86] tracking-[-0.06em]">
+                        <Kinetic from={200} to={({ startups: 340, smes: 560, enterprise: 820, custom: 460 } as Record<string, number>)[s.slug] ?? 600}>
+                          {s.navLabel}
+                        </Kinetic>
                       </h2>
-                      <p className="mt-8 max-w-2xl font-display text-h3 font-bold">{s.headline}</p>
+                      <p className="mt-8 max-w-2xl font-display text-h3 font-medium">{s.headline}</p>
                       <p className={cn("mt-5 max-w-xl text-[1.05rem] leading-relaxed", sf.dark ? "text-white" : "text-slate-600")}>{s.intro}</p>
                       <Button href={`/solutions/${s.slug}`} variant={sf.dark ? "secondary" : "primary"} size="lg" icon="arrow" className="mt-8">
                         {`Solutions for ${s.navLabel}`}
@@ -107,7 +111,7 @@ export default function SolutionsPage() {
       </section>
 
       <WhyLamhaSection number="02" />
-      <CTASection location="solutions_index" />
+      <NextStep location="solutions_index" next={{ href: "/work", label: "Next chapter", title: "Work and studio studies", film: "experience" }} />
     </>
   );
 }

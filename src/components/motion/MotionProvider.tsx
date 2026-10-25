@@ -4,10 +4,14 @@ import { useEffect } from "react";
 import { MotionConfig } from "motion/react";
 import { SmoothScroll } from "./SmoothScroll";
 import { ScrollProgress } from "./Motion";
-import { Preloader } from "./Preloader";
+import { LoadHairline } from "./LoadHairline";
 import { PageTransitions } from "./PageTransitions";
 
-/** Global motion configuration: honours prefers-reduced-motion; smooth scroll, progress bar and intro. */
+/**
+ * Global motion configuration: honours prefers-reduced-motion; smooth scroll, scroll position, asset loading
+ * hairline and page transitions. There is no preloader: content paints from the server HTML at once and the
+ * first-visit intro is CSS on the content itself (globals.css, .intro-line / .intro-fade).
+ */
 export function MotionProvider({ children }: { children: React.ReactNode }) {
   // The app is interactive: the CSS failsafe for hidden animation states (globals.css) stands down.
   useEffect(() => {
@@ -15,7 +19,7 @@ export function MotionProvider({ children }: { children: React.ReactNode }) {
   }, []);
   return (
     <MotionConfig reducedMotion="user" transition={{ ease: [0.16, 1, 0.3, 1] }}>
-      <Preloader />
+      <LoadHairline />
       <SmoothScroll />
       <ScrollProgress />
       <PageTransitions />

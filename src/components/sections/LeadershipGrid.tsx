@@ -19,7 +19,7 @@ export async function LeadershipGrid({ number = "10", tone = "light", showLink =
             <SectionLabel number={number} tone={tone}>
               About the company
             </SectionLabel>
-            <h2 id="leadership-heading" className={cn("mt-8 text-h2 font-extrabold", dark ? "text-white" : "text-navy")}>
+            <h2 id="leadership-heading" className={cn("mt-8 text-h2 font-medium", dark ? "text-white" : "text-navy")}>
               The company and the people behind it.
             </h2>
             <p className={cn("mt-5 text-[0.95rem] leading-relaxed", dark ? "text-slate-300" : "text-slate-700")}>{site.about.short}</p>

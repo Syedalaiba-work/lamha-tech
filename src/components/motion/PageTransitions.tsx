@@ -5,20 +5,48 @@ import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 
 const EASE = [0.76, 0, 0.24, 1] as const;
-const COVER_MS = 520;
+const COVER_MS = 560;
+
+const SECTION_NAMES: Record<string, string> = {
+  "": "Home",
+  services: "Services",
+  solutions: "Solutions",
+  work: "Work",
+  technology: "Technology",
+  products: "Products & R&D",
+  about: "About",
+  careers: "Careers",
+  contact: "Contact",
+  "start-a-project": "Start a project",
+  privacy: "Privacy",
+  terms: "Terms",
+};
+
+/** The destination's name for the cover: the link's own short text on detail pages, else the section name. */
+function labelFor(a: HTMLAnchorElement, url: URL): string {
+  const explicit = a.getAttribute("data-transition-label");
+  if (explicit) return explicit;
+  const parts = url.pathname.split("/").filter(Boolean);
+  const section = SECTION_NAMES[parts[0] ?? ""] ?? "LAMHA";
+  if (parts.length > 1) {
+    const text = (a.getAttribute("aria-label") || a.textContent || "").replace(/\s+/g, " ").trim();
+    if (text && text.length <= 36) return text;
+  }
+  return section;
+}
 
 /**
- * Cover → navigate → reveal. Internal link clicks first draw the navy curtain up from the bottom
- * (chamfered leading edge), then navigate; the route template's curtain lifts off the new page.
- * Runs in the capture phase so it can stop Next's own navigation, but after-the-fact handlers on the
- * link (analytics) still fire. Skips anything that should behave natively: modified/middle clicks,
- * new tabs, downloads, hash-only and same-page links, external origins, `data-no-transition`, and
- * every click under reduced motion.
+ * Cover → navigate → reveal. An internal link click grows a navy L-form out of the bottom-left corner until it
+ * fills the screen (the destination's name rides on it), then navigates; the route template lifts the cover off
+ * the new page. Runs in the capture phase so it can stop Next's own navigation, but after-the-fact handlers on
+ * the link (analytics) still fire. Skips anything that should behave natively: modified/middle clicks, new tabs,
+ * downloads, hash-only and same-page links, external origins, `data-no-transition`, and every click under
+ * reduced motion. Back/forward navigation is never intercepted.
  */
 export function PageTransitions() {
   const router = useRouter();
   const pathname = usePathname();
-  const [covering, setCovering] = useState(false);
+  const [cover, setCover] = useState<string | null>(null);
   const timer = useRef<number | null>(null);
   const safety = useRef<number | null>(null);
 
@@ -26,7 +54,7 @@ export function PageTransitions() {
   useEffect(() => {
     if (timer.current) window.clearTimeout(timer.current);
     if (safety.current) window.clearTimeout(safety.current);
-    const t = window.setTimeout(() => setCovering(false), 60);
+    const t = window.setTimeout(() => setCover(null), 60);
     return () => window.clearTimeout(t);
   }, [pathname]);
 
@@ -44,12 +72,12 @@ export function PageTransitions() {
       const here = window.location;
       if (url.pathname === here.pathname && url.search === here.search) return; // same page or hash jump
       e.preventDefault();
-      setCovering(true);
+      setCover(labelFor(a, url));
       const href = url.pathname + url.search + url.hash;
       timer.current = window.setTimeout(() => router.push(href), COVER_MS);
       // Never strand the visitor behind the cover if the navigation fails or stalls.
       if (safety.current) window.clearTimeout(safety.current);
-      safety.current = window.setTimeout(() => setCovering(false), 8000);
+      safety.current = window.setTimeout(() => setCover(null), 8000);
     };
     // Window capture runs before React (whose root listeners live on document), so Next does not also navigate.
     window.addEventListener("click", onClick, true);
@@ -58,20 +86,33 @@ export function PageTransitions() {
 
   return (
     <AnimatePresence>
-      {covering && (
+      {cover !== null && (
         <motion.div
           key="cover"
           aria-hidden="true"
           data-overlay
-          className="pointer-events-none fixed inset-0 z-[95] bg-navy"
-          initial={{ clipPath: "polygon(0% 100%, 100% 100%, 100% 100%, 100% 100%, 0% 100%)" }}
-          animate={{ clipPath: "polygon(0% 0%, 100% 0%, 100% 0%, 100% 100%, 0% 100%)", transition: { duration: COVER_MS / 1000, ease: EASE } }}
+          className="l-aperture dark-section pointer-events-none fixed inset-0 z-[95] bg-navy text-white"
+          initial={{ "--la": "0%", "--lb": "100%", "--lc": "10%" } as never}
+          animate={{ "--la": "100%", "--lb": "0%", "--lc": "0%", transition: { duration: COVER_MS / 1000, ease: EASE } } as never}
           exit={{ opacity: 0, transition: { duration: 0.2, delay: 0.25 } }}
         >
-          {/* Only visible if the next page takes a moment: the brand L-form module (not the logo lockup), gently pulsing. */}
-          <motion.svg viewBox="0 0 32 32" className="absolute left-1/2 top-1/2 h-12 w-12 -translate-x-1/2 -translate-y-1/2" initial={{ opacity: 0 }} animate={{ opacity: [0, 0.9, 0.4, 0.9] }} transition={{ delay: 0.9, duration: 2.4, repeat: Infinity }}>
-            <path d="M4 3h7v14.5l3.5 3.5H28v7H4z" fill="#FFFFFF" />
-          </motion.svg>
+          <div className="container-x absolute inset-x-0 bottom-0 pb-[8vh]">
+            <motion.p
+              initial={{ y: "60%", opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.18 }}
+              className="font-display text-[clamp(2.5rem,8vw,8rem)] font-medium leading-none tracking-[-0.05em]"
+            >
+              {cover}
+            </motion.p>
+            {/* Only visible if the next page takes a moment: a thin progress line. */}
+            <motion.span
+              className="mt-6 block h-px origin-left bg-white/50"
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: [0, 0.6, 0.85] }}
+              transition={{ delay: 0.7, duration: 3, times: [0, 0.4, 1] }}
+            />
+          </div>
         </motion.div>
       )}
     </AnimatePresence>
