@@ -48,11 +48,12 @@ export const site = {
   },
   /**
    * Official external profiles (single source of truth for footer links and Organization.sameAs).
-   * TODO(owner): add the LinkedIn company page URL when created; add others only if they are official LAMHA accounts.
+   * Add others only if they are official LAMHA accounts.
    * Entries with null href are hidden everywhere. Never add directories or unofficial listings here.
    */
   social: [
-    { label: "LinkedIn", href: null as string | null },
+    // Company Page created by the owner (2026-10-30).
+    { label: "LinkedIn", href: "https://www.linkedin.com/company/145361391/" as string | null },
     // Company GitHub (LAMHATechnologies) is set from the owner portal once GitHub confirms the account exists.
     { label: "GitHub", href: null as string | null },
     { label: "Facebook", href: null as string | null },
