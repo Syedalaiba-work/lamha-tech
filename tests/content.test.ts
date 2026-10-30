@@ -70,7 +70,7 @@ describe("URL validation", () => {
 
 describe("section validation", () => {
   it("requires valid business emails and a plausible phone number", () => {
-    const base = { generalEmail: "Hello@Example.com", projectsEmail: "p@example.com", careersEmail: "c@example.com", phone: "+92 334 1606621", phoneDisplay: "", deliveryNote: "Remote-first." };
+    const base = { generalEmail: "Hello@Example.com", projectsEmail: "p@example.com", careersEmail: "c@example.com", phone: "+92 301 8161936", phoneDisplay: "", deliveryNote: "Remote-first." };
     const parsed = contactSchema.parse(base);
     expect(parsed.generalEmail).toBe("hello@example.com");
     expect(parsed.phoneDisplay).toBeNull();
