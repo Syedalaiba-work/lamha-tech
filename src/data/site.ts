@@ -11,6 +11,8 @@ export const site = {
   supportingLine: "From Ideas to Systems. From Systems to Impact.",
   positioning:
     "LAMHA Technologies helps businesses, startups and organizations turn technical requirements and real-world problems into practical software, digital products and technology solutions.",
+  /** Home page and default title: brand plus the terms clients search for (kept under ~60 characters). */
+  homeTitle: "LAMHA Technologies | Software Company in Islamabad, Pakistan",
   description:
     "LAMHA Technologies is a technology and software company in Islamabad, Pakistan, building software, web and mobile products and digital solutions.",
   /** Fuller factual description for the Organization entity (no snippet length limit). Every claim appears on the site. */

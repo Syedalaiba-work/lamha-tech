@@ -15,7 +15,7 @@ import { People } from "@/components/sections/home/People";
 import { CTASection } from "@/components/sections/CTASection";
 
 export const metadata: Metadata = buildMetadata({
-  title: `${site.name} | Technology & Software Solutions`,
+  title: site.homeTitle,
   description: site.description,
   path: "/",
   absoluteTitle: true,
@@ -32,7 +32,7 @@ export default async function HomePage() {
   const { site } = await getContent();
   return (
     <>
-      <JsonLd data={webPageJsonLd({ title: `${site.name} | Technology & Software Solutions`, description: site.description, path: "/" })} />
+      <JsonLd data={webPageJsonLd({ title: site.homeTitle, description: site.description, path: "/" })} />
       {/* The pinned WebGL journey; static hero + stacked chapters for reduced motion / no WebGL. */}
       <HomeJourney
         fallback={

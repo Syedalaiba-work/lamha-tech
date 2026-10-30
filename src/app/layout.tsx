@@ -31,7 +31,7 @@ const mono = JetBrains_Mono({
 const baseMetadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
-    default: `${site.name} | Technology & Software Solutions`,
+    default: site.homeTitle,
     template: `%s | ${site.name}`,
   },
   description: site.description,
@@ -55,13 +55,13 @@ const baseMetadata: Metadata = {
     type: "website",
     siteName: site.name,
     locale: "en_US",
-    title: `${site.name} | Technology & Software Solutions`,
+    title: site.homeTitle,
     description: site.description,
     url: site.url,
   },
   twitter: {
     card: "summary_large_image",
-    title: `${site.name} | Technology & Software Solutions`,
+    title: site.homeTitle,
     description: site.description,
   },
   robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 } },
